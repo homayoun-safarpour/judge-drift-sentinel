@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "judge-drift-sentinel"
+version = "0.1.0"
+description = "When your eval scores move, tells you whether your system changed or your LLM judge did - via a frozen human-labeled anchor set."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Homayoun Safarpour Dehkordi", email = "homayoun.safarpour@gmail.com" }]
+keywords = ["llm-as-judge", "evaluation", "drift-detection", "ai-engineering", "llm-evals"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.scripts]
+drift-sentinel = "driftsentinel.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Pin the rule set so lint results are identical on every machine and in CI.
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "PL"]
+
+[tool.ruff.lint.per-file-ignores]
+# Literal expected values in assertions are the point of a test, not a smell.
+"tests/*" = ["PLR2004"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
