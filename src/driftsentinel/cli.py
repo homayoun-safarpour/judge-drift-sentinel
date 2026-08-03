@@ -4,6 +4,9 @@
 (STABLE), 3 on SYSTEM_CHANGE (trustworthy, but your system moved), and 2 on
 JUDGE_DRIFT (do not trust the numbers). That makes it usable as a quality
 gate: fail the pipeline precisely when the scoreboard itself is broken.
+
+`drift-sentinel baseline` scores a run against the frozen anchors and writes
+a pinned baseline JSON (with `anchor_freeze_hash`) for later `check` calls.
 """
 
 from __future__ import annotations
@@ -11,8 +14,10 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from typing import Any
 
 from driftsentinel.anchors import load_anchors
+from driftsentinel.baseline import pin_baseline, write_baseline
 from driftsentinel.runs import load_run
 from driftsentinel.verdict import Verdict, diagnose
 
@@ -53,6 +58,21 @@ def _render_json(verdict: Verdict) -> str:
     return json.dumps(payload, indent=2)
 
 
+def _render_baseline_plain(payload: dict[str, Any], out_path: str) -> str:
+    judge = payload["judge"]
+    fingerprint = f"{judge['model']}@{judge['prompt_sha'] or 'unversioned'}"
+    lines = [
+        "pinned       : yes",
+        f"anchor kappa : {payload['baseline_kappa']:.3f}",
+        f"freeze hash  : {payload['anchor_freeze_hash']}",
+        f"judge pin    : {fingerprint}",
+        f"wrote        : {out_path}",
+    ]
+    if "live_metric" in payload:
+        lines.insert(4, f"live metric  : {payload['live_metric']:.3f}")
+    return "\n".join(lines)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="drift-sentinel",
@@ -69,28 +89,54 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--metric-shift", type=float, default=0.05,
                        help="live-metric shift that declares SYSTEM_CHANGE (default 0.05)")
     check.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
+    baseline = sub.add_parser(
+        "baseline",
+        help="score a run and freeze it as the pinned baseline",
+    )
+    baseline.add_argument("--anchors", required=True, help="anchor set JSONL (id, label per line)")
+    baseline.add_argument("--run", required=True, help="judge run JSON to pin as baseline")
+    baseline.add_argument("--out", required=True, help="path to write the pinned baseline JSON")
+    baseline.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     return parser
+
+
+def _cmd_check(args: argparse.Namespace) -> int:
+    anchors = load_anchors(args.anchors)
+    baseline = load_run(args.baseline)
+    current = load_run(args.current)
+    verdict = diagnose(
+        anchors,
+        baseline,
+        current,
+        kappa_drop=args.kappa_drop,
+        metric_shift=args.metric_shift,
+    )
+    print(_render_json(verdict) if args.json else _render_plain(verdict))
+    return verdict.exit_code
+
+
+def _cmd_baseline(args: argparse.Namespace) -> int:
+    anchors = load_anchors(args.anchors)
+    run = load_run(args.run)
+    payload = pin_baseline(anchors, run)
+    written = write_baseline(args.out, payload)
+    if args.json:
+        print(json.dumps({**payload, "wrote": str(written)}, indent=2))
+    else:
+        print(_render_baseline_plain(payload, str(written)))
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
-        anchors = load_anchors(args.anchors)
-        baseline = load_run(args.baseline)
-        current = load_run(args.current)
-        verdict = diagnose(
-            anchors,
-            baseline,
-            current,
-            kappa_drop=args.kappa_drop,
-            metric_shift=args.metric_shift,
-        )
+        if args.command == "baseline":
+            return _cmd_baseline(args)
+        return _cmd_check(args)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-
-    print(_render_json(verdict) if args.json else _render_plain(verdict))
-    return verdict.exit_code
 
 
 if __name__ == "__main__":

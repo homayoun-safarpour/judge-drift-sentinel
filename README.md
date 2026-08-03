@@ -67,10 +67,16 @@ Every time you run your eval suite, have the judge also re-score the anchors, an
 }
 ```
 
+Pin your July run as the frozen baseline (records the anchor `freeze_hash` + kappa):
+
+```bash
+drift-sentinel baseline --anchors anchors.jsonl --run run_july.json --out baseline.json
+```
+
 Then ask the sentinel who moved:
 
 ```bash
-drift-sentinel check --anchors anchors.jsonl --baseline run_july.json --current run_august.json
+drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json
 ```
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT (stop — the scoreboard itself is broken).
@@ -83,9 +89,22 @@ Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3
 | `driftsentinel.agreement` | Cohen's kappa, observed agreement, flip rate — from scratch, stdlib only | You want chance-corrected agreement, not raw accuracy |
 | `driftsentinel.runs` | One judge run: model + prompt fingerprint + anchor scores | "Pin your judge" as data, not as a slogan |
 | `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
-| `driftsentinel.cli` | `drift-sentinel check`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
+| `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`) | You want a durable reference for later `check` calls |
+| `driftsentinel.cli` | `drift-sentinel baseline` / `check`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
 
 ## Worked example (real output)
+
+Freeze the July run as the pinned baseline (records the anchor freeze hash and kappa):
+
+```
+$ drift-sentinel baseline --anchors examples/anchors.jsonl --run examples/run_baseline.json --out baseline.json
+pinned       : yes
+anchor kappa : 0.833
+freeze hash  : ca7c25804843
+judge pin    : frontier-4-2026-05-01@9f2c1a
+live metric  : 0.810
+wrote        : baseline.json
+```
 
 The `examples/` folder ships both failure stories. In July the judge was pinned and agreed with the human labels at kappa 0.83. In August the live eval metric dropped from 0.81 to 0.66 — a 15-point fall that looks exactly like a system regression. Ask the sentinel:
 

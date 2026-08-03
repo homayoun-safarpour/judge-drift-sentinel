@@ -2,6 +2,7 @@
 
 from driftsentinel.agreement import cohen_kappa, flip_rate, observed_agreement
 from driftsentinel.anchors import AnchorSet, load_anchors
+from driftsentinel.baseline import pin_baseline, write_baseline
 from driftsentinel.runs import JudgeRun, load_run
 from driftsentinel.verdict import Verdict, diagnose
 
@@ -17,4 +18,6 @@ __all__ = [
     "load_anchors",
     "load_run",
     "observed_agreement",
+    "pin_baseline",
+    "write_baseline",
 ]
