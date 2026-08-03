@@ -89,7 +89,7 @@ Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3
 | `driftsentinel.agreement` | Cohen's kappa, observed agreement, flip rate — from scratch, stdlib only | You want chance-corrected agreement, not raw accuracy |
 | `driftsentinel.runs` | One judge run: model + prompt fingerprint + anchor scores | "Pin your judge" as data, not as a slogan |
 | `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
-| `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`) | You want a durable reference for later `check` calls |
+| `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
 | `driftsentinel.cli` | `drift-sentinel baseline` / `check`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
 
 ## Worked example (real output)
@@ -143,7 +143,7 @@ I run agent-driven daily project loops and build instruments for judging and eva
 - **No LLM dependency.** The sentinel judges the judge from score files; it never calls a model. Verdicts must be deterministic and testable.
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa, so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
-- **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared.
+- **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
 - **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`.
 
 ## Contributing

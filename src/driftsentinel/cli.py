@@ -17,7 +17,12 @@ import sys
 from typing import Any
 
 from driftsentinel.anchors import load_anchors
-from driftsentinel.baseline import pin_baseline, write_baseline
+from driftsentinel.baseline import (
+    enforce_anchor_freeze,
+    load_recorded_freeze_hash,
+    pin_baseline,
+    write_baseline,
+)
 from driftsentinel.runs import load_run
 from driftsentinel.verdict import Verdict, diagnose
 
@@ -103,6 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _cmd_check(args: argparse.Namespace) -> int:
     anchors = load_anchors(args.anchors)
+    enforce_anchor_freeze(anchors, load_recorded_freeze_hash(args.baseline))
     baseline = load_run(args.baseline)
     current = load_run(args.current)
     verdict = diagnose(

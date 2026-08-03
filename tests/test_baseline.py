@@ -4,7 +4,12 @@ from pathlib import Path
 import pytest
 
 from driftsentinel.anchors import AnchorSet, load_anchors
-from driftsentinel.baseline import pin_baseline, write_baseline
+from driftsentinel.baseline import (
+    enforce_anchor_freeze,
+    load_recorded_freeze_hash,
+    pin_baseline,
+    write_baseline,
+)
 from driftsentinel.cli import main
 from driftsentinel.runs import JudgeRun, load_run
 
@@ -84,3 +89,64 @@ def test_cli_baseline_json_mode(tmp_path, capsys):
     payload = json.loads(capsys.readouterr().out)
     assert payload["pinned"] is True
     assert payload["wrote"] == str(out)
+
+
+def test_enforce_anchor_freeze_accepts_matching_hash():
+    anchors = load_anchors(EXAMPLES / "anchors.jsonl")
+    enforce_anchor_freeze(anchors, anchors.freeze_hash)  # does not raise
+
+
+def test_enforce_anchor_freeze_skips_when_hash_absent():
+    anchors = load_anchors(EXAMPLES / "anchors.jsonl")
+    enforce_anchor_freeze(anchors, None)  # legacy plain-run baseline
+
+
+def test_enforce_anchor_freeze_rejects_mismatch():
+    anchors = load_anchors(EXAMPLES / "anchors.jsonl")
+    with pytest.raises(ValueError, match="anchor freeze hash mismatch"):
+        enforce_anchor_freeze(anchors, "deadbeef0000")
+
+
+def test_check_refuses_when_pinned_baseline_freeze_hash_mismatches(tmp_path, capsys):
+    """Named behavioral claim: check refuses if anchors no longer match the pin."""
+    anchors = load_anchors(EXAMPLES / "anchors.jsonl")
+    pinned = tmp_path / "pinned.json"
+    write_baseline(pinned, pin_baseline(anchors, load_run(EXAMPLES / "run_baseline.json")))
+    assert load_recorded_freeze_hash(pinned) == anchors.freeze_hash
+
+    edited = tmp_path / "anchors_edited.jsonl"
+    lines = (EXAMPLES / "anchors.jsonl").read_text(encoding="utf-8").splitlines()
+    # Flip one human label so the freeze hash changes.
+    edited.write_text(
+        "\n".join(
+            '{"id": "a01", "input": "x", "label": "fail"}' if '"id": "a01"' in line else line
+            for line in lines
+            if line.strip()
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    code = main([
+        "check",
+        "--anchors", str(edited),
+        "--baseline", str(pinned),
+        "--current", str(EXAMPLES / "run_baseline.json"),
+    ])
+    assert code == 1
+    err = capsys.readouterr().err
+    assert "anchor freeze hash mismatch" in err
+
+
+def test_check_allows_matching_pinned_baseline(tmp_path):
+    anchors = load_anchors(EXAMPLES / "anchors.jsonl")
+    pinned = tmp_path / "pinned.json"
+    write_baseline(pinned, pin_baseline(anchors, load_run(EXAMPLES / "run_baseline.json")))
+
+    code = main([
+        "check",
+        "--anchors", str(EXAMPLES / "anchors.jsonl"),
+        "--baseline", str(pinned),
+        "--current", str(EXAMPLES / "run_baseline.json"),
+    ])
+    assert code == 0
