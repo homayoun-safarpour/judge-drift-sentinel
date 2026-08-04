@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from driftsentinel.agreement import cohen_kappa
+from driftsentinel.agreement import DEFAULT_KAPPA, KappaConfig, agreement_kappa
 from driftsentinel.anchors import AnchorSet
 from driftsentinel.runs import JudgeRun
 
@@ -27,16 +27,26 @@ def _require_full_coverage(anchors: AnchorSet, run: JudgeRun) -> None:
         )
 
 
-def pin_baseline(anchors: AnchorSet, run: JudgeRun) -> dict[str, Any]:
+def pin_baseline(
+    anchors: AnchorSet,
+    run: JudgeRun,
+    *,
+    kappa: KappaConfig | None = None,
+) -> dict[str, Any]:
     """Score `run` against `anchors` and return a freeze-ready baseline payload."""
     _require_full_coverage(anchors, run)
-    kappa = cohen_kappa(anchors.labels, run.anchor_scores)
+    kappa_cfg = kappa or DEFAULT_KAPPA
+    score = agreement_kappa(
+        anchors.labels,
+        run.anchor_scores,
+        config=kappa_cfg,
+    )
     payload: dict[str, Any] = {
         "judge": {"model": run.model, "prompt_sha": run.prompt_sha},
         "created": run.created,
         "anchor_scores": dict(run.anchor_scores),
         "anchor_freeze_hash": anchors.freeze_hash,
-        "baseline_kappa": round(kappa, 6),
+        "baseline_kappa": round(score, 6),
         "pinned": True,
     }
     if run.live_metric is not None:

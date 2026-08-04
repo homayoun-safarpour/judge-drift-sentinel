@@ -1,6 +1,13 @@
 """judge-drift-sentinel: did your system change, or did your judge?"""
 
-from driftsentinel.agreement import cohen_kappa, flip_rate, observed_agreement
+from driftsentinel.agreement import (
+    KappaConfig,
+    agreement_kappa,
+    cohen_kappa,
+    flip_rate,
+    observed_agreement,
+    weighted_cohen_kappa,
+)
 from driftsentinel.anchors import AnchorSet, load_anchors
 from driftsentinel.baseline import pin_baseline, write_baseline
 from driftsentinel.runs import JudgeRun, load_run
@@ -11,7 +18,9 @@ __version__ = "0.1.0"
 __all__ = [
     "AnchorSet",
     "JudgeRun",
+    "KappaConfig",
     "Verdict",
+    "agreement_kappa",
     "cohen_kappa",
     "diagnose",
     "flip_rate",
@@ -19,5 +28,6 @@ __all__ = [
     "load_run",
     "observed_agreement",
     "pin_baseline",
+    "weighted_cohen_kappa",
     "write_baseline",
 ]

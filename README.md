@@ -79,6 +79,15 @@ Then ask the sentinel who moved:
 drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json
 ```
 
+For ordinal rubrics (integer scores such as 0-3), use weighted kappa so near misses cost less than far misses:
+
+```bash
+drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json \
+  --kappa-weights quadratic --kappa-levels 0,1,2,3
+```
+
+Default `--kappa-weights none` keeps unweighted Cohen's kappa for binary pass/fail labels.
+
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT (stop — the scoreboard itself is broken).
 
 ## What is in the box
@@ -86,7 +95,7 @@ Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3
 | Module | What it does | Use it when |
 |---|---|---|
 | `driftsentinel.anchors` | Loads the frozen anchor set, fingerprints it (`freeze_hash`) | You need proof the reference set itself never moved |
-| `driftsentinel.agreement` | Cohen's kappa, observed agreement, flip rate — from scratch, stdlib only | You want chance-corrected agreement, not raw accuracy |
+| `driftsentinel.agreement` | Cohen's kappa (unweighted) plus weighted linear/quadratic kappa for ordinal 0-3 rubrics; observed agreement; flip rate — stdlib only | You want chance-corrected agreement, including near-vs-far misses on ordinal scales |
 | `driftsentinel.runs` | One judge run: model + prompt fingerprint + anchor scores | "Pin your judge" as data, not as a slogan |
 | `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
 | `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
@@ -142,7 +151,7 @@ I run agent-driven daily project loops and build instruments for judging and eva
 
 - **No LLM dependency.** The sentinel judges the judge from score files; it never calls a model. Verdicts must be deterministic and testable.
 - **Zero runtime dependencies.** Standard library only.
-- **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa, so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
+- **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
 - **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`.
 

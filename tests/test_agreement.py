@@ -1,6 +1,12 @@
 import pytest
 
-from driftsentinel.agreement import cohen_kappa, flip_rate, observed_agreement
+from driftsentinel.agreement import (
+    agreement_kappa,
+    cohen_kappa,
+    flip_rate,
+    observed_agreement,
+    weighted_cohen_kappa,
+)
 
 
 def test_kappa_perfect_agreement_is_one():
@@ -46,3 +52,87 @@ def test_flip_rate_counts_changed_labels():
     a = {"1": "pass", "2": "pass", "3": "fail", "4": "fail"}
     b = {"1": "pass", "2": "fail", "3": "fail", "4": "pass"}
     assert flip_rate(a, b) == pytest.approx(0.5)
+
+
+def test_weighted_kappa_perfect_ordinal_agreement_is_one():
+    labels = {"a": "0", "b": "1", "c": "2", "d": "3"}
+    assert weighted_cohen_kappa(labels, dict(labels), weights="linear") == pytest.approx(1.0)
+    assert weighted_cohen_kappa(labels, dict(labels), weights="quadratic") == pytest.approx(1.0)
+
+
+def test_weighted_kappa_rejects_non_integer_labels():
+    with pytest.raises(ValueError, match="integer labels"):
+        weighted_cohen_kappa({"a": "pass"}, {"a": "fail"}, weights="linear")
+
+
+def test_weighted_kappa_hand_computed_linear_on_0_3():
+    # 4 items on scale 0-3. human: 0,1,2,3  judge: 0,2,2,3
+    # Linear weights: |d|=0 -> 1, |d|=1 -> 2/3, |d|=2 -> 1/3, |d|=3 -> 0
+    # po = (1 + 2/3 + 1 + 1) / 4 = 11/12
+    # Hand pe over uniform row marg and col [0.25,0,0.5,0.25] yields 7/12;
+    # kappa = (11/12 - 7/12) / (1 - 7/12) = 0.8
+    human = {"a": "0", "b": "1", "c": "2", "d": "3"}
+    judge = {"a": "0", "b": "2", "c": "2", "d": "3"}
+    assert weighted_cohen_kappa(
+        human, judge, weights="linear", levels=(0, 1, 2, 3)
+    ) == pytest.approx(0.8)
+
+
+def test_weighted_kappa_separates_near_miss_from_far_miss_on_ordinal_scale():
+    # Central claim: on a 0-3 rubric, off-by-1 disagreements must score higher
+    # weighted kappa than off-by-3 disagreements on the same items. Unweighted
+    # kappa treats both as total misses and cannot separate them.
+    human = {
+        "a": "0",
+        "b": "0",
+        "c": "1",
+        "d": "0",
+        "e": "2",
+        "f": "3",
+        "g": "3",
+        "h": "3",
+    }
+    near = {
+        "a": "0",
+        "b": "1",
+        "c": "1",
+        "d": "1",
+        "e": "2",
+        "f": "2",
+        "g": "3",
+        "h": "2",
+    }
+    far = {
+        "a": "0",
+        "b": "3",
+        "c": "1",
+        "d": "3",
+        "e": "2",
+        "f": "0",
+        "g": "3",
+        "h": "0",
+    }
+    levels = (0, 1, 2, 3)
+    # Same disagreeing ids -> same raw agreement; unweighted kappa ignores distance.
+    assert observed_agreement(human, near) == pytest.approx(observed_agreement(human, far))
+    near_k = weighted_cohen_kappa(human, near, weights="linear", levels=levels)
+    far_k = weighted_cohen_kappa(human, far, weights="linear", levels=levels)
+    assert near_k > far_k
+    near_q = weighted_cohen_kappa(human, near, weights="quadratic", levels=levels)
+    far_q = weighted_cohen_kappa(human, far, weights="quadratic", levels=levels)
+    assert near_q > far_q
+
+
+def test_agreement_kappa_none_keeps_binary_path():
+    a = {"1": "pass", "2": "pass", "3": "fail", "4": "fail"}
+    b = {"1": "pass", "2": "fail", "3": "pass", "4": "fail"}
+    assert agreement_kappa(a, b, weights="none") == pytest.approx(cohen_kappa(a, b))
+
+
+def test_agreement_kappa_linear_matches_weighted():
+    human = {"a": "0", "b": "1", "c": "2", "d": "3"}
+    judge = {"a": "0", "b": "2", "c": "2", "d": "3"}
+    levels = (0, 1, 2, 3)
+    assert agreement_kappa(human, judge, weights="linear", levels=levels) == pytest.approx(
+        weighted_cohen_kappa(human, judge, weights="linear", levels=levels)
+    )

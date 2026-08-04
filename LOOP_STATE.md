@@ -6,7 +6,7 @@ head item goes stale.
 
 - [x] W1 `drift-sentinel baseline` command: score a run and freeze it as the pinned baseline (cost: S) (touched: 2026-08-03)
 - [x] W2 Anchor freeze-hash enforcement: `check` refuses to run if the anchor file no longer matches the hash recorded in the baseline (cost: S) (touched: 2026-08-03)
-- [ ] W3 Weighted kappa for ordinal rubrics (0-3 scales, not just pass/fail) (cost: M)
+- [x] W3 Weighted kappa for ordinal rubrics (0-3 scales, not just pass/fail) (cost: M) (touched: 2026-08-04)
 - [ ] W4 `drift-sentinel history`: verdict timeline across N run files, spot slow decay (cost: M)
 - [ ] W5 GitHub Actions example: weekly anchor re-score, open an issue on JUDGE_DRIFT (cost: M)
 - [ ] W6 Adapter: read anchor scores straight from a judge-reliability-kit panel export (cost: M)

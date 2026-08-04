@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from driftsentinel.agreement import cohen_kappa, flip_rate
+from driftsentinel.agreement import DEFAULT_KAPPA, KappaConfig, agreement_kappa, flip_rate
 from driftsentinel.anchors import AnchorSet
 from driftsentinel.runs import JudgeRun
 
@@ -59,20 +59,34 @@ def _require_full_coverage(anchors: AnchorSet, run: JudgeRun) -> None:
         )
 
 
-def diagnose(
+def diagnose(  # noqa: PLR0913 — policy knobs stay keyword-only beside the three runs
     anchors: AnchorSet,
     baseline: JudgeRun,
     current: JudgeRun,
     *,
     kappa_drop: float = 0.10,
     metric_shift: float = 0.05,
+    kappa: KappaConfig | None = None,
 ) -> Verdict:
-    """Attribute score movement between two runs to the judge or to the system."""
+    """Attribute score movement between two runs to the judge or to the system.
+
+    Pass `kappa=KappaConfig(weights="linear"|"quadratic", levels=(0,1,2,3))`
+    for ordinal rubrics; default is unweighted Cohen's kappa.
+    """
     _require_full_coverage(anchors, baseline)
     _require_full_coverage(anchors, current)
+    kappa_cfg = kappa or DEFAULT_KAPPA
 
-    k_baseline = cohen_kappa(anchors.labels, baseline.anchor_scores)
-    k_current = cohen_kappa(anchors.labels, current.anchor_scores)
+    k_baseline = agreement_kappa(
+        anchors.labels,
+        baseline.anchor_scores,
+        config=kappa_cfg,
+    )
+    k_current = agreement_kappa(
+        anchors.labels,
+        current.anchor_scores,
+        config=kappa_cfg,
+    )
     flips = flip_rate(baseline.anchor_scores, current.anchor_scores)
     pinned = baseline.fingerprint == current.fingerprint
 

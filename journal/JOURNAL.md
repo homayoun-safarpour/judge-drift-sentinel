@@ -16,3 +16,12 @@ pinned baseline JSON usable by `check`. Module `driftsentinel.baseline`
 (`enforce_anchor_freeze` / `load_recorded_freeze_hash`). Legacy plain-run
 baselines without the field still compare. Named test:
 `test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`.
+
+## 2026-08-04 — W3 weighted kappa for ordinal rubrics
+
+Added pure-Python weighted Cohen's kappa (`linear` / `quadratic`) for
+ordinal integer labels such as 0-3 rubrics. `drift-sentinel check` and
+`baseline` take `--kappa-weights` / `--kappa-levels`; default `none` keeps
+the binary unweighted path. Central test:
+`test_weighted_kappa_separates_near_miss_from_far_miss_on_ordinal_scale`.
+43 tests green, ruff clean.

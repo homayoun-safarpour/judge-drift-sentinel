@@ -16,6 +16,7 @@ import json
 import sys
 from typing import Any
 
+from driftsentinel.agreement import WEIGHT_SCHEMES, KappaConfig
 from driftsentinel.anchors import load_anchors
 from driftsentinel.baseline import (
     enforce_anchor_freeze,
@@ -25,6 +26,44 @@ from driftsentinel.baseline import (
 )
 from driftsentinel.runs import load_run
 from driftsentinel.verdict import Verdict, diagnose
+
+
+def _parse_kappa_levels(raw: str | None) -> tuple[int, ...] | None:
+    if raw is None or raw.strip() == "":
+        return None
+    parts = [p.strip() for p in raw.split(",") if p.strip()]
+    if not parts:
+        raise ValueError("--kappa-levels must be a comma-separated list of integers, e.g. 0,1,2,3")
+    try:
+        return tuple(int(p) for p in parts)
+    except ValueError as exc:
+        raise ValueError(
+            "--kappa-levels must be a comma-separated list of integers, e.g. 0,1,2,3"
+        ) from exc
+
+
+def _kappa_config_from_args(args: argparse.Namespace) -> KappaConfig:
+    return KappaConfig(
+        weights=args.kappa_weights,
+        levels=_parse_kappa_levels(args.kappa_levels),
+    )
+
+
+def _add_kappa_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--kappa-weights",
+        choices=sorted(WEIGHT_SCHEMES),
+        default="none",
+        help=(
+            "kappa weight scheme: none (default, binary/categorical), "
+            "linear or quadratic (ordinal 0-3 rubrics)"
+        ),
+    )
+    parser.add_argument(
+        "--kappa-levels",
+        default=None,
+        help="comma-separated ordinal scale when using weighted kappa (e.g. 0,1,2,3)",
+    )
 
 
 def _render_plain(verdict: Verdict) -> str:
@@ -93,6 +132,7 @@ def build_parser() -> argparse.ArgumentParser:
                        help="kappa drop that declares JUDGE_DRIFT (default 0.10)")
     check.add_argument("--metric-shift", type=float, default=0.05,
                        help="live-metric shift that declares SYSTEM_CHANGE (default 0.05)")
+    _add_kappa_args(check)
     check.add_argument("--json", action="store_true", help="emit machine-readable JSON")
 
     baseline = sub.add_parser(
@@ -102,6 +142,7 @@ def build_parser() -> argparse.ArgumentParser:
     baseline.add_argument("--anchors", required=True, help="anchor set JSONL (id, label per line)")
     baseline.add_argument("--run", required=True, help="judge run JSON to pin as baseline")
     baseline.add_argument("--out", required=True, help="path to write the pinned baseline JSON")
+    _add_kappa_args(baseline)
     baseline.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     return parser
 
@@ -117,6 +158,7 @@ def _cmd_check(args: argparse.Namespace) -> int:
         current,
         kappa_drop=args.kappa_drop,
         metric_shift=args.metric_shift,
+        kappa=_kappa_config_from_args(args),
     )
     print(_render_json(verdict) if args.json else _render_plain(verdict))
     return verdict.exit_code
@@ -125,7 +167,11 @@ def _cmd_check(args: argparse.Namespace) -> int:
 def _cmd_baseline(args: argparse.Namespace) -> int:
     anchors = load_anchors(args.anchors)
     run = load_run(args.run)
-    payload = pin_baseline(anchors, run)
+    payload = pin_baseline(
+        anchors,
+        run,
+        kappa=_kappa_config_from_args(args),
+    )
     written = write_baseline(args.out, payload)
     if args.json:
         print(json.dumps({**payload, "wrote": str(written)}, indent=2))
