@@ -1,6 +1,6 @@
 # judge-drift-sentinel
 
-**Your eval score just dropped 15 points — this tool tells you in one command whether your system regressed or your LLM judge silently changed, so you never ship (or block) a release on a broken ruler.**
+**Your eval score just dropped 15 points. This tool tells you in one command whether the system regressed or the LLM judge silently changed, so you never ship (or block) a release on a broken ruler.**
 
 [![CI](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
@@ -12,12 +12,12 @@ Teams that grade LLM systems with an LLM judge get a moving scoreboard and canno
 
 | What moved | What it looks like | What teams do (wrongly) |
 |---|---|---|
-| The system | Eval score drops after a deploy | Roll back — correct, if it really was the system |
+| The system | Eval score drops after a deploy | Roll back (correct only if it really was the system) |
 | The judge model | Provider ships a silent update behind `-latest` | Roll back a healthy deploy, or chase a phantom regression |
-| The judge prompt | Someone "fixed" one rubric sentence in week 8 | Trust week-1 vs week-9 charts that are not comparable |
+| The judge prompt | Someone edited one rubric sentence in week 8 | Trust week-1 vs week-9 charts that are not comparable |
 | Nothing | Ordinary judge variance | Re-run until the number looks right |
 
-All four produce the same dashboard artifact: a number that moved. The score alone cannot tell you which one happened — you need a second measurement that isolates the judge.
+All four produce the same dashboard artifact: a number that moved. The score alone cannot tell you which one happened. You need a second measurement that isolates the judge.
 
 ## The insight
 
@@ -37,7 +37,7 @@ Freeze a small set of human-labeled examples. The humans never change, so any ch
      (distrust the number)   (the movement is real)      (carry on)
 ```
 
-The verdict is deterministic, computed from score files you already have, and needs zero LLM calls — so it runs in CI in milliseconds.
+The verdict is deterministic, computed from score files you already have, and needs zero LLM calls. It runs in CI in milliseconds.
 
 ## Install
 
@@ -49,13 +49,13 @@ git clone https://github.com/homayoun-safarpour/judge-drift-sentinel && cd judge
 ```
 
 PyPI name will be `judge-drift-sentinel` (import `driftsentinel`, CLI `drift-sentinel`).
-Packaging builds clean; **upload is pending a Boss PyPI API token** — do not treat
+Packaging builds clean; **upload is pending a PyPI API token**. Do not treat
 `pip install judge-drift-sentinel` as live until that succeeds. Exact commands:
 [docs/PUBLISH.md](docs/PUBLISH.md).
 
 ## Quickstart
 
-Label 10–50 representative outputs once, by hand — this is your anchor set (JSONL):
+Label 10–50 representative outputs once, by hand. That file is your anchor set (JSONL):
 
 ```json
 {"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
@@ -100,16 +100,16 @@ To see whether verdicts are stable or eroding across many pinned runs (not just 
 drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
 ```
 
-Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly — every step under `--kappa-drop`, but the first→last window exceeds it — history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
+Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the first→last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
 
-Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop — the scoreboard itself is broken).
+Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop: the scoreboard itself is broken).
 
 ## Import from judge-reliability-kit
 
 Do not hand-copy panel scores into sentinel files.
 [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit)
 stores ratings as `{item_id: {judge_id: [label, ...]}}` (replicated labels per
-judge). Sentinel documents a thin envelope — `judgekit.panel_export/v1` — that
+judge). Sentinel documents a thin envelope (`judgekit.panel_export/v1`) that
 adds the human gold map and judge fingerprint fields this tool needs:
 
 ```json
@@ -167,7 +167,7 @@ Operators should not wait for a human to notice a bad ruler. This repo ships
 **On `JUDGE_DRIFT` (exit 2):** the job opens a GitHub issue titled
 `JUDGE_DRIFT: weekly anchor re-score detected judge drift` (or comments on an
 existing open one), then fails so the workflow run is red. **On
-`SYSTEM_CHANGE` (exit 3) or `STABLE` (exit 0):** no issue — those are not
+`SYSTEM_CHANGE` (exit 3) or `STABLE` (exit 0):** no issue. Those are not
 ruler failures.
 
 ### Wiring your own paths (no secrets in the repo)
@@ -184,9 +184,9 @@ ruler failures.
 4. **Auth:** the workflow uses only `permissions: issues: write` and
    `secrets.GITHUB_TOKEN` (automatic). Do **not** commit PATs, OpenAI keys, or
    provider tokens. If you need issues in another repo, add a fine-scoped PAT
-   as a repository secret and swap `GH_TOKEN` — still never commit the value.
+   as a repository secret and swap `GH_TOKEN`. Never commit the value.
 5. **Smoke the drift path:** dispatch with
-   `current=examples/run_current.json` (the intentional JUDGE_DRIFT demo) and
+   `current=examples/run_current.json` (the intentional JUDGE_DRIFT fixture) and
    confirm an issue opens; then point `current` back at your real weekly file.
 
 Named contract test:
@@ -205,7 +205,7 @@ ruler* is still trustworthy. Wire sentinel as a `--gate NAME=COMMAND` so
 |---|---|---|
 | `STABLE` | `0` | Ruler held; live metric did not move past threshold |
 | `SYSTEM_CHANGE` | `3` | Ruler held; live metric movement is real (system) |
-| `JUDGE_DRIFT` (or history slow decay) | `2` | Ruler moved — do not trust the numbers |
+| `JUDGE_DRIFT` (or history slow decay) | `2` | Ruler moved; do not trust the numbers |
 | bad args / IO / freeze-hash mismatch | `1` | Fix the wiring before trusting any verdict |
 
 `loop-engine` treats **only exit 0 as PASS** (see its `--gate NAME=COMMAND`
@@ -229,7 +229,7 @@ loop-engine tick --state examples/LOOP_STATE.md \
 | `2` JUDGE_DRIFT | `2` | gate red → `action: repair` target `drift` |
 | `1` error | `1` | gate red → repair the command/paths |
 
-Demo paths: `run_current_system.json` → wrapper exit 0 + `SYSTEM_CHANGE` in
+Fixture paths: `run_current_system.json` → wrapper exit 0 + `SYSTEM_CHANGE` in
 stdout; `run_current.json` → wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
 `examples/LOOP_STATE.md`. Named tests:
 `tests/test_loop_engine_gate_docs.py`.
@@ -239,7 +239,7 @@ stdout; `run_current.json` → wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
 | Module | What it does | Use it when |
 |---|---|---|
 | `driftsentinel.anchors` | Loads the frozen anchor set, fingerprints it (`freeze_hash`) | You need proof the reference set itself never moved |
-| `driftsentinel.agreement` | Cohen's kappa (unweighted) plus weighted linear/quadratic kappa for ordinal 0-3 rubrics; observed agreement; flip rate — stdlib only | You want chance-corrected agreement, including near-vs-far misses on ordinal scales |
+| `driftsentinel.agreement` | Cohen's kappa (unweighted) plus weighted linear/quadratic kappa for ordinal 0-3 rubrics; observed agreement; flip rate; stdlib only | You want chance-corrected agreement, including near-vs-far misses on ordinal scales |
 | `driftsentinel.runs` | One judge run: model + prompt fingerprint + anchor scores | "Pin your judge" as data, not as a slogan |
 | `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
 | `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
@@ -263,7 +263,7 @@ live metric  : 0.810
 wrote        : baseline.json
 ```
 
-The `examples/` folder ships both failure stories. In July the judge was pinned and agreed with the human labels at kappa 0.83. In August the live eval metric dropped from 0.81 to 0.66 — a 15-point fall that looks exactly like a system regression. Ask the sentinel:
+The `examples/` folder ships both failure stories. In July the judge was pinned and agreed with the human labels at kappa 0.83. In August the live eval metric dropped from 0.81 to 0.66 (a 15-point fall that looks exactly like a system regression). Ask the sentinel:
 
 ```
 $ drift-sentinel check --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current.json
@@ -289,11 +289,21 @@ live metric  : moved -0.150
 reason       : anchor agreement held (0.833 -> 0.833) while the live metric moved -0.150; the movement is real and belongs to your system
 ```
 
-Now the rollback is justified — and you can prove it.
+Now the rollback is justified, and you can prove it.
 
 ## Why this exists
 
-I run agent-driven daily project loops and build instruments for judging and evaluating them. My [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit) answers the cross-sectional question: *why does a judge panel disagree right now?* But the failure that actually burned time was longitudinal: scores moved between weeks and nothing could say whether the systems changed or the ruler did. Every incident reduced to the same missing measurement — a frozen human-labeled reference the judge re-scores every run. So the measurement became a package: one verdict, three outcomes, and a loop-engine gate (`examples/as_loop_gate.py` + `--gate "drift=..."`) so an agent loop repairs the scoreboard the moment it stops being trustworthy — without treating honest `SYSTEM_CHANGE` as a broken base.
+Production eval pain is longitudinal. Cross-sectionally,
+[judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit)
+answers *why a judge panel disagrees right now*. The failure that burns release
+time is different: scores move between weeks and nothing says whether the system
+changed or the ruler did. Every incident reduced to the same missing measurement:
+a frozen human-labeled reference the judge re-scores every run.
+
+That measurement is this package. One verdict, three outcomes, CI exit codes, and
+a loop-engine gate (`examples/as_loop_gate.py` + `--gate "drift=..."`) so an agent
+loop repairs the scoreboard the moment it stops being trustworthy. Honest
+`SYSTEM_CHANGE` stays green; only `JUDGE_DRIFT` blocks.
 
 ## Design commitments
 
