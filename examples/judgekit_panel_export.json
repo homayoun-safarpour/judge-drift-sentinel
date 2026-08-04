@@ -1,0 +1,49 @@
+{
+  "schema_version": "judgekit.panel_export/v1",
+  "created": "2026-08-04",
+  "live_metric": 0.81,
+  "judges": {
+    "gpt-4o-judge": {
+      "model": "gpt-4o-judge",
+      "prompt_sha": "kit-demo-01"
+    },
+    "claude-judge": {
+      "model": "claude-judge",
+      "prompt_sha": "kit-demo-01"
+    }
+  },
+  "human_labels": {
+    "a01": "pass",
+    "a02": "pass",
+    "a03": "pass",
+    "a04": "fail",
+    "a05": "fail",
+    "a06": "fail"
+  },
+  "ratings": {
+    "a01": {
+      "gpt-4o-judge": ["pass", "pass", "pass", "pass"],
+      "claude-judge": ["pass", "pass", "pass", "pass"]
+    },
+    "a02": {
+      "gpt-4o-judge": ["pass", "pass", "pass", "pass"],
+      "claude-judge": ["pass", "pass", "fail", "pass"]
+    },
+    "a03": {
+      "gpt-4o-judge": ["pass", "pass", "pass", "pass"],
+      "claude-judge": ["pass", "pass", "pass", "pass"]
+    },
+    "a04": {
+      "gpt-4o-judge": ["fail", "fail", "fail", "fail"],
+      "claude-judge": ["fail", "fail", "fail", "fail"]
+    },
+    "a05": {
+      "gpt-4o-judge": ["fail", "fail", "pass", "fail"],
+      "claude-judge": ["fail", "fail", "fail", "fail"]
+    },
+    "a06": {
+      "gpt-4o-judge": ["fail", "fail", "fail", "fail"],
+      "claude-judge": ["fail", "fail", "fail", "fail"]
+    }
+  }
+}

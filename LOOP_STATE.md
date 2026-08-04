@@ -9,6 +9,6 @@ head item goes stale.
 - [x] W3 Weighted kappa for ordinal rubrics (0-3 scales, not just pass/fail) (cost: M) (touched: 2026-08-04)
 - [x] W4 `drift-sentinel history`: verdict timeline across N run files, spot slow decay (cost: M) (touched: 2026-08-04)
 - [x] W5 GitHub Actions example: weekly anchor re-score, open an issue on JUDGE_DRIFT (cost: M) (touched: 2026-08-04)
-- [ ] W6 Adapter: read anchor scores straight from a judge-reliability-kit panel export (cost: M)
+- [x] W6 Adapter: read anchor scores straight from a judge-reliability-kit panel export (cost: M) (touched: 2026-08-04)
 - [ ] W7 Docs: wiring `drift-sentinel check` as an agent-loop-engine gate (cost: S)
 - [ ] W8 Publish to PyPI so `pip install judge-drift-sentinel` is true (cost: M)

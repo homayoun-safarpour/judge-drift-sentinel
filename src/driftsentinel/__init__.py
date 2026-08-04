@@ -1,5 +1,12 @@
 """judge-drift-sentinel: did your system change, or did your judge?"""
 
+from driftsentinel.adapter import (
+    SCHEMA_VERSION,
+    PanelExport,
+    load_panel_export,
+    panel_to_anchors,
+    panel_to_run,
+)
 from driftsentinel.agreement import (
     KappaConfig,
     agreement_kappa,
@@ -21,6 +28,8 @@ __all__ = [
     "HistoryReport",
     "JudgeRun",
     "KappaConfig",
+    "PanelExport",
+    "SCHEMA_VERSION",
     "TimelineStep",
     "Verdict",
     "agreement_kappa",
@@ -29,8 +38,11 @@ __all__ = [
     "diagnose",
     "flip_rate",
     "load_anchors",
+    "load_panel_export",
     "load_run",
     "observed_agreement",
+    "panel_to_anchors",
+    "panel_to_run",
     "pin_baseline",
     "weighted_cohen_kappa",
     "write_baseline",

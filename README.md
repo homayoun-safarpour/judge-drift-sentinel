@@ -98,6 +98,56 @@ Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slo
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop — the scoreboard itself is broken).
 
+## Import from judge-reliability-kit
+
+Do not hand-copy panel scores into sentinel files.
+[judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit)
+stores ratings as `{item_id: {judge_id: [label, ...]}}` (replicated labels per
+judge). Sentinel documents a thin envelope — `judgekit.panel_export/v1` — that
+adds the human gold map and judge fingerprint fields this tool needs:
+
+```json
+{
+  "schema_version": "judgekit.panel_export/v1",
+  "created": "2026-08-04",
+  "live_metric": 0.81,
+  "judges": {
+    "gpt-4o-judge": { "model": "gpt-4o-judge", "prompt_sha": "kit-demo-01" }
+  },
+  "human_labels": { "a01": "pass", "a04": "fail" },
+  "ratings": {
+    "a01": { "gpt-4o-judge": ["pass", "pass", "pass", "pass"] },
+    "a04": { "gpt-4o-judge": ["fail", "fail", "fail", "fail"] }
+  }
+}
+```
+
+Convert one judge's replicates into sentinel anchors + run JSON (modal =
+majority vote, same rule as judgekit):
+
+```bash
+drift-sentinel import-judgekit \
+  --panel examples/judgekit_panel_export.json \
+  --judge gpt-4o-judge \
+  --anchors-out anchors.jsonl \
+  --run-out run.json
+```
+
+Bare kit ratings work too if you pass gold separately:
+
+```bash
+drift-sentinel import-judgekit \
+  --panel ratings.json \
+  --human-labels gold.json \
+  --judge gpt-4o-judge \
+  --anchors-out anchors.jsonl \
+  --run-out run.json
+```
+
+Python import path: `driftsentinel.adapter.load_panel_export` →
+`panel_to_anchors` / `panel_to_run`. Named test:
+`tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
+
 ## CI: weekly anchor re-score
 
 Operators should not wait for a human to notice a bad ruler. This repo ships
@@ -146,7 +196,8 @@ Named contract test:
 | `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
 | `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
 | `driftsentinel.history` | Verdict + kappa timeline across N runs; flags slow decay pairwise checks miss | Weekly/monthly pinned runs where erosion is gradual |
-| `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
+| `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history` / `import-judgekit`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
+| `driftsentinel.adapter` | Load `judgekit.panel_export/v1` (or bare ratings + gold) into `AnchorSet` / `JudgeRun` | Bridging judge-reliability-kit without hand-copying scores |
 | `.github/workflows/weekly-anchor-rescore.yml` | Weekly/manual re-score; `gh issue create` on JUDGE_DRIFT via `GITHUB_TOKEN` | Operators who need a calendar gate without a human watching CLI |
 
 ## Worked example (real output)
@@ -201,7 +252,7 @@ I run agent-driven daily project loops and build instruments for judging and eva
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`.
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
 
 ## Contributing
 

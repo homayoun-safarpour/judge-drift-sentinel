@@ -10,6 +10,9 @@ a pinned baseline JSON (with `anchor_freeze_hash`) for later `check` calls.
 
 `drift-sentinel history` walks N ordered runs, prints the verdict + kappa
 timeline, and flags slow decay that no single pairwise `check` would catch.
+
+`drift-sentinel import-judgekit` reads a judge-reliability-kit panel export
+(or bare ratings + human labels) and writes sentinel anchors JSONL + run JSON.
 """
 
 from __future__ import annotations
@@ -20,6 +23,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from driftsentinel.adapter import (
+    AGGREGATES,
+    load_panel_export,
+    panel_to_anchors,
+    panel_to_run,
+    write_anchors_jsonl,
+    write_run_json,
+)
 from driftsentinel.agreement import WEIGHT_SCHEMES, KappaConfig
 from driftsentinel.anchors import load_anchors
 from driftsentinel.baseline import (
@@ -168,6 +179,44 @@ def build_parser() -> argparse.ArgumentParser:
                          help="live-metric shift that declares SYSTEM_CHANGE (default 0.05)")
     _add_kappa_args(history)
     history.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
+    adapt = sub.add_parser(
+        "import-judgekit",
+        help="load anchor scores from a judge-reliability-kit panel export",
+    )
+    adapt.add_argument(
+        "--panel",
+        required=True,
+        help=(
+            "judgekit.panel_export/v1 JSON, or bare ratings "
+            "{item: {judge: [labels...]}} (needs --human-labels)"
+        ),
+    )
+    adapt.add_argument(
+        "--human-labels",
+        default=None,
+        help="optional gold map JSON ({id: label} or {human_labels: {...}}) for bare ratings",
+    )
+    adapt.add_argument(
+        "--judge",
+        required=True,
+        help="judge id key inside ratings to collapse into a JudgeRun",
+    )
+    adapt.add_argument(
+        "--aggregate",
+        choices=sorted(AGGREGATES),
+        default="modal",
+        help="how to collapse replicates: modal (default, judgekit majority) or first",
+    )
+    adapt.add_argument("--model", default=None, help="override judge model id in the run JSON")
+    adapt.add_argument(
+        "--prompt-sha",
+        default=None,
+        help="override prompt fingerprint in the run JSON",
+    )
+    adapt.add_argument("--anchors-out", required=True, help="write sentinel anchors JSONL here")
+    adapt.add_argument("--run-out", required=True, help="write sentinel run JSON here")
+    adapt.add_argument("--json", action="store_true", help="emit machine-readable JSON summary")
     return parser
 
 
@@ -273,6 +322,65 @@ def _cmd_history(args: argparse.Namespace) -> int:
     return report.exit_code
 
 
+def _render_import_plain(
+    anchors_path: str,
+    run_path: str,
+    n_anchors: int,
+    judge_id: str,
+    fingerprint: str,
+) -> str:
+    return "\n".join(
+        [
+            "imported     : yes",
+            f"anchors      : {n_anchors} labels -> {anchors_path}",
+            f"run          : judge {judge_id} -> {run_path}",
+            f"judge pin    : {fingerprint}",
+        ]
+    )
+
+
+def _cmd_import_judgekit(args: argparse.Namespace) -> int:
+    panel = load_panel_export(args.panel, human_labels_path=args.human_labels)
+    anchors = panel_to_anchors(panel)
+    run = panel_to_run(
+        panel,
+        args.judge,
+        aggregate=args.aggregate,
+        model=args.model,
+        prompt_sha=args.prompt_sha,
+    )
+    anchors_written = write_anchors_jsonl(args.anchors_out, anchors)
+    run_written = write_run_json(args.run_out, run)
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "imported": True,
+                    "schema_version": panel.schema_version or None,
+                    "anchors_out": str(anchors_written),
+                    "run_out": str(run_written),
+                    "n_anchors": len(anchors.labels),
+                    "judge": args.judge,
+                    "fingerprint": run.fingerprint,
+                    "aggregate": args.aggregate,
+                    "freeze_hash": anchors.freeze_hash,
+                },
+                indent=2,
+            )
+        )
+    else:
+        print(
+            _render_import_plain(
+                str(anchors_written),
+                str(run_written),
+                len(anchors.labels),
+                args.judge,
+                run.fingerprint,
+            )
+        )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
@@ -280,6 +388,8 @@ def main(argv: list[str] | None = None) -> int:
             return _cmd_baseline(args)
         if args.command == "history":
             return _cmd_history(args)
+        if args.command == "import-judgekit":
+            return _cmd_import_judgekit(args)
         return _cmd_check(args)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

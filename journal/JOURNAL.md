@@ -46,3 +46,13 @@ drift demo. README documents path inputs and secret wiring (no PATs in
 repo). Named test:
 `test_weekly_rescore_workflow_opens_issue_on_judge_drift`. 50 tests green,
 ruff clean.
+
+## 2026-08-04 — W6 judgekit panel-export adapter
+
+Shipped `driftsentinel.adapter` + `drift-sentinel import-judgekit`: reads
+`judgekit.panel_export/v1` (human_labels + replicated ratings) or bare
+judgekit ratings with `--human-labels`, collapses one judge via modal/first
+into sentinel anchors JSONL + run JSON. Example fixture
+`examples/judgekit_panel_export.json`. Named test:
+`test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
+59 tests green, ruff clean.
