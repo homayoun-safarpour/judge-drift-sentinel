@@ -12,3 +12,4 @@ head item goes stale.
 - [x] W6 Adapter: read anchor scores straight from a judge-reliability-kit panel export (cost: M) (touched: 2026-08-04)
 - [x] W7 Docs: wiring `drift-sentinel check` as an agent-loop-engine gate (cost: S) (touched: 2026-08-04)
 - [ ] W8 Publish to PyPI so `pip install judge-drift-sentinel` is true (cost: M)
+  - **BLOCKED_ON_BOSS_TOKEN (2026-08-04):** `python -m build` + `twine check` PASS; no `TWINE_*` / `PYPI_TOKEN` / `UV_PUBLISH_TOKEN` / `.pypirc` in env. Packaging polish + `docs/PUBLISH.md` shipped. Boss must run twine upload with API token; agents must not mark W8 [x] or claim pip install until PyPI succeeds.
