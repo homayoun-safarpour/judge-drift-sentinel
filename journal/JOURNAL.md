@@ -56,3 +56,12 @@ into sentinel anchors JSONL + run JSON. Example fixture
 `examples/judgekit_panel_export.json`. Named test:
 `test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
 59 tests green, ruff clean.
+
+## 2026-08-04 — W7 loop-engine gate docs
+
+Documented wiring `drift-sentinel check` as an agent-loop-engine
+`--gate NAME=COMMAND`, with exit-code table and remapper
+`examples/as_loop_gate.py` so SYSTEM_CHANGE (exit 3) stays gate-green while
+JUDGE_DRIFT (exit 2) trips **repair beats progress**. Snippet backlog
+`examples/LOOP_STATE.md`. Named tests in `test_loop_engine_gate_docs.py`.
+62 tests green, ruff clean.

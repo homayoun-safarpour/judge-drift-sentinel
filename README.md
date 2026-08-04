@@ -186,6 +186,48 @@ ruler failures.
 Named contract test:
 `tests/test_weekly_rescore_workflow.py::test_weekly_rescore_workflow_opens_issue_on_judge_drift`.
 
+## Gate for agent-loop-engine
+
+Stack story (copy-pasteable): [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine)
+decides *which* backlog item is safe; this package decides whether the *eval
+ruler* is still trustworthy. Wire sentinel as a `--gate NAME=COMMAND` so
+**repair beats progress** when the scoreboard itself moved.
+
+### Exit codes (raw `drift-sentinel check` / `history`)
+
+| Verdict | Exit | Meaning |
+|---|---|---|
+| `STABLE` | `0` | Ruler held; live metric did not move past threshold |
+| `SYSTEM_CHANGE` | `3` | Ruler held; live metric movement is real (system) |
+| `JUDGE_DRIFT` (or history slow decay) | `2` | Ruler moved — do not trust the numbers |
+| bad args / IO / freeze-hash mismatch | `1` | Fix the wiring before trusting any verdict |
+
+`loop-engine` treats **only exit 0 as PASS** (see its `--gate NAME=COMMAND`
+CLI). So a raw `--gate "drift=drift-sentinel check ..."` would mark
+`SYSTEM_CHANGE` (exit 3) as a red gate and wrongly block feature work even
+though the ruler is fine. Use the shipped remapper:
+
+```bash
+# install both CLIs, then from this repo root:
+loop-engine tick --state examples/LOOP_STATE.md \
+  --gate "tests=python -m pytest -q" \
+  --gate "drift=python examples/as_loop_gate.py --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current_system.json"
+```
+
+`examples/as_loop_gate.py` forwards to `drift-sentinel check` and remaps:
+
+| Sentinel exit | Wrapper exit | Loop effect |
+|---|---|---|
+| `0` STABLE | `0` | gate green |
+| `3` SYSTEM_CHANGE | `0` | gate green (ruler trustworthy) |
+| `2` JUDGE_DRIFT | `2` | gate red → `action: repair` target `drift` |
+| `1` error | `1` | gate red → repair the command/paths |
+
+Demo paths: `run_current_system.json` → wrapper exit 0 + `SYSTEM_CHANGE` in
+stdout; `run_current.json` → wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
+`examples/LOOP_STATE.md`. Named tests:
+`tests/test_loop_engine_gate_docs.py`.
+
 ## What is in the box
 
 | Module | What it does | Use it when |
@@ -198,6 +240,7 @@ Named contract test:
 | `driftsentinel.history` | Verdict + kappa timeline across N runs; flags slow decay pairwise checks miss | Weekly/monthly pinned runs where erosion is gradual |
 | `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history` / `import-judgekit`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
 | `driftsentinel.adapter` | Load `judgekit.panel_export/v1` (or bare ratings + gold) into `AnchorSet` / `JudgeRun` | Bridging judge-reliability-kit without hand-copying scores |
+| `examples/as_loop_gate.py` | Remaps check exits so loop-engine only goes red on JUDGE_DRIFT | `--gate "drift=python examples/as_loop_gate.py ..."` |
 | `.github/workflows/weekly-anchor-rescore.yml` | Weekly/manual re-score; `gh issue create` on JUDGE_DRIFT via `GITHUB_TOKEN` | Operators who need a calendar gate without a human watching CLI |
 
 ## Worked example (real output)
@@ -244,7 +287,7 @@ Now the rollback is justified — and you can prove it.
 
 ## Why this exists
 
-I run agent-driven daily project loops and build instruments for judging and evaluating them. My [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit) answers the cross-sectional question: *why does a judge panel disagree right now?* But the failure that actually burned time was longitudinal: scores moved between weeks and nothing could say whether the systems changed or the ruler did. Every incident reduced to the same missing measurement — a frozen human-labeled reference the judge re-scores every run. So the measurement became a package: one verdict, three outcomes, and exit codes that [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine) can consume as a quality gate (`--gate "judge=drift-sentinel check ..."`), so an agent loop halts itself the moment its own scoreboard stops being trustworthy.
+I run agent-driven daily project loops and build instruments for judging and evaluating them. My [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit) answers the cross-sectional question: *why does a judge panel disagree right now?* But the failure that actually burned time was longitudinal: scores moved between weeks and nothing could say whether the systems changed or the ruler did. Every incident reduced to the same missing measurement — a frozen human-labeled reference the judge re-scores every run. So the measurement became a package: one verdict, three outcomes, and a loop-engine gate (`examples/as_loop_gate.py` + `--gate "drift=..."`) so an agent loop repairs the scoreboard the moment it stops being trustworthy — without treating honest `SYSTEM_CHANGE` as a broken base.
 
 ## Design commitments
 
@@ -252,7 +295,7 @@ I run agent-driven daily project loops and build instruments for judging and eva
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
 
 ## Contributing
 
