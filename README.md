@@ -98,6 +98,44 @@ Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slo
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop — the scoreboard itself is broken).
 
+## CI: weekly anchor re-score
+
+Operators should not wait for a human to notice a bad ruler. This repo ships
+[`.github/workflows/weekly-anchor-rescore.yml`](.github/workflows/weekly-anchor-rescore.yml):
+
+| Trigger | What it does |
+|---|---|
+| Cron (Mondays 06:00 UTC) | Runs `drift-sentinel check` (or `history`) on configured paths |
+| `workflow_dispatch` | Same job, with path/mode inputs you pass in the Actions UI |
+
+**On `JUDGE_DRIFT` (exit 2):** the job opens a GitHub issue titled
+`JUDGE_DRIFT: weekly anchor re-score detected judge drift` (or comments on an
+existing open one), then fails so the workflow run is red. **On
+`SYSTEM_CHANGE` (exit 3) or `STABLE` (exit 0):** no issue — those are not
+ruler failures.
+
+### Wiring your own paths (no secrets in the repo)
+
+1. Keep producing a weekly re-score JSON the same shape as `examples/run_*.json`
+   (your judge scores the frozen anchors; this workflow never calls an LLM).
+2. In the Actions UI → **Weekly anchor re-score** → **Run workflow**, set:
+   - `anchors` → your frozen `anchors.jsonl`
+   - `baseline` → pinned baseline from `drift-sentinel baseline ... --out`
+   - `current` → this week's re-score JSON
+   - or `mode=history` + `history_runs` → ordered space-separated run paths
+3. For the scheduled run, either keep the defaults or edit the
+   `Resolve paths` defaults in the workflow YAML to your production paths.
+4. **Auth:** the workflow uses only `permissions: issues: write` and
+   `secrets.GITHUB_TOKEN` (automatic). Do **not** commit PATs, OpenAI keys, or
+   provider tokens. If you need issues in another repo, add a fine-scoped PAT
+   as a repository secret and swap `GH_TOKEN` — still never commit the value.
+5. **Smoke the drift path:** dispatch with
+   `current=examples/run_current.json` (the intentional JUDGE_DRIFT demo) and
+   confirm an issue opens; then point `current` back at your real weekly file.
+
+Named contract test:
+`tests/test_weekly_rescore_workflow.py::test_weekly_rescore_workflow_opens_issue_on_judge_drift`.
+
 ## What is in the box
 
 | Module | What it does | Use it when |
@@ -109,6 +147,7 @@ Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3
 | `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
 | `driftsentinel.history` | Verdict + kappa timeline across N runs; flags slow decay pairwise checks miss | Weekly/monthly pinned runs where erosion is gradual |
 | `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
+| `.github/workflows/weekly-anchor-rescore.yml` | Weekly/manual re-score; `gh issue create` on JUDGE_DRIFT via `GITHUB_TOKEN` | Operators who need a calendar gate without a human watching CLI |
 
 ## Worked example (real output)
 

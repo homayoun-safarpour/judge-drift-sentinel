@@ -1,0 +1,167 @@
+# Weekly (or on-demand) re-score of frozen anchors via drift-sentinel.
+# On JUDGE_DRIFT (exit 2): opens/comments a GitHub issue and fails the job.
+# Uses the built-in GITHUB_TOKEN only — do not commit PATs or API keys.
+#
+# Operators: change the default paths below (or pass workflow_dispatch inputs)
+# to your pinned baseline + latest weekly re-score JSON. See README § CI.
+
+name: Weekly anchor re-score
+
+on:
+  schedule:
+    # Mondays 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      anchors:
+        description: Path to frozen anchors JSONL
+        required: true
+        default: examples/anchors.jsonl
+      baseline:
+        description: Pinned baseline (or oldest) run JSON
+        required: true
+        default: examples/run_baseline.json
+      current:
+        description: Latest weekly re-score run JSON (check mode)
+        required: true
+        # Repo default is the SYSTEM_CHANGE example so the schedule does not
+        # spam JUDGE_DRIFT issues from the intentional drift demo file.
+        # Point this at your real weekly re-score when wiring production.
+        default: examples/run_current_system.json
+      mode:
+        description: "check (pairwise) or history (N-run timeline)"
+        required: true
+        default: check
+        type: choice
+        options:
+          - check
+          - history
+      history_runs:
+        description: Space-separated run paths when mode=history (oldest first)
+        required: false
+        default: examples/run_baseline.json examples/run_current_system.json
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: weekly-anchor-rescore
+  cancel-in-progress: false
+
+jobs:
+  rescore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Resolve paths (schedule has no inputs)
+        id: cfg
+        env:
+          IN_ANCHORS: ${{ inputs.anchors }}
+          IN_BASELINE: ${{ inputs.baseline }}
+          IN_CURRENT: ${{ inputs.current }}
+          IN_MODE: ${{ inputs.mode }}
+          IN_HISTORY_RUNS: ${{ inputs.history_runs }}
+        run: |
+          set -euo pipefail
+          echo "anchors=${IN_ANCHORS:-examples/anchors.jsonl}" >> "$GITHUB_OUTPUT"
+          echo "baseline=${IN_BASELINE:-examples/run_baseline.json}" >> "$GITHUB_OUTPUT"
+          echo "current=${IN_CURRENT:-examples/run_current_system.json}" >> "$GITHUB_OUTPUT"
+          echo "mode=${IN_MODE:-check}" >> "$GITHUB_OUTPUT"
+          echo "history_runs=${IN_HISTORY_RUNS:-examples/run_baseline.json examples/run_current_system.json}" >> "$GITHUB_OUTPUT"
+
+      - name: Re-score anchors with drift-sentinel
+        id: sentinel
+        run: |
+          set +e
+          mode="${{ steps.cfg.outputs.mode }}"
+          if [ "$mode" = "history" ]; then
+            # shellcheck disable=SC2086
+            drift-sentinel history \
+              --anchors "${{ steps.cfg.outputs.anchors }}" \
+              --runs ${{ steps.cfg.outputs.history_runs }} \
+              --json | tee sentinel.json
+          else
+            drift-sentinel check \
+              --anchors "${{ steps.cfg.outputs.anchors }}" \
+              --baseline "${{ steps.cfg.outputs.baseline }}" \
+              --current "${{ steps.cfg.outputs.current }}" \
+              --json | tee sentinel.json
+          fi
+          code=$?
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          if [ -f sentinel.json ]; then
+            VERDICT="$(python -c "import json;d=json.load(open('sentinel.json'));v=d.get('verdict');print(v if v else ('JUDGE_DRIFT' if d.get('slow_decay') or any(s.get('verdict')=='JUDGE_DRIFT' for s in d.get('steps',[])) else ('HISTORY' if 'steps' in d else 'UNKNOWN')))")"
+            echo "verdict=${VERDICT}" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+
+      - name: Open or update GitHub issue on JUDGE_DRIFT
+        if: steps.sentinel.outputs.exit_code == '2'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TITLE="JUDGE_DRIFT: weekly anchor re-score detected judge drift"
+          BODY_FILE=$(mktemp)
+          {
+            echo "## JUDGE_DRIFT detected"
+            echo
+            echo "Weekly (or manual) anchor re-score reported **JUDGE_DRIFT** (exit code 2)."
+            echo "Live eval metrics are untrustworthy until the judge is re-pinned."
+            echo
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| Mode | \`${{ steps.cfg.outputs.mode }}\` |"
+            echo "| Anchors | \`${{ steps.cfg.outputs.anchors }}\` |"
+            echo "| Baseline | \`${{ steps.cfg.outputs.baseline }}\` |"
+            echo "| Current | \`${{ steps.cfg.outputs.current }}\` |"
+            echo "| History runs | \`${{ steps.cfg.outputs.history_runs }}\` |"
+            echo "| Workflow run | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} |"
+            echo
+            echo '```json'
+            cat sentinel.json
+            echo '```'
+          } > "$BODY_FILE"
+
+          # Prefer commenting on an existing open drift issue over opening duplicates.
+          existing="$(gh issue list --state open --search "in:title JUDGE_DRIFT: weekly anchor" --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$BODY_FILE"
+            echo "Commented on existing issue #${existing}"
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
+          fi
+
+      - name: Fail the job on JUDGE_DRIFT
+        if: steps.sentinel.outputs.exit_code == '2'
+        run: |
+          echo "::error::JUDGE_DRIFT — scoreboard itself moved; see the opened/updated issue."
+          exit 1
+
+      - name: Fail the job on tool/config errors
+        if: steps.sentinel.outputs.exit_code == '1'
+        run: |
+          echo "::error::drift-sentinel failed with a configuration or I/O error (exit 1)."
+          exit 1
+
+      - name: Summarize non-drift outcomes
+        if: steps.sentinel.outputs.exit_code != '2' && steps.sentinel.outputs.exit_code != '1'
+        run: |
+          code="${{ steps.sentinel.outputs.exit_code }}"
+          echo "exit_code=${code} verdict=${{ steps.sentinel.outputs.verdict }}"
+          if [ "$code" = "3" ]; then
+            echo "SYSTEM_CHANGE: anchor agreement held; live metric movement is attributed to the system (no JUDGE_DRIFT issue)."
+          elif [ "$code" = "0" ]; then
+            echo "STABLE: no judge drift and no material system shift."
+          else
+            echo "Unexpected exit code ${code}; treating as soft notice."
+          fi

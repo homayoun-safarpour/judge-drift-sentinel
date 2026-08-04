@@ -34,3 +34,15 @@ kappa drop exceeds `--kappa-drop` while no consecutive pair alone does —
 the failure mode pairwise `check` cannot see. Central test:
 `test_history_flags_slow_decay_that_pairwise_checks_miss`. Exit 2 on
 JUDGE_DRIFT or slow decay. 49 tests green, ruff clean.
+
+## 2026-08-04 — W5 weekly CI re-score / issue on JUDGE_DRIFT
+
+Shipped `.github/workflows/weekly-anchor-rescore.yml`: Monday cron +
+`workflow_dispatch`, runs `drift-sentinel check` or `history`, opens or
+comments a GitHub issue via `gh` + `GITHUB_TOKEN` when exit code is 2
+(`JUDGE_DRIFT`), then fails the job. Schedule defaults use the
+SYSTEM_CHANGE example path to avoid weekly spam from the intentional
+drift demo. README documents path inputs and secret wiring (no PATs in
+repo). Named test:
+`test_weekly_rescore_workflow_opens_issue_on_judge_drift`. 50 tests green,
+ruff clean.
