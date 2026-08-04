@@ -321,12 +321,14 @@ Issues and PRs welcome. Run `python -m pytest -q` and `python -m ruff check src 
 
 ```bibtex
 @software{safarpour2026judgedriftsentinel,
-  author = {Safarpour Dehkordi, Homayoun},
+  author = {Homayoun Safarpour},
   title  = {judge-drift-sentinel: attribute eval-score movement to the system or the judge},
   year   = {2026},
   url    = {https://github.com/homayoun-safarpour/judge-drift-sentinel}
 }
 ```
+
+Author: Homayoun Safarpour · [LinkedIn](https://www.linkedin.com/in/homayoun-safarpour/)
 
 ## License
 
