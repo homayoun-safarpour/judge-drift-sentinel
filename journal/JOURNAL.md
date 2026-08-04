@@ -25,3 +25,12 @@ ordinal integer labels such as 0-3 rubrics. `drift-sentinel check` and
 the binary unweighted path. Central test:
 `test_weighted_kappa_separates_near_miss_from_far_miss_on_ordinal_scale`.
 43 tests green, ruff clean.
+
+## 2026-08-04 — W4 history timeline / slow decay
+
+Added `drift-sentinel history`: ordered N-run verdict + kappa timeline via
+`driftsentinel.history.build_history`. Flags slow decay when the first→last
+kappa drop exceeds `--kappa-drop` while no consecutive pair alone does —
+the failure mode pairwise `check` cannot see. Central test:
+`test_history_flags_slow_decay_that_pairwise_checks_miss`. Exit 2 on
+JUDGE_DRIFT or slow decay. 49 tests green, ruff clean.

@@ -10,6 +10,7 @@ from driftsentinel.agreement import (
 )
 from driftsentinel.anchors import AnchorSet, load_anchors
 from driftsentinel.baseline import pin_baseline, write_baseline
+from driftsentinel.history import HistoryReport, TimelineStep, build_history
 from driftsentinel.runs import JudgeRun, load_run
 from driftsentinel.verdict import Verdict, diagnose
 
@@ -17,10 +18,13 @@ __version__ = "0.1.0"
 
 __all__ = [
     "AnchorSet",
+    "HistoryReport",
     "JudgeRun",
     "KappaConfig",
+    "TimelineStep",
     "Verdict",
     "agreement_kappa",
+    "build_history",
     "cohen_kappa",
     "diagnose",
     "flip_rate",

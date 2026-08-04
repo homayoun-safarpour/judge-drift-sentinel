@@ -88,7 +88,15 @@ drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current 
 
 Default `--kappa-weights none` keeps unweighted Cohen's kappa for binary pass/fail labels.
 
-Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT (stop — the scoreboard itself is broken).
+To see whether verdicts are stable or eroding across many pinned runs (not just one pair), walk the timeline:
+
+```bash
+drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
+```
+
+Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly — every step under `--kappa-drop`, but the first→last window exceeds it — history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
+
+Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop — the scoreboard itself is broken).
 
 ## What is in the box
 
@@ -99,7 +107,8 @@ Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3
 | `driftsentinel.runs` | One judge run: model + prompt fingerprint + anchor scores | "Pin your judge" as data, not as a slogan |
 | `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
 | `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
-| `driftsentinel.cli` | `drift-sentinel baseline` / `check`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
+| `driftsentinel.history` | Verdict + kappa timeline across N runs; flags slow decay pairwise checks miss | Weekly/monthly pinned runs where erosion is gradual |
+| `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
 
 ## Worked example (real output)
 
@@ -153,7 +162,7 @@ I run agent-driven daily project loops and build instruments for judging and eva
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`.
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`.
 
 ## Contributing
 

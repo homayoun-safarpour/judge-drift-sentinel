@@ -7,6 +7,9 @@ gate: fail the pipeline precisely when the scoreboard itself is broken.
 
 `drift-sentinel baseline` scores a run against the frozen anchors and writes
 a pinned baseline JSON (with `anchor_freeze_hash`) for later `check` calls.
+
+`drift-sentinel history` walks N ordered runs, prints the verdict + kappa
+timeline, and flags slow decay that no single pairwise `check` would catch.
 """
 
 from __future__ import annotations
@@ -14,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 from typing import Any
 
 from driftsentinel.agreement import WEIGHT_SCHEMES, KappaConfig
@@ -24,6 +28,7 @@ from driftsentinel.baseline import (
     pin_baseline,
     write_baseline,
 )
+from driftsentinel.history import HistoryReport, build_history
 from driftsentinel.runs import load_run
 from driftsentinel.verdict import Verdict, diagnose
 
@@ -144,6 +149,25 @@ def build_parser() -> argparse.ArgumentParser:
     baseline.add_argument("--out", required=True, help="path to write the pinned baseline JSON")
     _add_kappa_args(baseline)
     baseline.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
+    history = sub.add_parser(
+        "history",
+        help="verdict timeline across N runs; flag slow kappa decay",
+    )
+    history.add_argument("--anchors", required=True, help="anchor set JSONL (id, label per line)")
+    history.add_argument(
+        "--runs",
+        nargs="+",
+        required=True,
+        metavar="RUN",
+        help="ordered run/baseline JSON files (oldest first; at least two)",
+    )
+    history.add_argument("--kappa-drop", type=float, default=0.10,
+                         help="kappa drop that declares JUDGE_DRIFT / slow decay (default 0.10)")
+    history.add_argument("--metric-shift", type=float, default=0.05,
+                         help="live-metric shift that declares SYSTEM_CHANGE (default 0.05)")
+    _add_kappa_args(history)
+    history.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     return parser
 
 
@@ -180,11 +204,82 @@ def _cmd_baseline(args: argparse.Namespace) -> int:
     return 0
 
 
+def _short_path(path: str) -> str:
+    return Path(path).name or path
+
+
+def _render_history_plain(report: HistoryReport) -> str:
+    lines: list[str] = []
+    for step in report.steps:
+        v = step.verdict
+        lines.append(
+            f"step {step.index:<3} {_short_path(step.from_source)} -> "
+            f"{_short_path(step.to_source):<24} {v.kind:<14} "
+            f"kappa {v.baseline_kappa:.3f} -> {v.current_kappa:.3f}"
+        )
+    lines.append("---")
+    lines.append(
+        f"window kappa : {report.first_kappa:.3f} -> {report.last_kappa:.3f} "
+        f"(drop {report.cumulative_kappa_drop:+.3f})"
+    )
+    if report.slow_decay:
+        lines.append(f"slow decay   : YES — {report.slow_decay_reason}")
+    else:
+        lines.append("slow decay   : no")
+    lines.extend(f"note         : {note}" for note in report.notes)
+    return "\n".join(lines)
+
+
+def _render_history_json(report: HistoryReport) -> str:
+    payload = {
+        "steps": [
+            {
+                "index": step.index,
+                "from": step.from_source,
+                "to": step.to_source,
+                "verdict": step.verdict.kind,
+                "baseline_kappa": round(step.verdict.baseline_kappa, 6),
+                "current_kappa": round(step.verdict.current_kappa, 6),
+                "anchor_flip_rate": round(step.verdict.anchor_flip_rate, 6),
+                "metric_delta": step.verdict.metric_delta,
+                "reason": step.verdict.reason,
+            }
+            for step in report.steps
+        ],
+        "first_kappa": round(report.first_kappa, 6),
+        "last_kappa": round(report.last_kappa, 6),
+        "cumulative_kappa_drop": round(report.cumulative_kappa_drop, 6),
+        "slow_decay": report.slow_decay,
+        "slow_decay_reason": report.slow_decay_reason,
+        "notes": list(report.notes),
+        "exit_code": report.exit_code,
+    }
+    return json.dumps(payload, indent=2)
+
+
+def _cmd_history(args: argparse.Namespace) -> int:
+    anchors = load_anchors(args.anchors)
+    # Enforce freeze hash from the first file when it is a pinned baseline.
+    enforce_anchor_freeze(anchors, load_recorded_freeze_hash(args.runs[0]))
+    runs = [load_run(path) for path in args.runs]
+    report = build_history(
+        anchors,
+        runs,
+        kappa_drop=args.kappa_drop,
+        metric_shift=args.metric_shift,
+        kappa=_kappa_config_from_args(args),
+    )
+    print(_render_history_json(report) if args.json else _render_history_plain(report))
+    return report.exit_code
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         if args.command == "baseline":
             return _cmd_baseline(args)
+        if args.command == "history":
+            return _cmd_history(args)
         return _cmd_check(args)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
