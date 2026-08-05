@@ -200,7 +200,9 @@ Named contract test:
 
 Stack story (copy-pasteable): [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine)
 decides *which* backlog item is safe; this package decides whether the *eval
-ruler* is still trustworthy. Wire sentinel as a `--gate NAME=COMMAND` so
+ruler* is still trustworthy. Before you automate either loop, fill a
+[Loop Contract](https://github.com/homayoun-safarpour/agent-loop-field-guide)
+(done / verifier / stop layers / state / irreversible). Wire sentinel as a `--gate NAME=COMMAND` so
 **repair beats progress** when the scoreboard itself moved.
 
 ### Exit codes (raw `drift-sentinel check` / `history`)
