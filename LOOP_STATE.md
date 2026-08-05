@@ -11,8 +11,8 @@ head item goes stale.
 - [x] W5 GitHub Actions example: weekly anchor re-score, open an issue on JUDGE_DRIFT (cost: M) (touched: 2026-08-04)
 - [x] W6 Adapter: read anchor scores straight from a judge-reliability-kit panel export (cost: M) (touched: 2026-08-04)
 - [x] W7 Docs: wiring `drift-sentinel check` as an agent-loop-engine gate (cost: S) (touched: 2026-08-04)
-- [ ] W8 Publish to PyPI so `pip install judge-drift-sentinel` is true (cost: M)
-  - **BLOCKED_ON_BOSS_TOKEN (2026-08-04):** `python -m build` + `twine check` PASS; no `TWINE_*` / `PYPI_TOKEN` / `UV_PUBLISH_TOKEN` / `.pypirc` in env. Packaging polish + `docs/PUBLISH.md` shipped. Boss must run twine upload with API token; agents must not mark W8 [x] or claim pip install until PyPI succeeds.
+- [x] W8 Publish to PyPI so `pip install judge-drift-sentinel` is true (cost: M) (touched: 2026-08-05)
+  - **DONE:** PyPI `judge-drift-sentinel==0.1.0` live; `pip index` / install verified 2026-08-05.
 
 ## BENCHMARK GATE (Week 1 — per WEEKLY_BUILD_BENCHMARK_RULE.md)
 
@@ -27,11 +27,11 @@ head item goes stale.
 | 5 | `public_git_guard.py` PASS | PASS (re-run before each push) |
 | 6 | AI-tell-clean README | PASS (re-scan on Sun) |
 | 7 | Interview pack (3 Q + 2-min demo + limitation) | TODO if missing `docs/INTERVIEW.md` |
-| W8 | PyPI / pip install claim | BLOCKED_ON_BOSS_TOKEN — week may **roll** DoD debt on this item only |
+| W8 | PyPI / pip install claim | **PASS** — `0.1.0` on PyPI (2026-08-05) |
 
-**Sunday close rule:** Week 1 counts when §A 1–7 are green. W8 rolls without killing the week if packaging is ready and PUBLISH.md is honest that pip is not true yet.
+**Sunday close rule:** Week 1 §A + W8 green. Ready to open Week 2 when Boss starts Mon scaffold for `agent-constraint-auditor`.
 
 ## NEXT TICK
 
-- Boss: PyPI token + `docs/PUBLISH.md` upload **or** acknowledge W8 roll into Week 2 spare slot.
-- Agent: keep Homayoun-only commits; no new face repo until Week 1 gate closed or rolled.
+- Week 1 DoD closed on W8. Next graph node: Week 2 `agent-constraint-auditor` scaffold (Boss go-ahead).
+- Still Boss: Automations Save+Active; optional delete `*-archive` repos.
