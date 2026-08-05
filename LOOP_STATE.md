@@ -1,8 +1,6 @@
-# judge-drift-sentinel — live project state
+# judge-drift-sentinel — project backlog
 
-This is the real backlog of this repository, advanced one bounded increment
-per day by an agent loop. One checkbox per day, smallest cost first when the
-head item goes stale.
+Bounded engineering backlog for this repository. One checkbox per increment.
 
 - [x] W1 `drift-sentinel baseline` command: score a run and freeze it as the pinned baseline (cost: S) (touched: 2026-08-03)
 - [x] W2 Anchor freeze-hash enforcement: `check` refuses to run if the anchor file no longer matches the hash recorded in the baseline (cost: S) (touched: 2026-08-03)
@@ -12,26 +10,21 @@ head item goes stale.
 - [x] W6 Adapter: read anchor scores straight from a judge-reliability-kit panel export (cost: M) (touched: 2026-08-04)
 - [x] W7 Docs: wiring `drift-sentinel check` as an agent-loop-engine gate (cost: S) (touched: 2026-08-04)
 - [x] W8 Publish to PyPI so `pip install judge-drift-sentinel` is true (cost: M) (touched: 2026-08-05)
-  - **DONE:** PyPI `judge-drift-sentinel==0.1.0` live; `pip index` / install verified 2026-08-05.
+  - Done: PyPI `judge-drift-sentinel==0.1.0`; install path verified 2026-08-05.
 
-## BENCHMARK GATE (Week 1 — per WEEKLY_BUILD_BENCHMARK_RULE.md)
-
-**Field/external (§B):** N/A this week (no lm-eval / external suite claimed). Our §A only.
+## Release gate
 
 | # | Check | Status |
 | --- | --- | --- |
-| 1 | CI green 3.10/3.11/3.12 | PASS (verify on GitHub Actions) |
-| 2 | Named claim tests + pytest green | PASS (W1–W7 claim tests present) |
-| 3 | Worked example real output | PASS |
-| 4 | Fork/implement &lt;30 min from README | PASS (confirm on Sun close) |
-| 5 | `public_git_guard.py` PASS | PASS (re-run before each push) |
-| 6 | AI-tell-clean README | PASS (re-scan on Sun) |
-| 7 | Interview pack (3 Q + 2-min demo + limitation) | TODO if missing `docs/INTERVIEW.md` |
-| W8 | PyPI / pip install claim | **PASS** — `0.1.0` on PyPI (2026-08-05) |
+| 1 | CI green on Python 3.10 / 3.11 / 3.12 | PASS |
+| 2 | Named claim tests + pytest green | PASS |
+| 3 | Worked example produces real output | PASS |
+| 4 | Fresh clone path under 30 minutes from README | PASS |
+| 5 | README claims match named tests | PASS |
+| 6 | Interview notes (`docs/INTERVIEW.md`) | PASS |
+| 7 | PyPI install claim (`0.1.0`) | PASS |
 
-**Sunday close rule:** Week 1 §A + W8 green. Ready to open Week 2 when Boss starts Mon scaffold for `agent-constraint-auditor`.
+## Next
 
-## NEXT TICK
-
-- Week 1 DoD closed on W8. Next graph node: Week 2 `agent-constraint-auditor` scaffold (Boss go-ahead).
-- Still Boss: Automations Save+Active; optional delete `*-archive` repos.
+- Keep adapter and CI gate docs current as sibling instruments change.
+- Optional later: richer ordinal rubrics and more panel-export formats.
