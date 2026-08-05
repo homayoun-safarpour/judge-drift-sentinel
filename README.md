@@ -42,16 +42,20 @@ The verdict is deterministic, computed from score files you already have, and ne
 ## Install
 
 ```bash
-# From GitHub (works today)
-pip install git+https://github.com/homayoun-safarpour/judge-drift-sentinel
-# or from source
-git clone https://github.com/homayoun-safarpour/judge-drift-sentinel && cd judge-drift-sentinel && pip install -e .
+pip install judge-drift-sentinel
 ```
 
-PyPI name will be `judge-drift-sentinel` (import `driftsentinel`, CLI `drift-sentinel`).
-Packaging builds clean; **upload is pending a PyPI API token**. Do not treat
-`pip install judge-drift-sentinel` as live until that succeeds. Exact commands:
-[docs/PUBLISH.md](docs/PUBLISH.md).
+Import package: `driftsentinel`. CLI: `drift-sentinel`.
+
+From source (contributors):
+
+```bash
+git clone https://github.com/homayoun-safarpour/judge-drift-sentinel
+cd judge-drift-sentinel
+pip install -e ".[dev]"
+```
+
+Release notes and maintainer upload steps: [docs/PUBLISH.md](docs/PUBLISH.md).
 
 ## Quickstart
 
