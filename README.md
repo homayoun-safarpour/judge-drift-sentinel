@@ -319,6 +319,11 @@ loop repairs the scoreboard the moment it stops being trustworthy. Honest
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
 - **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
 
+
+## Related reading
+
+- [Judge reliability and eval-score movement (arXiv:2606.15474)](https://arxiv.org/html/2606.15474): related field survey on LLM judges; this package is a separate deterministic CI gate, not that paper's code.
+
 ## Contributing
 
 Issues and PRs welcome. Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
