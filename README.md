@@ -1,6 +1,6 @@
-# judge-drift-sentinel
+﻿# judge-drift-sentinel
 
-**Your eval score just dropped 15 points. This tool tells you in one command whether the system regressed or the LLM judge silently changed, so you never ship (or block) a release on a broken ruler.**
+**Your LLM-judge eval score dropped after a provider model update—not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
 
 [![CI](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
@@ -59,7 +59,7 @@ Release notes and maintainer upload steps: [docs/PUBLISH.md](docs/PUBLISH.md).
 
 ## Quickstart
 
-Label 10–50 representative outputs once, by hand. That file is your anchor set (JSONL):
+Label 10â€“50 representative outputs once, by hand. That file is your anchor set (JSONL):
 
 ```json
 {"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
@@ -104,7 +104,7 @@ To see whether verdicts are stable or eroding across many pinned runs (not just 
 drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
 ```
 
-Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the first→last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
+Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the firstâ†’last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop: the scoreboard itself is broken).
 
@@ -154,7 +154,7 @@ drift-sentinel import-judgekit \
   --run-out run.json
 ```
 
-Python import path: `driftsentinel.adapter.load_panel_export` →
+Python import path: `driftsentinel.adapter.load_panel_export` â†’
 `panel_to_anchors` / `panel_to_run`. Named test:
 `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
 
@@ -178,11 +178,11 @@ ruler failures.
 
 1. Keep producing a weekly re-score JSON the same shape as `examples/run_*.json`
    (your judge scores the frozen anchors; this workflow never calls an LLM).
-2. In the Actions UI → **Weekly anchor re-score** → **Run workflow**, set:
-   - `anchors` → your frozen `anchors.jsonl`
-   - `baseline` → pinned baseline from `drift-sentinel baseline ... --out`
-   - `current` → this week's re-score JSON
-   - or `mode=history` + `history_runs` → ordered space-separated run paths
+2. In the Actions UI â†’ **Weekly anchor re-score** â†’ **Run workflow**, set:
+   - `anchors` â†’ your frozen `anchors.jsonl`
+   - `baseline` â†’ pinned baseline from `drift-sentinel baseline ... --out`
+   - `current` â†’ this week's re-score JSON
+   - or `mode=history` + `history_runs` â†’ ordered space-separated run paths
 3. For the scheduled run, either keep the defaults or edit the
    `Resolve paths` defaults in the workflow YAML to your production paths.
 4. **Auth:** the workflow uses only `permissions: issues: write` and
@@ -232,11 +232,11 @@ loop-engine tick --state examples/LOOP_STATE.md \
 |---|---|---|
 | `0` STABLE | `0` | gate green |
 | `3` SYSTEM_CHANGE | `0` | gate green (ruler trustworthy) |
-| `2` JUDGE_DRIFT | `2` | gate red → `action: repair` target `drift` |
-| `1` error | `1` | gate red → repair the command/paths |
+| `2` JUDGE_DRIFT | `2` | gate red â†’ `action: repair` target `drift` |
+| `1` error | `1` | gate red â†’ repair the command/paths |
 
-Fixture paths: `run_current_system.json` → wrapper exit 0 + `SYSTEM_CHANGE` in
-stdout; `run_current.json` → wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
+Fixture paths: `run_current_system.json` â†’ wrapper exit 0 + `SYSTEM_CHANGE` in
+stdout; `run_current.json` â†’ wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
 `examples/LOOP_STATE.md`. Named tests:
 `tests/test_loop_engine_gate_docs.py`.
 
@@ -334,7 +334,7 @@ Issues and PRs welcome. Run `python -m pytest -q` and `python -m ruff check src 
 }
 ```
 
-Author: Homayoun Safarpour · [LinkedIn](https://www.linkedin.com/in/homayoun-safarpour/)
+Author: Homayoun Safarpour Â· [LinkedIn](https://www.linkedin.com/in/homayoun-safarpour/)
 
 ## License
 
