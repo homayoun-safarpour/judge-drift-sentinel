@@ -1,0 +1,20 @@
+{
+  "judge": { "model": "frontier-4-latest", "prompt_sha": "9f2c1a" },
+  "created": "2026-08-06",
+  "live_metric": 0.81,
+  "note": "Synthetic JUDGE_DRIFT-only fixture: live metric unchanged; anchor agreement drops.",
+  "anchor_scores": {
+    "a01": "fail",
+    "a02": "fail",
+    "a03": "pass",
+    "a04": "pass",
+    "a05": "pass",
+    "a06": "pass",
+    "a07": "pass",
+    "a08": "fail",
+    "a09": "pass",
+    "a10": "fail",
+    "a11": "pass",
+    "a12": "fail"
+  }
+}
