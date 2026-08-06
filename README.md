@@ -59,7 +59,7 @@ Release notes and maintainer upload steps: [docs/PUBLISH.md](docs/PUBLISH.md).
 
 ## Quickstart
 
-Label 10â€“50 representative outputs once, by hand. That file is your anchor set (JSONL):
+Label 10-50 representative outputs once, by hand. That file is your anchor set (JSONL):
 
 ```json
 {"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
@@ -80,19 +80,19 @@ Every time you run your eval suite, have the judge also re-score the anchors, an
 Pin your July run as the frozen baseline (records the anchor `freeze_hash` + kappa):
 
 ```bash
-drift-sentinel baseline --anchors anchors.jsonl --run run_july.json --out baseline.json
+drift-sentinel baseline --anchors examples/anchors.jsonl --run examples/run_baseline.json --out baseline.json
 ```
 
 Then ask the sentinel who moved:
 
 ```bash
-drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json
+drift-sentinel check --anchors examples/anchors.jsonl --baseline baseline.json --current examples/run_current.json
 ```
 
 For ordinal rubrics (integer scores such as 0-3), use weighted kappa so near misses cost less than far misses:
 
 ```bash
-drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json \
+drift-sentinel check --anchors examples/anchors.jsonl --baseline baseline.json --current examples/run_current.json \
   --kappa-weights quadratic --kappa-levels 0,1,2,3
 ```
 
@@ -104,7 +104,7 @@ To see whether verdicts are stable or eroding across many pinned runs (not just 
 drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
 ```
 
-Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the firstâ†’last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
+Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the first->last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop: the scoreboard itself is broken).
 
