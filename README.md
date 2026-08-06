@@ -273,6 +273,15 @@ The `examples/` folder ships both failure stories. In July the judge was pinned 
 
 ```
 $ drift-sentinel check --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current.json
+
+Judge-only movement with a flat live metric (synthetic):
+
+```bash
+drift-sentinel check --anchors examples/anchors.jsonl \
+  --baseline examples/run_baseline.json \
+  --current examples/synthetic_judge_only_current.json
+# JUDGE_DRIFT, live metric +0.000 → exit 2 (see examples/synthetic_judge_only_OUTPUT.txt)
+```
 verdict      : JUDGE_DRIFT
 anchor kappa : 0.833 -> 0.333
 anchor flips : 25.0% of frozen anchors changed label
