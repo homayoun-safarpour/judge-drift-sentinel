@@ -1,6 +1,6 @@
 ﻿# judge-drift-sentinel
 
-**Your LLM-judge eval score dropped after a provider model update—not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
+**Your LLM-judge eval score dropped after a provider model update: not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
 
 [![CI](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
@@ -26,8 +26,8 @@ Freeze a small set of human-labeled examples. The humans never change, so any ch
 ```
                      frozen anchor set (human labels, never changes)
                                        |
-        baseline run:  judge scores anchors  ->  kappa vs humans = 0.83
-        current  run:  judge scores anchors  ->  kappa vs humans = ?
+        baseline run: judge scores anchors  ->  kappa vs humans = 0.83
+        current  run: judge scores anchors  ->  kappa vs humans = ?
                                        |
               +------------------------+------------------------+
               | kappa fell             | kappa held,             | both held

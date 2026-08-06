@@ -1,4 +1,4 @@
-# judge-drift-sentinel — project backlog
+# judge-drift-sentinel : project backlog
 
 Bounded engineering backlog for this repository. One checkbox per increment.
 
