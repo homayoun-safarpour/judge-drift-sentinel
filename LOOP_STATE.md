@@ -28,3 +28,7 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 - Keep adapter and CI gate docs current as sibling instruments change.
 - Optional later: richer ordinal rubrics and more panel-export formats.
+
+## Maintenance log
+
+- 2026-08-07: Interview/README/LOOP em-dash cleanup; topics confirmed; CI green on latest docs push. Week backlog W1-W8 remains complete. Next focus: Sunday 2026-08-10 benchmark gate paste + LinkedIn draft (Boss).
