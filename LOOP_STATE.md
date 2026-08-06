@@ -32,3 +32,21 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 ## Maintenance log
 
 - 2026-08-07: Interview/README/LOOP em-dash cleanup; topics confirmed; CI green on latest docs push. Week backlog W1-W8 remains complete. Next focus: Sunday 2026-08-10 benchmark gate paste + LinkedIn draft (Boss).
+
+## BENCHMARK GATE
+Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PENDING Sunday | paste workflow run URLs |
+| Named claim tests | PENDING Sunday | paste pytest summary |
+| Worked example | PENDING Sunday | paste `examples/` command + output |
+| Fork/implement <30 min | PENDING Sunday | time the Quickstart |
+| public_git_guard | PENDING Sunday | paste PASS line |
+| README AI-tell clean | PENDING Sunday | guard C |
+| Interview pack | PENDING Sunday | docs/INTERVIEW.md present |
+
+Field/external benchmark (§B): not claimed this week.
+
+Sunday close: paste real outputs above; LinkedIn draft is Boss-only; growth pulse after gate.
+
