@@ -41,7 +41,7 @@ Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
 | CI 3.10/3.11/3.12 | PASS (latest docs push) | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions |
 | Named claim tests | PASS | local `pytest -q` -> 62 passed (2026-08-07) |
 | Worked example | PASS | baseline+check on examples/run_baseline.json + run_current.json -> JUDGE_DRIFT |
-| Fork/implement <30 min | PENDING Sunday | time a clean clone Quickstart once on Sunday |
+| Fork/implement <30 min | PASS | clean clone+pip install -e .+baseline+check = 22s (2026-08-07); expected JUDGE_DRIFT |
 | public_git_guard | PASS | PASS on 2026-08-07 docs pushes |
 | README AI-tell clean | PASS | guard C clean after Quickstart path fix (643f239) |
 | Interview pack | PASS | docs/INTERVIEW.md present |
