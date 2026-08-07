@@ -1,6 +1,6 @@
 ﻿# judge-drift-sentinel
 
-**Your LLM-judge eval score dropped after a provider model update: not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
+**Your LLM-judge eval score dropped after a provider model update—not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
 
 [![CI](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
@@ -26,8 +26,8 @@ Freeze a small set of human-labeled examples. The humans never change, so any ch
 ```
                      frozen anchor set (human labels, never changes)
                                        |
-        baseline run: judge scores anchors  ->  kappa vs humans = 0.83
-        current  run: judge scores anchors  ->  kappa vs humans = ?
+        baseline run:  judge scores anchors  ->  kappa vs humans = 0.83
+        current  run:  judge scores anchors  ->  kappa vs humans = ?
                                        |
               +------------------------+------------------------+
               | kappa fell             | kappa held,             | both held
@@ -59,7 +59,7 @@ Release notes and maintainer upload steps: [docs/PUBLISH.md](docs/PUBLISH.md).
 
 ## Quickstart
 
-Label 10-50 representative outputs once, by hand. That file is your anchor set (JSONL):
+Label 10â€“50 representative outputs once, by hand. That file is your anchor set (JSONL):
 
 ```json
 {"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
@@ -80,19 +80,19 @@ Every time you run your eval suite, have the judge also re-score the anchors, an
 Pin your July run as the frozen baseline (records the anchor `freeze_hash` + kappa):
 
 ```bash
-drift-sentinel baseline --anchors examples/anchors.jsonl --run examples/run_baseline.json --out baseline.json
+drift-sentinel baseline --anchors anchors.jsonl --run run_july.json --out baseline.json
 ```
 
 Then ask the sentinel who moved:
 
 ```bash
-drift-sentinel check --anchors examples/anchors.jsonl --baseline baseline.json --current examples/run_current.json
+drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json
 ```
 
 For ordinal rubrics (integer scores such as 0-3), use weighted kappa so near misses cost less than far misses:
 
 ```bash
-drift-sentinel check --anchors examples/anchors.jsonl --baseline baseline.json --current examples/run_current.json \
+drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json \
   --kappa-weights quadratic --kappa-levels 0,1,2,3
 ```
 
@@ -104,7 +104,7 @@ To see whether verdicts are stable or eroding across many pinned runs (not just 
 drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
 ```
 
-Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the first->last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
+Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the firstâ†’last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop: the scoreboard itself is broken).
 
@@ -273,15 +273,6 @@ The `examples/` folder ships both failure stories. In July the judge was pinned 
 
 ```
 $ drift-sentinel check --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current.json
-
-Judge-only movement with a flat live metric (synthetic):
-
-```bash
-drift-sentinel check --anchors examples/anchors.jsonl \
-  --baseline examples/run_baseline.json \
-  --current examples/synthetic_judge_only_current.json
-# JUDGE_DRIFT, live metric +0.000 → exit 2 (see examples/synthetic_judge_only_OUTPUT.txt)
-```
 verdict      : JUDGE_DRIFT
 anchor kappa : 0.833 -> 0.333
 anchor flips : 25.0% of frozen anchors changed label
@@ -328,6 +319,9 @@ loop repairs the scoreboard the moment it stops being trustworthy. Honest
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
 - **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
 
+## Field alignment
+
+Living / meta-eval practice freezes a reference and re-measures the judge (same family as bias-aware reporting tools and instability CLIs). This package turns that into CI exit codes. Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
 
 ## Related reading
 
