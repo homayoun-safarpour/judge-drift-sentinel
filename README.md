@@ -336,7 +336,7 @@ Living / meta-eval practice freezes a reference and re-measures the judge (same 
 
 ## Contributing
 
-Issues and PRs welcome. Open good first issue: [named pytest for examples/drifting](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/9). Sibling map: [judge-field-guide #1](https://github.com/homayoun-safarpour/judge-field-guide/issues/1). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
+Issues and PRs welcome. Recent community: `examples/drifting/` via PR #8. Open good first issue: [named pytest for examples/drifting](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/9). Sibling map: [judge-field-guide #1](https://github.com/homayoun-safarpour/judge-field-guide/issues/1). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
 
 ## Citation
 
@@ -354,3 +354,5 @@ Author: Homayoun Safarpour Â· [LinkedIn](https://www.linkedin.com/in/homayoun-
 ## License
 
 MIT
+
+
