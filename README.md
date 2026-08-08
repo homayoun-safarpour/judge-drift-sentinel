@@ -59,6 +59,8 @@ Release notes and maintainer upload steps: [docs/PUBLISH.md](docs/PUBLISH.md).
 
 ## Quickstart
 
+Claim boundaries (what metric, what fixture, what is not claimed): [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
+
 Label 10â€“50 representative outputs once, by hand. That file is your anchor set (JSONL):
 
 ```json
