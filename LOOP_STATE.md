@@ -32,6 +32,7 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Maintenance log
 
+- 2026-08-09: Sunday gate refresh — CI run 31270926978, pytest 62, worked example JUDGE_DRIFT exit 2, public_git_guard PASS; growth pulse logged.
 - 2026-08-08: Restored BENCHMARK GATE after accidental trim; linked community GFI #7 from Next + README Contributing.
 - 2026-08-07: Interview/README/LOOP em-dash cleanup; topics confirmed; CI green on latest docs push. Week backlog W1-W8 remains complete. Next focus: Sunday 2026-08-10 benchmark gate paste + LinkedIn draft (Boss).
 
@@ -40,16 +41,16 @@ Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
 
 | Check | Result | Evidence |
 | --- | --- | --- |
-| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/31268439712 |
-| Named claim tests | PASS | local `pytest -q` -> 62 passed (2026-08-08) |
-| Worked example | PASS | baseline+check on examples/run_baseline.json + run_current.json -> JUDGE_DRIFT |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/31270926978 |
+| Named claim tests | PASS | local `pytest -q` -> 62 passed (2026-08-09 Sunday) |
+| Worked example | PASS | `baseline` then `check` on examples/{anchors.jsonl,run_baseline.json,run_current.json} -> JUDGE_DRIFT exit 2 (kappa 0.833->0.333) |
 | Fork/implement <30 min | PASS | clean clone+pip install -e .+baseline+check = 22s (2026-08-07); expected JUDGE_DRIFT |
-| public_git_guard | PASS | PASS on 2026-08-08 docs pushes |
+| public_git_guard | PASS | PASS on 2026-08-09 Sunday close |
 | README AI-tell clean | PASS | guard C clean after Quickstart path fix (643f239) |
 | Interview pack | PASS | docs/INTERVIEW.md present |
 
 Field/external benchmark (§B): not claimed this week.
 
-Sunday close: paste real outputs above; LinkedIn draft is Boss-only; growth pulse after gate.
+Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 still open.
 
 
