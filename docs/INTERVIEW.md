@@ -1,9 +1,29 @@
-# Interview talking points: judge-drift-sentinel
+﻿# Interview notes — judge-drift-sentinel
 
-Five CLI-backed points for a technical screen (no resume recap).
+## Three questions
 
-- **`drift-sentinel baseline RUN.json --anchors anchors.jsonl -o baseline.json`** :  pins human-labeled anchors (`anchor_freeze_hash`) so later runs compare against the same ruler, not a moving rubric.
-- **`drift-sentinel check CURRENT.json --baseline baseline.json --anchors anchors.jsonl`** :  attributes score movement: `STABLE`, `SYSTEM_CHANGE`, or `JUDGE_DRIFT`; exit codes are shaped for CI (trust the number only when the judge agreement held).
-- **Frozen anchors isolate the judge** :  humans never change in the anchor set, so a drop in kappa vs humans means the judge or prompt moved, not necessarily your deploy.
-- **`drift-sentinel history --anchors anchors.jsonl --runs run1.json run2.json`** :  timeline of verdicts catches slow judge decay that pairwise `check` might miss in isolation.
-- **`drift-sentinel import-judgekit --panel panel_export.json`** :  bridges a judge-reliability-kit panel export into sentinel anchor/run JSON so you do not re-label examples twice.
+1. Why can a live eval metric move without the system under test changing?
+2. What does a frozen human-labeled anchor set isolate that a live metric cannot?
+3. How do exit codes from `drift-sentinel check` plug into CI or an agent loop gate?
+
+## Two-minute demo
+
+```bash
+pip install judge-drift-sentinel
+# or: git clone … && pip install -e ".[dev]"
+drift-sentinel baseline examples/run_baseline.json --anchors examples/anchors.jsonl -o /tmp/baseline.json
+drift-sentinel check examples/run_system_change.json --baseline /tmp/baseline.json --anchors examples/anchors.jsonl
+echo Exit:$LASTEXITCODE
+```
+
+Show the verdict (`SYSTEM_CHANGE` / `JUDGE_DRIFT` / `STABLE`) and that the command needs no LLM calls.
+
+## Limitations
+
+- Anchor quality bounds the method: biased or tiny anchors produce noisy kappa.
+- Does not replace system evals; it attributes movement of a score you already compute.
+- Weighted kappa helps ordinal rubrics; it does not invent labels the humans never provided.
+
+## Related instruments
+
+- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide) - CI-tested map of the LLM-judge ecosystem
