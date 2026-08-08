@@ -4,11 +4,11 @@ One-screen map of the fixtures under this directory. Use these to see the differ
 
 | Fixture | Story |
 |---|---|
-| `run_current.json` | Intentional **JUDGE_DRIFT** — kappa vs humans fell; distrust the scoreboard. |
-| `run_current_system.json` | **SYSTEM_CHANGE** (system-side drift) — kappa held, live metric moved; the movement is real. |
+| `run_current.json` | Intentional **JUDGE_DRIFT** (kappa vs humans fell; distrust the scoreboard). |
+| `run_current_system.json` | **SYSTEM_CHANGE** / system-side drift (kappa held, live metric moved; the movement is real). |
 | `synthetic_judge_only_*.json` / `synthetic_judge_only_OUTPUT.txt` | Judge-only attribution: drift isolated to the judge, not the system under test. |
 | `as_loop_gate.py` | Exit remap for [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine) gates (`SYSTEM_CHANGE` → pass, `JUDGE_DRIFT` → fail). |
-| `drifting/` | Multi-run **history** fixture — consecutive pairs report `JUDGE_DRIFT`; expected exit `2`. |
+| `drifting/` | Multi-run **history** fixture (consecutive pairs report `JUDGE_DRIFT`; expected exit `2`). |
 
 Supporting files: `anchors.jsonl` (frozen human labels), `run_baseline.json` (pinned baseline run), `LOOP_STATE.md` (sample loop backlog).
 
