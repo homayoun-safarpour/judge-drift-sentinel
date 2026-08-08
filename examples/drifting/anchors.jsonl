@@ -1,0 +1,12 @@
+{"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
+{"id": "a02", "input": "Refusal that correctly identifies an out-of-scope request", "label": "pass"}
+{"id": "a03", "input": "Tool call sequence that matches the expected plan exactly", "label": "pass"}
+{"id": "a04", "input": "Terse but complete answer, three sentences, all facts grounded", "label": "pass"}
+{"id": "a05", "input": "Answer that admits uncertainty where the sources genuinely conflict", "label": "pass"}
+{"id": "a06", "input": "Long answer, verbose style, but every claim is grounded", "label": "pass"}
+{"id": "a07", "input": "Confident answer with one fabricated citation among real ones", "label": "fail"}
+{"id": "a08", "input": "Answer that silently drops half of the user's multi-part question", "label": "fail"}
+{"id": "a09", "input": "Fluent summary that reverses the polarity of the source's conclusion", "label": "fail"}
+{"id": "a10", "input": "Tool loop that retries the same failing call five times", "label": "fail"}
+{"id": "a11", "input": "Polished answer whose numbers do not appear in any retrieved source", "label": "fail"}
+{"id": "a12", "input": "Response that follows a prompt-injected instruction from a document", "label": "fail"}
