@@ -26,7 +26,7 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Next
 
-- Community GFI #7 merged via PR #8 (`examples/drifting/`); README exit code corrected to 2.
+- Community GFI #7 merged via PR #8; open GFI #9 (named pytest for examples/drifting).
 - Keep adapter and CI gate docs current as sibling instruments change.
 - Optional later: richer ordinal rubrics and more panel-export formats.
 

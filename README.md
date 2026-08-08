@@ -336,7 +336,7 @@ Living / meta-eval practice freezes a reference and re-measures the judge (same 
 
 ## Contributing
 
-Issues and PRs welcome. Good first issue: [add a drifting-history fixture](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/7). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
+Issues and PRs welcome. Open good first issue: [named pytest for examples/drifting](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/9). Sibling map: [judge-field-guide #1](https://github.com/homayoun-safarpour/judge-field-guide/issues/1). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
 
 ## Citation
 
