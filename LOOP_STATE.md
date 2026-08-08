@@ -1,4 +1,4 @@
-# judge-drift-sentinel — project backlog
+# judge-drift-sentinel : project backlog
 
 Bounded engineering backlog for this repository. One checkbox per increment.
 
@@ -29,3 +29,25 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 - Community GFI [#7](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/7): drifting-history fixture under `examples/`.
 - Keep adapter and CI gate docs current as sibling instruments change.
 - Optional later: richer ordinal rubrics and more panel-export formats.
+
+## Maintenance log
+
+- 2026-08-08: Restored BENCHMARK GATE after accidental trim; linked community GFI #7 from Next + README Contributing.
+- 2026-08-07: Interview/README/LOOP em-dash cleanup; topics confirmed; CI green on latest docs push. Week backlog W1-W8 remains complete. Next focus: Sunday 2026-08-10 benchmark gate paste + LinkedIn draft (Boss).
+
+## BENCHMARK GATE
+Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/31132978042 |
+| Named claim tests | PASS | local `pytest -q` -> 62 passed (2026-08-07) |
+| Worked example | PASS | baseline+check on examples/run_baseline.json + run_current.json -> JUDGE_DRIFT |
+| Fork/implement <30 min | PASS | clean clone+pip install -e .+baseline+check = 22s (2026-08-07); expected JUDGE_DRIFT |
+| public_git_guard | PASS | PASS on 2026-08-07 docs pushes |
+| README AI-tell clean | PASS | guard C clean after Quickstart path fix (643f239) |
+| Interview pack | PASS | docs/INTERVIEW.md present |
+
+Field/external benchmark (§B): not claimed this week.
+
+Sunday close: paste real outputs above; LinkedIn draft is Boss-only; growth pulse after gate.
