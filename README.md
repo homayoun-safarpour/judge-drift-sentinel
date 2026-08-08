@@ -261,6 +261,8 @@ stdout; `run_current.json` â†’ wrapper exit 2 + `JUDGE_DRIFT`. Snippet back
 
 ## Worked example (real output)
 
+See [`examples/README.md`](examples/README.md) for a one-screen map of which fixture shows JUDGE_DRIFT vs SYSTEM_DRIFT.
+
 Freeze the July run as the pinned baseline (records the anchor freeze hash and kappa):
 
 ```
