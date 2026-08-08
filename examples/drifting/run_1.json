@@ -1,0 +1,19 @@
+{
+  "judge": { "model": "frontier-4-2026-05-01", "prompt_sha": "9f2c1a" },
+  "created": "2026-07-06",
+  "live_metric": 0.81,
+  "anchor_scores": {
+    "a01": "pass",
+    "a02": "pass",
+    "a03": "pass",
+    "a04": "pass",
+    "a05": "pass",
+    "a06": "pass",
+    "a07": "fail",
+    "a08": "fail",
+    "a09": "fail",
+    "a10": "fail",
+    "a11": "fail",
+    "a12": "fail"
+  }
+}
