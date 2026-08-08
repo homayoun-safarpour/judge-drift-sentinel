@@ -259,6 +259,8 @@ stdout; `run_current.json` â†’ wrapper exit 2 + `JUDGE_DRIFT`. Snippet back
 | `examples/as_loop_gate.py` | Remaps check exits so loop-engine only goes red on JUDGE_DRIFT | `--gate "drift=python examples/as_loop_gate.py ..."` |
 | `.github/workflows/weekly-anchor-rescore.yml` | Weekly/manual re-score; `gh issue create` on JUDGE_DRIFT via `GITHUB_TOKEN` | Operators who need a calendar gate without a human watching CLI |
 
+Fixture map (which file is JUDGE_DRIFT vs SYSTEM_CHANGE): [examples/README.md](examples/README.md).
+
 ## Worked example (real output)
 
 Freeze the July run as the pinned baseline (records the anchor freeze hash and kappa):
