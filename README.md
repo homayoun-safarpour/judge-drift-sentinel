@@ -331,6 +331,7 @@ Living / meta-eval practice freezes a reference and re-measures the judge (same 
 
 ## Related reading
 
+- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide): link-checked map of the LLM-judge tool ecosystem (this package is listed there).
 - [Judge reliability and eval-score movement (arXiv:2606.15474)](https://arxiv.org/html/2606.15474): related field survey on LLM judges; this package is a separate deterministic CI gate, not that paper's code.
 
 ## Contributing
