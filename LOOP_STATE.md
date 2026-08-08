@@ -26,7 +26,7 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Next
 
-- Community GFI [#7](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/7): drifting-history fixture under `examples/`.
+- Community GFI #7 merged via PR #8 (`examples/drifting/`); README exit code corrected to 2.
 - Keep adapter and CI gate docs current as sibling instruments change.
 - Optional later: richer ordinal rubrics and more panel-export formats.
 
@@ -51,4 +51,5 @@ Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
 Field/external benchmark (§B): not claimed this week.
 
 Sunday close: paste real outputs above; LinkedIn draft is Boss-only; growth pulse after gate.
+
 
