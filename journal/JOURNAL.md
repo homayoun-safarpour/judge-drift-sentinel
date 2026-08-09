@@ -65,3 +65,10 @@ Documented wiring `drift-sentinel check` as an agent-loop-engine
 JUDGE_DRIFT (exit 2) trips **repair beats progress**. Snippet backlog
 `examples/LOOP_STATE.md`. Named tests in `test_loop_engine_gate_docs.py`.
 62 tests green, ruff clean.
+
+## 2026-08-09 — GFI #9 drifting history fixture test
+
+Locked `examples/drifting/` into CI via
+`tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`:
+same CLI path as the fixture README, asserts exit 2 and a step line with
+`JUDGE_DRIFT`. 63 tests green, ruff clean.

@@ -11,6 +11,8 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 - [x] W7 Docs: wiring `drift-sentinel check` as an agent-loop-engine gate (cost: S) (touched: 2026-08-04)
 - [x] W8 Publish to PyPI so `pip install judge-drift-sentinel` is true (cost: M) (touched: 2026-08-05)
   - Done: PyPI `judge-drift-sentinel==0.1.0`; install path verified 2026-08-05.
+- [x] Community GFI #9: named pytest for `examples/drifting` history exit 2 (cost: S) (touched: 2026-08-09)
+  - Done: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`.
 
 ## Release gate
 
@@ -26,12 +28,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Next
 
-- Community GFI #7 merged via PR #8; open GFI #9 (named pytest for examples/drifting).
+- Add `[project.optional-dependencies] dev` (`pytest`, `ruff`) so README `pip install -e ".[dev]"` is true.
 - Keep adapter and CI gate docs current as sibling instruments change.
 - Optional later: richer ordinal rubrics and more panel-export formats.
 
 ## Maintenance log
 
+- 2026-08-09: Shipped GFI #9 named pytest for `examples/drifting` history (`test_history_example.py`); pytest 63, ruff clean.
 - 2026-08-09: Sunday gate refresh — CI run 31270926978, pytest 62, worked example JUDGE_DRIFT exit 2, public_git_guard PASS; growth pulse logged.
 - 2026-08-08: Restored BENCHMARK GATE after accidental trim; linked community GFI #7 from Next + README Contributing.
 - 2026-08-07: Interview/README/LOOP em-dash cleanup; topics confirmed; CI green on latest docs push. Week backlog W1-W8 remains complete. Next focus: Sunday 2026-08-10 benchmark gate paste + LinkedIn draft (Boss).
@@ -42,7 +45,7 @@ Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
 | Check | Result | Evidence |
 | --- | --- | --- |
 | CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/31283081576 |
-| Named claim tests | PASS | local `pytest -q` -> 62 passed (2026-08-09 Sunday) |
+| Named claim tests | PASS | local `pytest -q` -> 63 passed (2026-08-09; includes drifting history fixture) |
 | Worked example | PASS | `baseline` then `check` on examples/{anchors.jsonl,run_baseline.json,run_current.json} -> JUDGE_DRIFT exit 2 (kappa 0.833->0.333) |
 | Fork/implement <30 min | PASS | clean clone+pip install -e .+baseline+check = 22s (2026-08-07); expected JUDGE_DRIFT |
 | public_git_guard | PASS | PASS on 2026-08-09 Sunday close |
@@ -51,6 +54,11 @@ Week: Mon 2026-08-04 to Sun 2026-08-10 · repo: judge-drift-sentinel
 
 Field/external benchmark (§B): not claimed this week.
 
-Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 still open.
+Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
+## NEXT TICK (daily 2026-08-09)
+
+- **Item:** Add `[project.optional-dependencies] dev = ["pytest", "ruff"]` in `pyproject.toml` so README `pip install -e ".[dev]"` installs the contributor toolchain.
+- **Why:** README already documents that path; the extras table is missing, so a fresh clone following Contributing cannot rely on `.[dev]`.
+- **Verify:** `python -m pip install -e ".[dev]" && python -m ruff check src tests && python -m pytest -q`
 

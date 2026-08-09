@@ -323,7 +323,7 @@ loop repairs the scoreboard the moment it stops being trustworthy. Honest
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
 
 ## Field alignment
 
@@ -336,7 +336,7 @@ Living / meta-eval practice freezes a reference and re-measures the judge (same 
 
 ## Contributing
 
-Issues and PRs welcome. Recent community: `examples/drifting/` via PR #8. Open good first issue: [named pytest for examples/drifting](https://github.com/homayoun-safarpour/judge-drift-sentinel/issues/9). Sibling map: [judge-field-guide #1](https://github.com/homayoun-safarpour/judge-field-guide/issues/1). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
+Issues and PRs welcome. Recent community: `examples/drifting/` via PR #8; named pytest lock in `tests/test_history_example.py` (GFI #9). Sibling map: [judge-field-guide #1](https://github.com/homayoun-safarpour/judge-field-guide/issues/1). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
 
 ## Citation
 
