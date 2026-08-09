@@ -53,4 +53,19 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 still open.
 
+## NEXT TICK (evening 2026-08-09)
+
+- **Item:** Triage open community GFI #9 (named pytest for `examples/drifting` history exit 2). Land a ready contributor PR if one exists; otherwise HOLD product scope and only reconfirm release gates.
+- **Why:** W1–W8 and Sunday benchmark gate are green (CI run 31283435563). New product scope is out of bounds; GFI #9 is the only open increment already named in this backlog.
+- **Verify:**
+  ```bash
+  gh issue view 9
+  gh pr list --label "good first issue" --state open
+  gh run list --branch main --limit 1
+  python -m pytest -q
+  drift-sentinel history \
+    --anchors examples/drifting/anchors.jsonl \
+    --runs examples/drifting/run_1.json examples/drifting/run_2.json examples/drifting/run_3.json
+  echo exit:$?
+  ```
 
