@@ -72,3 +72,9 @@ Locked `examples/drifting/` into CI via
 `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`:
 same CLI path as the fixture README, asserts exit 2 and a step line with
 `JUDGE_DRIFT`. 63 tests green, ruff clean.
+
+## 2026-08-10 — packaging dev extras
+
+Added `[project.optional-dependencies] dev = ["pytest", "ruff"]` so the
+README contributor path `pip install -e ".[dev]"` installs the toolchain.
+Named claim: `tests/test_packaging.py`. 65 tests green, ruff clean.
