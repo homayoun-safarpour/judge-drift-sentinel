@@ -72,3 +72,8 @@ Locked `examples/drifting/` into CI via
 `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`:
 same CLI path as the fixture README, asserts exit 2 and a step line with
 `JUDGE_DRIFT`. 63 tests green, ruff clean.
+
+## 2026-08-10 — evening HOLD
+
+HOLD product scope. Gates green; refreshed NEXT TICK to evening
+2026-08-10 for README `.[dev]` optional-dependencies only.

@@ -56,9 +56,15 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-09)
+## NEXT TICK (evening 2026-08-10)
 
 - **Item:** Add `[project.optional-dependencies] dev = ["pytest", "ruff"]` in `pyproject.toml` so README `pip install -e ".[dev]"` installs the contributor toolchain.
-- **Why:** README already documents that path; the extras table is missing, so a fresh clone following Contributing cannot rely on `.[dev]`.
-- **Verify:** `python -m pip install -e ".[dev]" && python -m ruff check src tests && python -m pytest -q`
+- **Why:** Gates remain green on `main` (CI run 31302752262; weekly re-score 31367524117). W1–W8 and GFI #9 pytest are landed; the only named Next increment left is the missing `.[dev]` extras table already promised by README Contributing.
+- **Verify:**
+  ```bash
+  gh run list --branch main --limit 1
+  python -m pip install -e ".[dev]"
+  python -m ruff check src tests
+  python -m pytest -q
+  ```
 
