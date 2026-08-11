@@ -15,6 +15,8 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`.
 - [x] Packaging: `[project.optional-dependencies] dev` (`pytest`, `ruff`) so README `pip install -e ".[dev]"` is true (cost: S) (touched: 2026-08-10)
   - Done: `pyproject.toml` extras + `tests/test_packaging.py`.
+- [x] Adapter audit: lock panel-envelope fields + documented `import-judgekit` CLI flags against `examples/judgekit_panel_export.json` (cost: S) (touched: 2026-08-11)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`.
 
 ## Release gate
 
@@ -30,11 +32,12 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Next
 
-- Keep adapter and CI gate docs current as sibling instruments change.
+- Keep CI gate docs current as sibling instruments change (weekly re-score workflow + loop-engine gate).
 - Optional later: richer ordinal rubrics and more panel-export formats.
 
 ## Maintenance log
 
+- 2026-08-11: Adapter audit - named claim for panel envelope + documented `import-judgekit` flags vs `examples/judgekit_panel_export.json`; README judgekit section + encoding cleanup; pytest 66, ruff clean.
 - 2026-08-10: Added `[project.optional-dependencies] dev` (`pytest`, `ruff`); named claim in `tests/test_packaging.py`; pytest 65, ruff clean.
 - 2026-08-09: Shipped GFI #9 named pytest for `examples/drifting` history (`test_history_example.py`); pytest 63, ruff clean.
 - 2026-08-09: Sunday gate refresh — CI run 31270926978, pytest 62, worked example JUDGE_DRIFT exit 2, public_git_guard PASS; growth pulse logged.
@@ -58,9 +61,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-10)
+## NEXT TICK (daily 2026-08-11)
 
-- **Item:** Audit `driftsentinel.adapter` + README judgekit section against `examples/judgekit_panel_export.json` and add/adjust a named claim if any documented field or CLI flag is untested.
-- **Why:** Packaging extras are done; the remaining Next head item is keeping the judgekit adapter path accurate as sibling panel-export shapes evolve.
-- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py tests/test_packaging.py`
+- **Item:** Audit `.github/workflows/weekly-anchor-rescore.yml` + README CI section against `tests/test_weekly_rescore_workflow.py` and add/adjust a named claim if any documented trigger, input, or JUDGE_DRIFT issue path is untested.
+- **Why:** Adapter envelope/flags are locked; the remaining Next head item is keeping the weekly CI gate path accurate as workflow inputs evolve.
+- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_weekly_rescore_workflow.py tests/test_loop_engine_gate_docs.py`
 

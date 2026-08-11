@@ -135,3 +135,108 @@ def test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export():
     run = panel_to_run(panel, "claude-judge")
     assert set(run.anchor_scores) == set(panel.human_labels)
     assert all(isinstance(v, str) and v for v in run.anchor_scores.values())
+
+
+def test_import_judgekit_cli_locks_panel_envelope_and_documented_flags(tmp_path, capsys):
+    """Named claim: example panel fields and documented import-judgekit flags round-trip.
+
+    Locks ``examples/judgekit_panel_export.json`` envelope keys (created,
+    live_metric, judges fingerprints) and CLI flags documented in README /
+    ``--help``: ``--human-labels`` (nested gold map), ``--aggregate``,
+    ``--model``, ``--prompt-sha``.
+    """
+    panel = load_panel_export(PANEL)
+    assert panel.schema_version == SCHEMA_VERSION
+    assert panel.created == "2026-08-04"
+    assert panel.live_metric == pytest.approx(0.81)
+    assert set(panel.judges) == {"gpt-4o-judge", "claude-judge"}
+
+    anchors_out = tmp_path / "anchors.jsonl"
+    run_out = tmp_path / "run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(PANEL),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(anchors_out),
+            "--run-out",
+            str(run_out),
+            "--json",
+        ]
+    )
+    assert code == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["aggregate"] == "modal"
+    assert summary["schema_version"] == SCHEMA_VERSION
+
+    written = json.loads(run_out.read_text(encoding="utf-8"))
+    assert written["created"] == "2026-08-04"
+    assert written["live_metric"] == pytest.approx(0.81)
+    assert written["judge"] == {"model": "gpt-4o-judge", "prompt_sha": "kit-demo-01"}
+    assert written["anchor_scores"]["a05"] == "fail"  # modal of fixture replicates
+
+    override_run = tmp_path / "run_override.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(PANEL),
+            "--judge",
+            "gpt-4o-judge",
+            "--aggregate",
+            "first",
+            "--model",
+            "override-model",
+            "--prompt-sha",
+            "override-sha",
+            "--anchors-out",
+            str(tmp_path / "anchors2.jsonl"),
+            "--run-out",
+            str(override_run),
+            "--json",
+        ]
+    )
+    assert code == 0
+    override_summary = json.loads(capsys.readouterr().out)
+    assert override_summary["aggregate"] == "first"
+    assert override_summary["fingerprint"] == "override-model@override-sha"
+    override_payload = json.loads(override_run.read_text(encoding="utf-8"))
+    assert override_payload["judge"] == {"model": "override-model", "prompt_sha": "override-sha"}
+    assert override_payload["anchor_scores"]["a05"] == "fail"  # first replicate in fixture
+
+    bare = tmp_path / "ratings.json"
+    bare.write_text(
+        json.dumps(
+            {
+                "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                "a02": {"gpt-4o-judge": ["fail", "fail"]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    nested_gold = tmp_path / "gold_nested.json"
+    nested_gold.write_text(
+        json.dumps({"human_labels": {"a01": "pass", "a02": "fail"}}),
+        encoding="utf-8",
+    )
+    bare_run = tmp_path / "bare_run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(bare),
+            "--human-labels",
+            str(nested_gold),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(tmp_path / "bare_anchors.jsonl"),
+            "--run-out",
+            str(bare_run),
+        ]
+    )
+    assert code == 0
+    assert load_run(bare_run).anchor_scores == {"a01": "pass", "a02": "fail"}

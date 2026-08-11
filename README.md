@@ -1,6 +1,6 @@
 ﻿# judge-drift-sentinel
 
-**Your LLM-judge eval score dropped after a provider model update—not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
+**Your LLM-judge eval score dropped after a provider model update, not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
 
 [![CI](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
@@ -63,7 +63,7 @@ Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md).
 
 Claim boundaries (what metric, what fixture, what is not claimed): [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
 
-Label 10â€“50 representative outputs once, by hand. That file is your anchor set (JSONL):
+Label 10-50 representative outputs once, by hand. That file is your anchor set (JSONL):
 
 ```json
 {"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
@@ -108,7 +108,7 @@ To see whether verdicts are stable or eroding across many pinned runs (not just 
 drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
 ```
 
-Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the firstâ†’last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
+Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the first->last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
 
 Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop: the scoreboard itself is broken).
 
@@ -158,9 +158,15 @@ drift-sentinel import-judgekit \
   --run-out run.json
 ```
 
-Python import path: `driftsentinel.adapter.load_panel_export` â†’
-`panel_to_anchors` / `panel_to_run`. Named test:
-`tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
+The written run JSON keeps panel `created`, `live_metric`, and judge
+fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
+{modal,first}` (default modal), `--model`, `--prompt-sha`, and
+`--human-labels` for bare ratings (`{id: label}` or
+`{human_labels: {...}}`). Python path:
+`driftsentinel.adapter.load_panel_export` -> `panel_to_anchors` /
+`panel_to_run`. Named tests:
+`tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`,
+`tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`.
 
 ## CI: weekly anchor re-score
 
@@ -182,11 +188,11 @@ ruler failures.
 
 1. Keep producing a weekly re-score JSON the same shape as `examples/run_*.json`
    (your judge scores the frozen anchors; this workflow never calls an LLM).
-2. In the Actions UI â†’ **Weekly anchor re-score** â†’ **Run workflow**, set:
-   - `anchors` â†’ your frozen `anchors.jsonl`
-   - `baseline` â†’ pinned baseline from `drift-sentinel baseline ... --out`
-   - `current` â†’ this week's re-score JSON
-   - or `mode=history` + `history_runs` â†’ ordered space-separated run paths
+2. In the Actions UI -> **Weekly anchor re-score** -> **Run workflow**, set:
+   - `anchors` -> your frozen `anchors.jsonl`
+   - `baseline` -> pinned baseline from `drift-sentinel baseline ... --out`
+   - `current` -> this week's re-score JSON
+   - or `mode=history` + `history_runs` -> ordered space-separated run paths
 3. For the scheduled run, either keep the defaults or edit the
    `Resolve paths` defaults in the workflow YAML to your production paths.
 4. **Auth:** the workflow uses only `permissions: issues: write` and
@@ -236,11 +242,11 @@ loop-engine tick --state examples/LOOP_STATE.md \
 |---|---|---|
 | `0` STABLE | `0` | gate green |
 | `3` SYSTEM_CHANGE | `0` | gate green (ruler trustworthy) |
-| `2` JUDGE_DRIFT | `2` | gate red â†’ `action: repair` target `drift` |
-| `1` error | `1` | gate red â†’ repair the command/paths |
+| `2` JUDGE_DRIFT | `2` | gate red -> `action: repair` target `drift` |
+| `1` error | `1` | gate red -> repair the command/paths |
 
-Fixture paths: `run_current_system.json` â†’ wrapper exit 0 + `SYSTEM_CHANGE` in
-stdout; `run_current.json` â†’ wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
+Fixture paths: `run_current_system.json` -> wrapper exit 0 + `SYSTEM_CHANGE` in
+stdout; `run_current.json` -> wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
 `examples/LOOP_STATE.md`. Named tests:
 `tests/test_loop_engine_gate_docs.py`.
 
@@ -323,7 +329,7 @@ loop repairs the scoreboard the moment it stops being trustworthy. Honest
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export` and `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`. Loop gate remap: `tests/test_loop_engine_gate_docs.py::test_as_loop_gate_remaps_system_change_to_pass_and_judge_drift_to_fail`.
 
 ## Field alignment
 
@@ -349,7 +355,7 @@ Issues and PRs welcome. Recent community: `examples/drifting/` via PR #8; named 
 }
 ```
 
-Author: Homayoun Safarpour Â· [LinkedIn](https://www.linkedin.com/in/homayoun-safarpour/)
+Author: Homayoun Safarpour | [LinkedIn](https://www.linkedin.com/in/homayoun-safarpour/)
 
 ## License
 

@@ -78,3 +78,13 @@ same CLI path as the fixture README, asserts exit 2 and a step line with
 Added `[project.optional-dependencies] dev = ["pytest", "ruff"]` so the
 README contributor path `pip install -e ".[dev]"` installs the toolchain.
 Named claim: `tests/test_packaging.py`. 65 tests green, ruff clean.
+
+## 2026-08-11 — adapter envelope + import-judgekit flag claim
+
+Audited `driftsentinel.adapter` and the README judgekit section against
+`examples/judgekit_panel_export.json`. Added named claim
+`test_import_judgekit_cli_locks_panel_envelope_and_documented_flags` for
+panel `created` / `live_metric` / judge fingerprints and documented CLI
+flags (`--human-labels` nested gold, `--aggregate`, `--model`,
+`--prompt-sha`). README judgekit claims and ASCII cleanup. 66 tests green,
+ruff clean.
