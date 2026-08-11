@@ -58,9 +58,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-10)
+## NEXT TICK (evening 2026-08-11)
 
 - **Item:** Audit `driftsentinel.adapter` + README judgekit section against `examples/judgekit_panel_export.json` and add/adjust a named claim if any documented field or CLI flag is untested.
-- **Why:** Packaging extras are done; the remaining Next head item is keeping the judgekit adapter path accurate as sibling panel-export shapes evolve.
+- **Why:** Gates green and W1–W8 complete; Next head remains keeping the judgekit adapter path accurate as sibling panel-export shapes evolve (no new product scope).
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py tests/test_packaging.py`
 
