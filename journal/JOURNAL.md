@@ -78,3 +78,8 @@ same CLI path as the fixture README, asserts exit 2 and a step line with
 Added `[project.optional-dependencies] dev = ["pytest", "ruff"]` so the
 README contributor path `pip install -e ".[dev]"` installs the toolchain.
 Named claim: `tests/test_packaging.py`. 65 tests green, ruff clean.
+
+## 2026-08-11 — HOLD
+
+Gates green on main (CI 31368532247). No feature ship; evening NEXT TICK
+refreshed for tomorrow's daily on the open adapter/docs accuracy item.
