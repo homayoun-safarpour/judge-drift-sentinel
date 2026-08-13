@@ -61,9 +61,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-11)
+## NEXT TICK (evening 2026-08-13)
 
 - **Item:** Audit `.github/workflows/weekly-anchor-rescore.yml` + README CI section against `tests/test_weekly_rescore_workflow.py` and add/adjust a named claim if any documented trigger, input, or JUDGE_DRIFT issue path is untested.
-- **Why:** Adapter envelope/flags are locked; the remaining Next head item is keeping the weekly CI gate path accurate as workflow inputs evolve.
+- **Why:** Gates green on main (CI 31471748435); W1–W8 and adapter envelope claims are landed. Remaining Next head is keeping the weekly CI / loop-engine gate docs accurate—no new product scope.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_weekly_rescore_workflow.py tests/test_loop_engine_gate_docs.py`
 
