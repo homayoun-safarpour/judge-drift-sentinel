@@ -88,3 +88,8 @@ panel `created` / `live_metric` / judge fingerprints and documented CLI
 flags (`--human-labels` nested gold, `--aggregate`, `--model`,
 `--prompt-sha`). README judgekit claims and ASCII cleanup. 66 tests green,
 ruff clean.
+
+## 2026-08-15 — HOLD
+
+Gates green on main (CI 31471748435). No feature ship; evening NEXT TICK
+refreshed for tomorrow's daily on the open weekly CI gate docs item.
