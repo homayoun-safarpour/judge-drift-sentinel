@@ -203,7 +203,7 @@ ruler failures.
    `current=examples/run_current.json` (the intentional JUDGE_DRIFT fixture) and
    confirm an issue opens; then point `current` back at your real weekly file.
 
-Named contract test:
+Named contract test (cron, inputs, issue title/comment path, exit-2 fail):
 `tests/test_weekly_rescore_workflow.py::test_weekly_rescore_workflow_opens_issue_on_judge_drift`.
 
 ## Gate for agent-loop-engine

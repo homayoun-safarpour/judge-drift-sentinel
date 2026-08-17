@@ -88,3 +88,11 @@ panel `created` / `live_metric` / judge fingerprints and documented CLI
 flags (`--human-labels` nested gold, `--aggregate`, `--model`,
 `--prompt-sha`). README judgekit claims and ASCII cleanup. 66 tests green,
 ruff clean.
+
+## 2026-08-17 — weekly CI trigger/input/issue claim
+
+Audited `.github/workflows/weekly-anchor-rescore.yml` against README § CI.
+Strengthened `test_weekly_rescore_workflow_opens_issue_on_judge_drift` to
+lock Monday cron `0 6 * * 1`, documented workflow_dispatch inputs, JUDGE_DRIFT
+issue title + create/comment path, exit-2 job fail, schedule defaults, and
+`secrets.GITHUB_TOKEN`. 66 tests green, ruff clean.
