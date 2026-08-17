@@ -96,3 +96,8 @@ Strengthened `test_weekly_rescore_workflow_opens_issue_on_judge_drift` to
 lock Monday cron `0 6 * * 1`, documented workflow_dispatch inputs, JUDGE_DRIFT
 issue title + create/comment path, exit-2 job fail, schedule defaults, and
 `secrets.GITHUB_TOKEN`. 66 tests green, ruff clean.
+
+## 2026-08-17 — evening HOLD
+
+HOLD: CI green on main (32008667016); no feature work. NEXT TICK points at
+loop-engine gate docs audit vs `tests/test_loop_engine_gate_docs.py`.
