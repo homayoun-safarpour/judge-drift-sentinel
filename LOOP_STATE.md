@@ -19,6 +19,8 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`.
 - [x] CI audit: lock weekly-anchor-rescore triggers, path inputs, and JUDGE_DRIFT issue path against README (cost: S) (touched: 2026-08-17)
   - Done: `tests/test_weekly_rescore_workflow.py::test_weekly_rescore_workflow_opens_issue_on_judge_drift`.
+- [x] Loop-engine gate audit: lock README remapper table + tick command + `examples/LOOP_STATE.md` snippet + STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits (cost: S) (touched: 2026-08-20)
+  - Done: `tests/test_loop_engine_gate_docs.py` (4 named claims).
 
 ## Release gate
 
@@ -34,11 +36,12 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Next
 
-- Keep loop-engine gate docs current as sibling instruments change (`docs` + `examples/as_loop_gate.py` vs `tests/test_loop_engine_gate_docs.py`).
-- Optional later: richer ordinal rubrics and more panel-export formats.
+- Optional: richer ordinal rubrics (named claim for linear vs quadratic near-miss separation beyond the existing weighted-kappa test).
+- Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-08-20: Loop-engine gate audit - named claims lock README remapper table, documented tick/state paths, `examples/LOOP_STATE.md` snippet alignment, `_TRUSTWORTHY` remapper, and STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits; pytest 67, ruff clean.
 - 2026-08-17: Weekly CI audit - named claim locks Monday cron, workflow_dispatch inputs, JUDGE_DRIFT issue title/comment path, exit-2 gate, and schedule defaults; pytest 66, ruff clean.
 - 2026-08-11: Adapter audit - named claim for panel envelope + documented `import-judgekit` flags vs `examples/judgekit_panel_export.json`; README judgekit section + encoding cleanup; pytest 66, ruff clean.
 - 2026-08-10: Added `[project.optional-dependencies] dev` (`pytest`, `ruff`); named claim in `tests/test_packaging.py`; pytest 65, ruff clean.
@@ -64,9 +67,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-17)
+## NEXT TICK (daily 2026-08-20)
 
-- **Item:** Audit README Gate for agent-loop-engine section + `examples/as_loop_gate.py` against `tests/test_loop_engine_gate_docs.py` and add/adjust a named claim if any documented exit remap or gate wiring is untested.
-- **Why:** Weekly re-score workflow claims are locked; the remaining Next head item is keeping the loop-engine gate path accurate as sibling instruments change.
-- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_loop_engine_gate_docs.py`
+- **Item:** Add a named claim that quadratic weighted kappa penalizes far misses more than linear on the same ordinal near/far pair (extend `tests/test_agreement.py` / README ordinal flags if the claim is not already explicit).
+- **Why:** Loop-engine gate wiring is locked; the Next head is the smallest remaining optional slice (ordinal rubrics depth).
+- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_agreement.py`
 

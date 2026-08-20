@@ -96,3 +96,12 @@ Strengthened `test_weekly_rescore_workflow_opens_issue_on_judge_drift` to
 lock Monday cron `0 6 * * 1`, documented workflow_dispatch inputs, JUDGE_DRIFT
 issue title + create/comment path, exit-2 job fail, schedule defaults, and
 `secrets.GITHUB_TOKEN`. 66 tests green, ruff clean.
+
+## 2026-08-20 — loop-engine gate remapper/tick claim
+
+Audited README § Gate for agent-loop-engine and
+`examples/as_loop_gate.py` against `tests/test_loop_engine_gate_docs.py`.
+Strengthened named claims to lock the remapper table, documented
+`loop-engine tick` state/gate paths, `examples/LOOP_STATE.md` snippet
+alignment, `_TRUSTWORTHY` remapper contract, and wrapper exits for
+STABLE / SYSTEM_CHANGE / JUDGE_DRIFT fixtures. 67 tests green, ruff clean.
