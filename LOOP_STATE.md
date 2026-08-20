@@ -64,9 +64,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-17)
+## NEXT TICK (evening 2026-08-20)
 
 - **Item:** Audit README Gate for agent-loop-engine section + `examples/as_loop_gate.py` against `tests/test_loop_engine_gate_docs.py` and add/adjust a named claim if any documented exit remap or gate wiring is untested.
-- **Why:** Weekly re-score workflow claims are locked; the remaining Next head item is keeping the loop-engine gate path accurate as sibling instruments change.
+- **Why:** Release gates PASS and CI green on main; no new product scope — Next head remains keeping the loop-engine gate path accurate as sibling instruments change.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_loop_engine_gate_docs.py`
 
