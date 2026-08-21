@@ -105,3 +105,8 @@ Strengthened named claims to lock the remapper table, documented
 `loop-engine tick` state/gate paths, `examples/LOOP_STATE.md` snippet
 alignment, `_TRUSTWORTHY` remapper contract, and wrapper exits for
 STABLE / SYSTEM_CHANGE / JUDGE_DRIFT fixtures. 67 tests green, ruff clean.
+
+## 2026-08-21 — evening HOLD
+
+HOLD: gates green on main (CI 32346948845); refreshed NEXT TICK to evening
+2026-08-21 pointing at ordinal linear-vs-quadratic near/far claim. No feature ship.

@@ -67,9 +67,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-20)
+## NEXT TICK (evening 2026-08-21)
 
 - **Item:** Add a named claim that quadratic weighted kappa penalizes far misses more than linear on the same ordinal near/far pair (extend `tests/test_agreement.py` / README ordinal flags if the claim is not already explicit).
-- **Why:** Loop-engine gate wiring is locked; the Next head is the smallest remaining optional slice (ordinal rubrics depth).
+- **Why:** Release gates PASS and CI green on main (32346948845); loop-engine gate claims already landed — Next head remains the smallest optional ordinal-rubrics depth slice, no new product scope.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_agreement.py`
 
