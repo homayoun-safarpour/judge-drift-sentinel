@@ -93,7 +93,7 @@ Then ask the sentinel who moved:
 drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json
 ```
 
-For ordinal rubrics (integer scores such as 0-3), use weighted kappa so near misses cost less than far misses:
+For ordinal rubrics (integer scores such as 0-3), use weighted kappa so near misses cost less than far misses. Quadratic weights (`--kappa-weights quadratic`) open a larger near-vs-far gap than linear on the same pair (`tests/test_agreement.py::test_quadratic_penalizes_far_misses_more_than_linear`):
 
 ```bash
 drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json \

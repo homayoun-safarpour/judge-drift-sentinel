@@ -36,11 +36,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Next
 
-- Optional: richer ordinal rubrics (named claim for linear vs quadratic near-miss separation beyond the existing weighted-kappa test).
+- [x] Optional: richer ordinal rubrics (named claim for linear vs quadratic near-miss separation beyond the existing weighted-kappa test) (cost: S) (touched: 2026-08-21)
+  - Done: `tests/test_agreement.py::test_quadratic_penalizes_far_misses_more_than_linear`.
 - Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-08-21: Ordinal kappa depth - named claim that quadratic opens a larger near-vs-far gap than linear on the same pair; README ordinal flags cite the test; pytest 68, ruff clean.
 - 2026-08-20: Loop-engine gate audit - named claims lock README remapper table, documented tick/state paths, `examples/LOOP_STATE.md` snippet alignment, `_TRUSTWORTHY` remapper, and STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits; pytest 67, ruff clean.
 - 2026-08-17: Weekly CI audit - named claim locks Monday cron, workflow_dispatch inputs, JUDGE_DRIFT issue title/comment path, exit-2 gate, and schedule defaults; pytest 66, ruff clean.
 - 2026-08-11: Adapter audit - named claim for panel envelope + documented `import-judgekit` flags vs `examples/judgekit_panel_export.json`; README judgekit section + encoding cleanup; pytest 66, ruff clean.
@@ -67,9 +69,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-20)
+## NEXT TICK (daily 2026-08-21)
 
-- **Item:** Add a named claim that quadratic weighted kappa penalizes far misses more than linear on the same ordinal near/far pair (extend `tests/test_agreement.py` / README ordinal flags if the claim is not already explicit).
-- **Why:** Loop-engine gate wiring is locked; the Next head is the smallest remaining optional slice (ordinal rubrics depth).
-- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_agreement.py`
+- **Item:** Add a named claim for a second panel-export format beyond `judgekit.panel_export/v1` (or document and lock why only v1 is supported), smallest adapter slice.
+- **Why:** Ordinal quadratic-vs-linear depth is locked; the remaining Next head is panel-export format coverage.
+- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py`
 

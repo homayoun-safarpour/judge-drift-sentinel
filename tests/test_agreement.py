@@ -123,6 +123,51 @@ def test_weighted_kappa_separates_near_miss_from_far_miss_on_ordinal_scale():
     assert near_q > far_q
 
 
+def test_quadratic_penalizes_far_misses_more_than_linear():
+    # Named claim: on the same ordinal near/far pair, quadratic weights
+    # (Fleiss-Cohen) open a larger near-minus-far gap than linear
+    # (Cicchetti-Allison). Near misses get more credit under quadratic;
+    # far misses score lower, so the separation is sharper.
+    human = {
+        "a": "0",
+        "b": "0",
+        "c": "1",
+        "d": "0",
+        "e": "2",
+        "f": "3",
+        "g": "3",
+        "h": "3",
+    }
+    near = {
+        "a": "0",
+        "b": "1",
+        "c": "1",
+        "d": "1",
+        "e": "2",
+        "f": "2",
+        "g": "3",
+        "h": "2",
+    }
+    far = {
+        "a": "0",
+        "b": "3",
+        "c": "1",
+        "d": "3",
+        "e": "2",
+        "f": "0",
+        "g": "3",
+        "h": "0",
+    }
+    levels = (0, 1, 2, 3)
+    near_linear = weighted_cohen_kappa(human, near, weights="linear", levels=levels)
+    far_linear = weighted_cohen_kappa(human, far, weights="linear", levels=levels)
+    near_quad = weighted_cohen_kappa(human, near, weights="quadratic", levels=levels)
+    far_quad = weighted_cohen_kappa(human, far, weights="quadratic", levels=levels)
+    assert near_quad > near_linear
+    assert far_quad < far_linear
+    assert (near_quad - far_quad) > (near_linear - far_linear)
+
+
 def test_agreement_kappa_none_keeps_binary_path():
     a = {"1": "pass", "2": "pass", "3": "fail", "4": "fail"}
     b = {"1": "pass", "2": "fail", "3": "pass", "4": "fail"}
