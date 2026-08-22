@@ -24,6 +24,7 @@ from driftsentinel.anchors import AnchorSet
 from driftsentinel.runs import JudgeRun
 
 SCHEMA_VERSION = "judgekit.panel_export/v1"
+SUPPORTED_SCHEMA_VERSIONS = frozenset({SCHEMA_VERSION})
 AGGREGATES = frozenset({"modal", "first"})
 
 
@@ -94,6 +95,15 @@ def parse_panel_dict(
         ratings_raw = record["ratings"]
         if not isinstance(ratings_raw, Mapping):
             raise ValueError("'ratings' must be a JSON object")
+        schema = str(record.get("schema_version", "") or "")
+        if schema and schema not in SUPPORTED_SCHEMA_VERSIONS:
+            supported = ", ".join(sorted(SUPPORTED_SCHEMA_VERSIONS))
+            raise ValueError(
+                f"unsupported panel schema_version {schema!r}; "
+                f"only {supported} is supported "
+                f"(omit schema_version on a v1-shaped envelope, or pass bare "
+                f"ratings + human_labels)"
+            )
         labels_src = human_labels if human_labels is not None else record.get("human_labels")
         if not isinstance(labels_src, Mapping):
             raise ValueError(
@@ -120,7 +130,7 @@ def parse_panel_dict(
             created=str(record.get("created", "")),
             live_metric=float(metric) if metric is not None else None,
             source=source,
-            schema_version=str(record.get("schema_version", "")),
+            schema_version=schema or SCHEMA_VERSION,
         )
 
     if _looks_like_ratings(record):
@@ -138,8 +148,8 @@ def parse_panel_dict(
 
     raise ValueError(
         "unrecognized panel JSON: expected judgekit.panel_export/v1 "
-        "({schema_version, human_labels, ratings}) or bare ratings "
-        "{item: {judge: [labels...]}}"
+        "({schema_version, human_labels, ratings}; only that schema_version "
+        "is supported) or bare ratings {item: {judge: [labels...]}}"
     )
 
 

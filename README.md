@@ -118,7 +118,10 @@ Do not hand-copy panel scores into sentinel files.
 [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit)
 stores ratings as `{item_id: {judge_id: [label, ...]}}` (replicated labels per
 judge). Sentinel documents a thin envelope (`judgekit.panel_export/v1`) that
-adds the human gold map and judge fingerprint fields this tool needs:
+adds the human gold map and judge fingerprint fields this tool needs. Only
+that schema_version is accepted on enveloped panels; unknown versions fail
+closed (`tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`).
+Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
 {
@@ -166,7 +169,8 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `driftsentinel.adapter.load_panel_export` -> `panel_to_anchors` /
 `panel_to_run`. Named tests:
 `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`,
-`tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`.
+`tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`,
+`tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`.
 
 ## CI: weekly anchor re-score
 
@@ -261,7 +265,7 @@ stdout; `run_current.json` -> wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
 | `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
 | `driftsentinel.history` | Verdict + kappa timeline across N runs; flags slow decay pairwise checks miss | Weekly/monthly pinned runs where erosion is gradual |
 | `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history` / `import-judgekit`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
-| `driftsentinel.adapter` | Load `judgekit.panel_export/v1` (or bare ratings + gold) into `AnchorSet` / `JudgeRun` | Bridging judge-reliability-kit without hand-copying scores |
+| `driftsentinel.adapter` | Load `judgekit.panel_export/v1` only (or bare ratings + gold); reject unknown schema_version | Bridging judge-reliability-kit without hand-copying scores |
 | `examples/as_loop_gate.py` | Remaps check exits so loop-engine only goes red on JUDGE_DRIFT | `--gate "drift=python examples/as_loop_gate.py ..."` |
 | `.github/workflows/weekly-anchor-rescore.yml` | Weekly/manual re-score; `gh issue create` on JUDGE_DRIFT via `GITHUB_TOKEN` | Operators who need a calendar gate without a human watching CLI |
 
@@ -329,7 +333,7 @@ loop repairs the scoreboard the moment it stops being trustworthy. Honest
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export` and `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`. Loop gate remap + tick wiring: `tests/test_loop_engine_gate_docs.py` (remapper table, `examples/LOOP_STATE.md` snippet, STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits).
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`, `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`, and `tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`. Loop gate remap + tick wiring: `tests/test_loop_engine_gate_docs.py` (remapper table, `examples/LOOP_STATE.md` snippet, STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits).
 
 ## Field alignment
 

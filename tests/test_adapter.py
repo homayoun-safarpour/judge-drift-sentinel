@@ -9,6 +9,7 @@ import pytest
 
 from driftsentinel.adapter import (
     SCHEMA_VERSION,
+    SUPPORTED_SCHEMA_VERSIONS,
     load_panel_export,
     modal_label,
     panel_to_anchors,
@@ -135,6 +136,32 @@ def test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export():
     run = panel_to_run(panel, "claude-judge")
     assert set(run.anchor_scores) == set(panel.human_labels)
     assert all(isinstance(v, str) and v for v in run.anchor_scores.values())
+
+
+def test_unsupported_panel_schema_version_is_rejected():
+    """Named claim: only judgekit.panel_export/v1 envelopes are accepted.
+
+    A second producer format is not shipped yet. Unknown schema_version
+    values fail closed; omit schema_version on a v1-shaped envelope, or use
+    bare ratings + human_labels.
+    """
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+    with pytest.raises(ValueError, match="unsupported panel schema_version"):
+        parse_panel_dict(
+            {
+                "schema_version": "judgekit.panel_export/v2",
+                "human_labels": {"a01": "pass"},
+                "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+            }
+        )
+    # v1-shaped envelope without schema_version still parses as v1.
+    panel = parse_panel_dict(
+        {
+            "human_labels": {"a01": "pass"},
+            "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+        }
+    )
+    assert panel.schema_version == SCHEMA_VERSION
 
 
 def test_import_judgekit_cli_locks_panel_envelope_and_documented_flags(tmp_path, capsys):

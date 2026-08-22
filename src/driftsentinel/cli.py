@@ -188,8 +188,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--panel",
         required=True,
         help=(
-            "judgekit.panel_export/v1 JSON, or bare ratings "
-            "{item: {judge: [labels...]}} (needs --human-labels)"
+            "judgekit.panel_export/v1 JSON only (unknown schema_version "
+            "rejected), or bare ratings {item: {judge: [labels...]}} "
+            "(needs --human-labels)"
         ),
     )
     adapt.add_argument(
