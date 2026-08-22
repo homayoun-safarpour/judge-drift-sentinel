@@ -105,3 +105,7 @@ Strengthened named claims to lock the remapper table, documented
 `loop-engine tick` state/gate paths, `examples/LOOP_STATE.md` snippet
 alignment, `_TRUSTWORTHY` remapper contract, and wrapper exits for
 STABLE / SYSTEM_CHANGE / JUDGE_DRIFT fixtures. 67 tests green, ruff clean.
+
+## 2026-08-22 — evening HOLD
+
+HOLD: gates green on main; NEXT TICK refreshed to evening 2026-08-22 (panel-export format claim / v1-only lock). No ship.
