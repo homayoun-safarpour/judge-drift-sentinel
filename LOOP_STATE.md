@@ -69,9 +69,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-21)
+## NEXT TICK (evening 2026-08-22)
 
 - **Item:** Add a named claim for a second panel-export format beyond `judgekit.panel_export/v1` (or document and lock why only v1 is supported), smallest adapter slice.
-- **Why:** Ordinal quadratic-vs-linear depth is locked; the remaining Next head is panel-export format coverage.
+- **Why:** Gates green; ordinal quadratic-vs-linear depth is on main; remaining Next head is still panel-export format coverage — no new product scope.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py`
 
