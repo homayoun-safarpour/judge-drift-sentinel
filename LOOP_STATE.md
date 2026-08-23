@@ -75,9 +75,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-23)
+## NEXT TICK (evening 2026-08-23)
 
 - **Item:** Named claim locking adapter unsupported-schema `ValueError` text to the same v1-only / bare-ratings escape hatch as `import-judgekit --help`.
-- **Why:** Help and parse rejection are claim-tested separately; the error string operators see at runtime should stay aligned with both so a wording drift cannot reopen a false second-format promise.
+- **Why:** Gates green; today's help-text claim is on main; remaining enrichment is aligning the runtime `ValueError` operators see with that gate — no new product scope.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py`
 
