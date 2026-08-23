@@ -122,3 +122,8 @@ locks `import-judgekit --help` to the v1-only schema gate: panel help cites
 `judgekit.panel_export/v1`, unknown schema_version rejected, bare ratings +
 `--human-labels` still documented. README judgekit section cites the claim.
 70 tests green, ruff clean.
+
+## 2026-08-23 — evening HOLD
+
+HOLD: gates green on main (CI 32627227042); NEXT TICK refreshed to evening
+2026-08-23 (unsupported-schema ValueError text claim). No ship.
