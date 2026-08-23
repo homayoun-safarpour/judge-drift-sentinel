@@ -164,6 +164,31 @@ def test_unsupported_panel_schema_version_is_rejected():
     assert panel.schema_version == SCHEMA_VERSION
 
 
+def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
+    """Named claim: import-judgekit --help states the v1-only schema gate.
+
+    Locks CLI help so operators see the same contract as
+    ``test_unsupported_panel_schema_version_is_rejected``: enveloped panels
+    accept only ``judgekit.panel_export/v1`` (unknown schema_version rejected);
+    bare ratings remain allowed when ``--human-labels`` supplies gold.
+    """
+    with pytest.raises(SystemExit) as excinfo:
+        main(["import-judgekit", "--help"])
+    assert excinfo.value.code == 0
+    help_text = capsys.readouterr().out
+    # argparse wraps long --panel help; collapse whitespace for phrase locks.
+    help_flat = " ".join(help_text.split())
+
+    assert SCHEMA_VERSION in help_flat
+    assert "unknown schema_version" in help_flat
+    assert "rejected" in help_flat
+    assert "bare ratings" in help_flat
+    assert "--human-labels" in help_flat
+    # --panel help must not advertise a second envelope version.
+    assert "panel_export/v2" not in help_flat
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+
+
 def test_import_judgekit_cli_locks_panel_envelope_and_documented_flags(tmp_path, capsys):
     """Named claim: example panel fields and documented import-judgekit flags round-trip.
 

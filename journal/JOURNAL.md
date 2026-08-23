@@ -113,3 +113,12 @@ Adapter now rejects enveloped panels whose `schema_version` is not
 `tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`.
 README + `import-judgekit` help state v1-only; bare ratings + gold remain
 supported. 69 tests green, ruff clean.
+
+## 2026-08-23 — import-judgekit --help v1-only claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`
+locks `import-judgekit --help` to the v1-only schema gate: panel help cites
+`judgekit.panel_export/v1`, unknown schema_version rejected, bare ratings +
+`--human-labels` still documented. README judgekit section cites the claim.
+70 tests green, ruff clean.

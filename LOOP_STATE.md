@@ -40,10 +40,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_agreement.py::test_quadratic_penalizes_far_misses_more_than_linear`.
 - [x] Document and lock that only `judgekit.panel_export/v1` (plus bare ratings + gold) is supported; reject unknown schema_version (cost: S) (touched: 2026-08-22)
   - Done: `tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`.
+- [x] Named claim locking `import-judgekit --help` to the v1-only schema gate (cost: S) (touched: 2026-08-23)
+  - Done: `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`.
 - Optional later: more panel-export formats beyond `judgekit.panel_export/v1` (when a real second producer exists).
 
 ## Maintenance log
 
+- 2026-08-23: import-judgekit help claim - named test locks `--help` to v1-only / unknown schema_version rejected / bare ratings + `--human-labels`; README cites the claim; pytest 70, ruff clean.
 - 2026-08-22: Panel schema gate - adapter rejects unknown `schema_version` values; README + CLI help state v1-only; named claim `test_unsupported_panel_schema_version_is_rejected`; pytest 69, ruff clean.
 - 2026-08-21: Ordinal kappa depth - named claim that quadratic opens a larger near-vs-far gap than linear on the same pair; README ordinal flags cite the test; pytest 68, ruff clean.
 - 2026-08-20: Loop-engine gate audit - named claims lock README remapper table, documented tick/state paths, `examples/LOOP_STATE.md` snippet alignment, `_TRUSTWORTHY` remapper, and STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits; pytest 67, ruff clean.
@@ -72,9 +75,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-22)
+## NEXT TICK (daily 2026-08-23)
 
-- **Item:** Named claim locking `import-judgekit --help` text to the v1-only schema gate (unknown schema_version rejected; bare ratings + gold still allowed).
-- **Why:** Adapter rejection is locked; CLI help was updated in the same slice and should be claim-tested so help text cannot drift from the gate.
+- **Item:** Named claim locking adapter unsupported-schema `ValueError` text to the same v1-only / bare-ratings escape hatch as `import-judgekit --help`.
+- **Why:** Help and parse rejection are claim-tested separately; the error string operators see at runtime should stay aligned with both so a wording drift cannot reopen a false second-format promise.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py`
 
