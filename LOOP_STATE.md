@@ -81,3 +81,33 @@ Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 fa
 - **Why:** Help and parse rejection are claim-tested separately; the error string operators see at runtime should stay aligned with both so a wording drift cannot reopen a false second-format promise.
 - **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py`
 
+## SUNDAY CLOSE (2026-08-23)
+
+Usefulness gate for the public week repo `judge-drift-sentinel` (closed Mon 2026-08-24 UTC).
+
+| Signal | Result | Evidence |
+| --- | --- | --- |
+| CI (3.10 / 3.11 / 3.12) | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/32627227042 |
+| Local pytest + ruff | PASS | `ruff check src tests` clean; `pytest -q` -> 70 passed |
+| Claim still true? | YES | Named claims hold: frozen-anchor JUDGE_DRIFT, history slow decay, drifting fixture, judgekit adapter + v1 schema gate + `--help` lock, loop-engine gate docs, weekly rescore workflow, packaging `.[dev]` |
+| Example still runnable? | YES | `baseline` then `check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833 -> 0.333) |
+| Release gate table | PASS | Unchanged; PyPI `0.1.0` claim still documented |
+
+Week boundary: W1–W8 + queued Next increments through 2026-08-23 help-lock are done. No field/employer demand claimed. No private research content in this close.
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge scoreboard moves after a silent provider update, teams still cannot tell judge drift from a real system regression — so they roll back healthy deploys or chase noise.
+2. `judge-drift-sentinel` freezes a small human-labeled anchor set and runs a zero-LLM `drift-sentinel check`: STABLE / SYSTEM_CHANGE / JUDGE_DRIFT from score files you already have.
+3. Public worked example stays honest: baseline kappa 0.833 → current 0.333 exits 2 with JUDGE_DRIFT when the judge pin slips to `-latest`.
+4. This week locked the judgekit bridge to `judgekit.panel_export/v1` only (unknown schema_version fails closed; `--help` claim-tested) so the adapter cannot quietly promise a second format.
+5. Try path: `pip install judge-drift-sentinel` or `pip install -e ".[dev]"`, then the README Quickstart on the repo examples — CI green on 3.10/3.11/3.12.
+
+## NEXT TICK (sunday 2026-08-23)
+
+- **Scaffold / retarget:** Monday active public week repo remains `homayoun-safarpour/judge-drift-sentinel` @ `main` (no retarget).
+- **Item:** Named claim locking adapter unsupported-schema `ValueError` text to the same v1-only / bare-ratings escape hatch as `import-judgekit --help` (carried from daily 2026-08-23).
+- **Why:** Help and parse-rejection claims can drift apart; operators who hit a bad panel need the runtime error to restate the same contract.
+- **Verify:** `python -m ruff check src tests && python -m pytest -q tests/test_adapter.py`
+- **Defer:** Extra panel-export formats beyond v1 — only when a real second producer exists.
+
