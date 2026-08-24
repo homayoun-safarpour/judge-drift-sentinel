@@ -131,3 +131,8 @@ locks the adapter unsupported-schema `ValueError` text to the same v1-only /
 omit-schema / bare ratings + human_labels escape hatch as
 `import-judgekit --help`. README judgekit section cites the claim.
 71 tests green, ruff clean.
+
+## 2026-08-24 — evening HOLD
+
+HOLD: gates green on main (CI 32704411774); NEXT TICK refreshed to evening
+2026-08-24 (unrecognized-panel ValueError text claim). No ship.
