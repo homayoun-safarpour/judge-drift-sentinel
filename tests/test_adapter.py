@@ -164,6 +164,37 @@ def test_unsupported_panel_schema_version_is_rejected():
     assert panel.schema_version == SCHEMA_VERSION
 
 
+def test_unsupported_schema_error_locks_v1_only_escape_hatch():
+    """Named claim: unsupported-schema ValueError matches the help escape hatch.
+
+    Locks the parse-time error string so operators see the same v1-only /
+    bare-ratings contract as ``import-judgekit --help``
+    (``test_import_judgekit_help_locks_v1_only_schema_gate``): only
+    ``judgekit.panel_export/v1`` is supported; escape by omitting
+    schema_version on a v1-shaped envelope, or bare ratings + human_labels.
+    """
+    with pytest.raises(ValueError) as excinfo:
+        parse_panel_dict(
+            {
+                "schema_version": "judgekit.panel_export/v2",
+                "human_labels": {"a01": "pass"},
+                "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+            }
+        )
+    err = " ".join(str(excinfo.value).split())
+
+    assert "unsupported panel schema_version" in err
+    assert SCHEMA_VERSION in err
+    assert f"only {SCHEMA_VERSION} is supported" in err
+    assert "omit schema_version" in err
+    assert "bare ratings" in err
+    assert "human_labels" in err
+    # Rejected value may appear in the message; must not list it as supported.
+    supported_clause = err.split(";", 1)[-1]
+    assert "panel_export/v2" not in supported_clause
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

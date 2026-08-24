@@ -122,3 +122,12 @@ locks `import-judgekit --help` to the v1-only schema gate: panel help cites
 `judgekit.panel_export/v1`, unknown schema_version rejected, bare ratings +
 `--human-labels` still documented. README judgekit section cites the claim.
 70 tests green, ruff clean.
+
+## 2026-08-24 — unsupported-schema ValueError escape-hatch claim
+
+Named claim
+`tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`
+locks the adapter unsupported-schema `ValueError` text to the same v1-only /
+omit-schema / bare ratings + human_labels escape hatch as
+`import-judgekit --help`. README judgekit section cites the claim.
+71 tests green, ruff clean.
