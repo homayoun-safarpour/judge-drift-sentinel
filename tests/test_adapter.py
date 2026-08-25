@@ -195,6 +195,29 @@ def test_unsupported_schema_error_locks_v1_only_escape_hatch():
     assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
 
 
+def test_unrecognized_panel_error_locks_v1_only_escape_hatch():
+    """Named claim: unrecognized-panel ValueError matches the v1-only contract.
+
+    Malformed panel JSON takes a different raise path than unknown
+    schema_version. Locks that message to the same v1-only / bare-ratings
+    escape hatch as ``test_unsupported_schema_error_locks_v1_only_escape_hatch``
+    and ``test_import_judgekit_help_locks_v1_only_schema_gate`` so a wording
+    drift cannot reopen a false second-format promise on this path.
+    """
+    with pytest.raises(ValueError) as excinfo:
+        parse_panel_dict({"not_a_panel": True, "items": []})
+    err = " ".join(str(excinfo.value).split())
+
+    assert "unrecognized panel JSON" in err
+    assert SCHEMA_VERSION in err
+    assert f"only {SCHEMA_VERSION} is supported" in err
+    assert "bare ratings" in err
+    assert "human_labels" in err
+    # Must not advertise a second envelope version on this path either.
+    assert "panel_export/v2" not in err
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

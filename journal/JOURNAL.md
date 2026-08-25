@@ -131,3 +131,13 @@ locks the adapter unsupported-schema `ValueError` text to the same v1-only /
 omit-schema / bare ratings + human_labels escape hatch as
 `import-judgekit --help`. README judgekit section cites the claim.
 71 tests green, ruff clean.
+
+## 2026-08-25 — unrecognized-panel ValueError escape-hatch claim
+
+Named claim
+`tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`
+locks the adapter unrecognized-panel `ValueError` text to the same v1-only /
+bare ratings + human_labels escape hatch as the unsupported-schema path and
+`import-judgekit --help`. Malformed-panel message now interpolates
+`SCHEMA_VERSION`. README judgekit section cites the claim.
+72 tests green, ruff clean.

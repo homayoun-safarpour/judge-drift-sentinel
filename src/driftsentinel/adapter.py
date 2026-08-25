@@ -147,9 +147,10 @@ def parse_panel_dict(
         )
 
     raise ValueError(
-        "unrecognized panel JSON: expected judgekit.panel_export/v1 "
-        "({schema_version, human_labels, ratings}; only that schema_version "
-        "is supported) or bare ratings {item: {judge: [labels...]}}"
+        f"unrecognized panel JSON: expected {SCHEMA_VERSION} "
+        f"({{schema_version, human_labels, ratings}}; only {SCHEMA_VERSION} "
+        f"is supported) or bare ratings + human_labels "
+        f"{{item: {{judge: [labels...]}}}}"
     )
 
 
