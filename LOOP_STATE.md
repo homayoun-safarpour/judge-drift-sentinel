@@ -46,10 +46,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`.
 - [x] Named claim locking unrecognized-panel `ValueError` text to the same v1-only / bare-ratings contract as the unsupported-schema error and `import-judgekit --help` (cost: S) (touched: 2026-08-25)
   - Done: `tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`.
+- [x] Named claim that unsupported-schema and unrecognized-panel `ValueError` strings share the same operator-facing phrase set (`only {SCHEMA_VERSION} is supported`, `bare ratings`, `human_labels`) (cost: S) (touched: 2026-08-26)
+  - Done: `tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`.
 - Optional later: more panel-export formats beyond `judgekit.panel_export/v1` (when a real second producer exists).
 
 ## Maintenance log
 
+- 2026-08-26: shared escape-hatch phrase claim - named test asserts unsupported-schema and unrecognized-panel ValueErrors both carry `only {SCHEMA_VERSION} is supported`, `bare ratings`, and `human_labels`; README cites the claim; pytest 73, ruff clean.
 - 2026-08-25: unrecognized-panel ValueError claim - named test locks malformed-panel parse error to v1-only / bare ratings + human_labels escape hatch aligned with unsupported-schema and `--help`; README cites the claim; pytest 72, ruff clean.
 - 2026-08-24: unsupported-schema ValueError claim - named test locks parse error text to v1-only / omit-schema / bare ratings + human_labels escape hatch aligned with `--help`; README cites the claim; pytest 71, ruff clean.
 - 2026-08-23: import-judgekit help claim - named test locks `--help` to v1-only / unknown schema_version rejected / bare ratings + `--human-labels`; README cites the claim; pytest 70, ruff clean.
@@ -81,9 +84,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-25)
+## NEXT TICK (daily 2026-08-26)
 
-- **Item:** Named claim that unsupported-schema and unrecognized-panel `ValueError` strings share the same operator-facing phrase set (`only {SCHEMA_VERSION} is supported`, `bare ratings`, `human_labels`) so the two raise paths cannot drift apart independently.
-- **Why:** Each path is claim-locked alone; a shared-phrase regression keeps the v1-only / bare-ratings contract from splitting if only one message is edited.
+- **Item:** Named claim that `import-judgekit --help` shares the same operator-facing phrase set (`only {SCHEMA_VERSION} is supported` / v1 citation, `bare ratings`, and human-labels / `--human-labels`) with both unsupported-schema and unrecognized-panel `ValueError` strings, so help and raise paths cannot drift apart independently.
+- **Why:** The two raise paths are now cross-locked; help is still only claim-locked alone, so a help-only edit could silently diverge from the shared escape hatch.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

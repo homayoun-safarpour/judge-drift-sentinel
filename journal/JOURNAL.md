@@ -141,3 +141,12 @@ bare ratings + human_labels escape hatch as the unsupported-schema path and
 `import-judgekit --help`. Malformed-panel message now interpolates
 `SCHEMA_VERSION`. README judgekit section cites the claim.
 72 tests green, ruff clean.
+
+## 2026-08-26 — shared escape-hatch phrase claim
+
+Named claim
+`tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`
+asserts unsupported-schema and unrecognized-panel `ValueError` strings both
+carry the shared operator-facing phrases `only {SCHEMA_VERSION} is supported`,
+`bare ratings`, and `human_labels`, so one path cannot drift from the other.
+README judgekit section cites the claim. 73 tests green, ruff clean.

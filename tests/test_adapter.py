@@ -218,6 +218,38 @@ def test_unrecognized_panel_error_locks_v1_only_escape_hatch():
     assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
 
 
+def test_schema_and_unrecognized_errors_share_escape_hatch_phrases():
+    """Named claim: both raise paths share the operator-facing phrase set.
+
+    Each path is claim-locked alone. This regression asserts the shared
+    phrases (``only {SCHEMA_VERSION} is supported``, ``bare ratings``,
+    ``human_labels``) appear in both ValueError strings so editing one
+    message cannot silently split the v1-only / bare-ratings contract.
+    """
+    with pytest.raises(ValueError) as unsupported:
+        parse_panel_dict(
+            {
+                "schema_version": "judgekit.panel_export/v2",
+                "human_labels": {"a01": "pass"},
+                "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+            }
+        )
+    with pytest.raises(ValueError) as unrecognized:
+        parse_panel_dict({"not_a_panel": True, "items": []})
+
+    unsupported_err = " ".join(str(unsupported.value).split())
+    unrecognized_err = " ".join(str(unrecognized.value).split())
+    shared = (
+        f"only {SCHEMA_VERSION} is supported",
+        "bare ratings",
+        "human_labels",
+    )
+    for phrase in shared:
+        assert phrase in unsupported_err
+        assert phrase in unrecognized_err
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
