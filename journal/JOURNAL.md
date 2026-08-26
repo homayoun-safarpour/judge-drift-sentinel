@@ -141,3 +141,9 @@ bare ratings + human_labels escape hatch as the unsupported-schema path and
 `import-judgekit --help`. Malformed-panel message now interpolates
 `SCHEMA_VERSION`. README judgekit section cites the claim.
 72 tests green, ruff clean.
+
+## 2026-08-26 — evening HOLD
+
+HOLD. Gates green (CI 32824551970 on main `4632a81`). Evening NEXT TICK keeps
+shared-phrase lock between unsupported-schema and unrecognized-panel
+ValueError paths — enrichment only, no new producer format.

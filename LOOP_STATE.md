@@ -81,7 +81,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-25)
+## NEXT TICK (evening 2026-08-26)
 
 - **Item:** Named claim that unsupported-schema and unrecognized-panel `ValueError` strings share the same operator-facing phrase set (`only {SCHEMA_VERSION} is supported`, `bare ratings`, `human_labels`) so the two raise paths cannot drift apart independently.
 - **Why:** Each path is claim-locked alone; a shared-phrase regression keeps the v1-only / bare-ratings contract from splitting if only one message is edited.
