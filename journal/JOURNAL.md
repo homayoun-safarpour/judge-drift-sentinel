@@ -150,3 +150,9 @@ asserts unsupported-schema and unrecognized-panel `ValueError` strings both
 carry the shared operator-facing phrases `only {SCHEMA_VERSION} is supported`,
 `bare ratings`, and `human_labels`, so one path cannot drift from the other.
 README judgekit section cites the claim. 73 tests green, ruff clean.
+
+## 2026-08-27 — evening HOLD
+
+HOLD. Gates green (CI 32945778146 on main `d644a52`). Evening NEXT TICK keeps
+help ↔ raise-path shared escape-hatch phrase lock — enrichment only, no new
+producer format.
