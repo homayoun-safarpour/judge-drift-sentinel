@@ -84,7 +84,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-26)
+## NEXT TICK (evening 2026-08-27)
 
 - **Item:** Named claim that `import-judgekit --help` shares the same operator-facing phrase set (`only {SCHEMA_VERSION} is supported` / v1 citation, `bare ratings`, and human-labels / `--human-labels`) with both unsupported-schema and unrecognized-panel `ValueError` strings, so help and raise paths cannot drift apart independently.
 - **Why:** The two raise paths are now cross-locked; help is still only claim-locked alone, so a help-only edit could silently diverge from the shared escape hatch.
