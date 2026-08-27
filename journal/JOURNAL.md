@@ -150,3 +150,13 @@ asserts unsupported-schema and unrecognized-panel `ValueError` strings both
 carry the shared operator-facing phrases `only {SCHEMA_VERSION} is supported`,
 `bare ratings`, and `human_labels`, so one path cannot drift from the other.
 README judgekit section cites the claim. 73 tests green, ruff clean.
+
+## 2026-08-27 — help+raise shared escape-hatch claim
+
+Named claim
+`tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`
+asserts `import-judgekit --help` and both unsupported-schema /
+unrecognized-panel `ValueError` strings share SCHEMA_VERSION / v1 citation,
+`bare ratings`, and human-labels / `--human-labels`, so help cannot drift
+from the raise paths independently. README judgekit section cites the claim.
+74 tests green, ruff clean.

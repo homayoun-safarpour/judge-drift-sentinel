@@ -250,6 +250,54 @@ def test_schema_and_unrecognized_errors_share_escape_hatch_phrases():
     assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
 
 
+def test_help_and_raise_paths_share_escape_hatch_phrases(capsys):
+    """Named claim: help and both raise paths share the escape-hatch phrase set.
+
+    Raise paths are cross-locked alone
+    (``test_schema_and_unrecognized_errors_share_escape_hatch_phrases``).
+    Help is claim-locked alone
+    (``test_import_judgekit_help_locks_v1_only_schema_gate``). This
+    regression asserts the shared operator-facing contract cannot drift
+    between help and either raise path: SCHEMA_VERSION / v1 citation,
+    ``bare ratings``, and human-labels / ``--human-labels``.
+    """
+    with pytest.raises(SystemExit) as help_exc:
+        main(["import-judgekit", "--help"])
+    assert help_exc.value.code == 0
+    help_flat = " ".join(capsys.readouterr().out.split())
+
+    with pytest.raises(ValueError) as unsupported:
+        parse_panel_dict(
+            {
+                "schema_version": "judgekit.panel_export/v2",
+                "human_labels": {"a01": "pass"},
+                "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+            }
+        )
+    with pytest.raises(ValueError) as unrecognized:
+        parse_panel_dict({"not_a_panel": True, "items": []})
+
+    unsupported_err = " ".join(str(unsupported.value).split())
+    unrecognized_err = " ".join(str(unrecognized.value).split())
+
+    # v1 citation on help; only-supported clause on both raise paths.
+    assert SCHEMA_VERSION in help_flat
+    for err in (unsupported_err, unrecognized_err):
+        assert SCHEMA_VERSION in err
+        assert f"only {SCHEMA_VERSION} is supported" in err
+
+    # bare ratings on all three operator surfaces.
+    for text in (help_flat, unsupported_err, unrecognized_err):
+        assert "bare ratings" in text
+
+    # human-labels: CLI flag in help; field name in raise paths.
+    assert "--human-labels" in help_flat
+    for err in (unsupported_err, unrecognized_err):
+        assert "human_labels" in err
+
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
