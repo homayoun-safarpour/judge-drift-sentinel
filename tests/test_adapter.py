@@ -298,6 +298,57 @@ def test_help_and_raise_paths_share_escape_hatch_phrases(capsys):
     assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
 
 
+def test_import_judgekit_cli_stderr_shares_escape_hatch_phrases(tmp_path, capsys):
+    """Named claim: CLI stderr surfaces shared escape-hatch phrases and exits 1.
+
+    Help and both library raise paths are three-way locked
+    (``test_help_and_raise_paths_share_escape_hatch_phrases``). This claim
+    locks the ``import-judgekit`` CLI error path: unsupported-schema and
+    unrecognized panel files print the shared phrases
+    (``only {SCHEMA_VERSION} is supported``, ``bare ratings``,
+    ``human_labels``) on stderr and exit 1, so CLI wrapping cannot diverge
+    from the library messages.
+    """
+    shared = (
+        f"only {SCHEMA_VERSION} is supported",
+        "bare ratings",
+        "human_labels",
+    )
+    cases = (
+        {
+            "schema_version": "judgekit.panel_export/v2",
+            "human_labels": {"a01": "pass"},
+            "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+        },
+        {"not_a_panel": True, "items": []},
+    )
+    for i, payload in enumerate(cases):
+        panel_path = tmp_path / f"bad_panel_{i}.json"
+        panel_path.write_text(json.dumps(payload), encoding="utf-8")
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(tmp_path / f"anchors_{i}.jsonl"),
+                "--run-out",
+                str(tmp_path / f"run_{i}.json"),
+            ]
+        )
+        captured = capsys.readouterr()
+        err_flat = " ".join(captured.err.split())
+        assert code == 1
+        assert "error:" in err_flat
+        for phrase in shared:
+            assert phrase in err_flat
+        assert captured.out == ""
+
+    assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

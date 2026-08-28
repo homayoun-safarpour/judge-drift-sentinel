@@ -160,3 +160,13 @@ unrecognized-panel `ValueError` strings share SCHEMA_VERSION / v1 citation,
 `bare ratings`, and human-labels / `--human-labels`, so help cannot drift
 from the raise paths independently. README judgekit section cites the claim.
 74 tests green, ruff clean.
+
+## 2026-08-28 — import-judgekit CLI stderr escape-hatch claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`
+asserts `import-judgekit` prints the shared escape-hatch phrases
+(`only {SCHEMA_VERSION} is supported`, `bare ratings`, `human_labels`) on
+stderr and exits 1 for unsupported-schema and unrecognized panel files, so
+the CLI error path cannot diverge from the library raise paths. README
+judgekit section cites the claim. 75 tests green, ruff clean.
