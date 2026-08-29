@@ -349,6 +349,40 @@ def test_import_judgekit_cli_stderr_shares_escape_hatch_phrases(tmp_path, capsys
     assert frozenset({SCHEMA_VERSION}) == SUPPORTED_SCHEMA_VERSIONS
 
 
+def test_import_judgekit_cli_rejects_malformed_panel_json(tmp_path, capsys):
+    """Named claim: CLI rejects malformed panel JSON with exit 1 and error: stderr.
+
+    ValueError escape-hatch surfaces (library + help + CLI stderr) are locked.
+    This claim locks the remaining ``main()`` catch branch for panel load:
+    ``JSONDecodeError`` on malformed panel JSON must exit 1 with an
+    ``error:`` stderr line, never succeed silently or dump a traceback.
+    """
+    panel_path = tmp_path / "malformed_panel.json"
+    panel_path.write_text("{not valid json", encoding="utf-8")
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(tmp_path / "anchors.jsonl"),
+            "--run-out",
+            str(tmp_path / "run.json"),
+        ]
+    )
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert code == 1
+    assert "error:" in err_flat
+    assert "Traceback" not in captured.err
+    assert captured.out == ""
+    # Outputs must not be created on parse failure.
+    assert not (tmp_path / "anchors.jsonl").exists()
+    assert not (tmp_path / "run.json").exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

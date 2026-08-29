@@ -52,10 +52,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`.
 - [x] Named claim that `import-judgekit` CLI stderr surfaces the shared escape-hatch phrases (`only {SCHEMA_VERSION} is supported`, `bare ratings`, `human_labels`) and exits 1 when the panel is unsupported-schema or unrecognized (cost: S) (touched: 2026-08-28)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`.
+- [x] Named claim that `import-judgekit` CLI rejects malformed panel JSON (`JSONDecodeError`) with exit 1 and an `error:` stderr line (cost: S) (touched: 2026-08-29)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`.
 - Optional later: more panel-export formats beyond `judgekit.panel_export/v1` (when a real second producer exists).
 
 ## Maintenance log
 
+- 2026-08-29: import-judgekit CLI malformed-JSON claim - named test asserts malformed panel JSON prints `error:` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 76, ruff clean.
 - 2026-08-28: import-judgekit CLI stderr escape-hatch claim - named test asserts unsupported-schema and unrecognized panel files print shared phrases on stderr and exit 1; README cites the claim; pytest 75, ruff clean.
 - 2026-08-27: help+raise shared escape-hatch claim - named test asserts `import-judgekit --help` and both ValueError paths share SCHEMA_VERSION / v1 citation, `bare ratings`, and human-labels / `--human-labels`; README cites the claim; pytest 74, ruff clean.
 - 2026-08-26: shared escape-hatch phrase claim - named test asserts unsupported-schema and unrecognized-panel ValueErrors both carry `only {SCHEMA_VERSION} is supported`, `bare ratings`, and `human_labels`; README cites the claim; pytest 73, ruff clean.
@@ -90,9 +93,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-28)
+## NEXT TICK (daily 2026-08-29)
 
-- **Item:** Named claim that `import-judgekit` CLI rejects malformed panel JSON (`JSONDecodeError`) with exit 1 and an `error:` stderr line, so the CLI JSON parse failure path cannot silently succeed or dump a traceback.
-- **Why:** ValueError escape-hatch surfaces (library + help + CLI stderr) are locked; malformed JSON is the remaining `main()` catch branch for panel load that still lacks a named claim.
+- **Item:** Named claim that `import-judgekit` CLI rejects a missing panel file (`OSError` / `FileNotFoundError`) with exit 1 and an `error:` stderr line, so the remaining `main()` catch branch for panel load cannot silently succeed or dump a traceback.
+- **Why:** JSONDecodeError and ValueError CLI surfaces are locked; missing-path `OSError` is the last `main()` catch type for panel load that still lacks a named claim.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

@@ -170,3 +170,12 @@ asserts `import-judgekit` prints the shared escape-hatch phrases
 stderr and exits 1 for unsupported-schema and unrecognized panel files, so
 the CLI error path cannot diverge from the library raise paths. README
 judgekit section cites the claim. 75 tests green, ruff clean.
+
+## 2026-08-29 — import-judgekit CLI malformed-JSON claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line (no
+traceback, no output files) when the panel file is malformed JSON, so the
+`JSONDecodeError` catch in `main()` cannot silently succeed. README
+judgekit section cites the claim. 76 tests green, ruff clean.
