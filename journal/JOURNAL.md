@@ -170,3 +170,9 @@ asserts `import-judgekit` prints the shared escape-hatch phrases
 stderr and exits 1 for unsupported-schema and unrecognized panel files, so
 the CLI error path cannot diverge from the library raise paths. README
 judgekit section cites the claim. 75 tests green, ruff clean.
+
+## 2026-08-29 — evening HOLD
+
+HOLD. Gates green (CI 33154015057 on main `a5f4405`). Evening NEXT TICK keeps
+malformed-panel JSON CLI error-path claim — enrichment only, no new producer
+format.
