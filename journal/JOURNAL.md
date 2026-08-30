@@ -179,3 +179,12 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line (no
 traceback, no output files) when the panel file is malformed JSON, so the
 `JSONDecodeError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 76 tests green, ruff clean.
+
+## 2026-08-30 — import-judgekit CLI missing-panel claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`
+asserts `import-judgekit` exits 1 with an `error:` stderr line (no
+traceback, no output files) when `--panel` points at a missing path, so the
+`OSError` catch in `main()` cannot silently succeed. README judgekit
+section cites the claim. 77 tests green, ruff clean.

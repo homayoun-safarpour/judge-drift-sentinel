@@ -383,6 +383,41 @@ def test_import_judgekit_cli_rejects_malformed_panel_json(tmp_path, capsys):
     assert not (tmp_path / "run.json").exists()
 
 
+def test_import_judgekit_cli_rejects_missing_panel_file(tmp_path, capsys):
+    """Named claim: CLI rejects a missing panel file with exit 1 and error: stderr.
+
+    ValueError and JSONDecodeError CLI surfaces are locked. This claim locks
+    the remaining ``main()`` catch type for panel load: ``OSError`` /
+    ``FileNotFoundError`` on a missing ``--panel`` path must exit 1 with an
+    ``error:`` stderr line, never succeed silently or dump a traceback.
+    """
+    panel_path = tmp_path / "does_not_exist.json"
+    anchors_out = tmp_path / "anchors.jsonl"
+    run_out = tmp_path / "run.json"
+    assert not panel_path.exists()
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(anchors_out),
+            "--run-out",
+            str(run_out),
+        ]
+    )
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert code == 1
+    assert "error:" in err_flat
+    assert "Traceback" not in captured.err
+    assert captured.out == ""
+    assert not anchors_out.exists()
+    assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
