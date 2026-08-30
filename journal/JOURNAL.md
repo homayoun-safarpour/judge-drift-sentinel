@@ -179,3 +179,9 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line (no
 traceback, no output files) when the panel file is malformed JSON, so the
 `JSONDecodeError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 76 tests green, ruff clean.
+
+## 2026-08-30 — evening HOLD
+
+HOLD. Gates green (CI 33242243931 on main `f271c91`). Evening NEXT TICK keeps
+missing-panel-path CLI error-path claim — enrichment only, no new producer
+format.
