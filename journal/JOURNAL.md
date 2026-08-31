@@ -198,3 +198,9 @@ traceback, no output files) when bare ratings point `--human-labels` at a
 missing path, so the secondary gold `OSError` catch in `main()` cannot
 silently succeed. README judgekit section cites the claim. 78 tests green,
 ruff clean.
+
+## 2026-08-31 — evening HOLD
+
+HOLD. Gates green (CI 33370973254 on main `a6e49d8`). Evening NEXT TICK keeps
+malformed-`--human-labels`-JSON CLI error-path claim — enrichment only, no new
+producer format.
