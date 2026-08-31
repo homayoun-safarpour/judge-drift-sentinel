@@ -105,3 +105,33 @@ Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 fa
 - **Why:** Missing `--panel` and missing `--human-labels` OSError surfaces are locked; malformed gold JSON is the remaining operator footgun on the same `main()` `JSONDecodeError` catch for the secondary path.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
+## SUNDAY CLOSE (2026-08-30)
+
+Usefulness gate for the public week repo `judge-drift-sentinel` (closed Mon 2026-08-31 UTC).
+
+| Signal | Result | Evidence |
+| --- | --- | --- |
+| CI (3.10 / 3.11 / 3.12) | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/33370973254 |
+| Local pytest + ruff | PASS | `ruff check src tests` clean; `pytest -q` -> 78 passed |
+| Claim still true? | YES | Named claims hold: frozen-anchor JUDGE_DRIFT, history slow decay, drifting fixture, judgekit adapter escape-hatch locks through missing panel / missing human-labels CLI surfaces, loop-engine gate docs, weekly rescore workflow, packaging `.[dev]` |
+| Example still runnable? | YES | `baseline` then `check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833 -> 0.333) |
+| Release gate table | PASS | Unchanged; PyPI `0.1.0` claim still documented |
+
+Week boundary: W1–W8 + Next increments through missing-`--human-labels` CLI lock are done. No field/employer demand claimed. No private research content in this close.
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge scoreboard moves after a silent provider update, teams still cannot tell judge drift from a real system regression — so they roll back healthy deploys or chase noise.
+2. `judge-drift-sentinel` freezes a small human-labeled anchor set and runs a zero-LLM `drift-sentinel check`: STABLE / SYSTEM_CHANGE / JUDGE_DRIFT from score files you already have.
+3. Public worked example stays honest: baseline kappa 0.833 → current 0.333 exits 2 with JUDGE_DRIFT when the judge pin slips to `-latest`.
+4. This week finished locking the `import-judgekit` operator surface: shared v1-only / bare-ratings escape-hatch phrases on help + raise + stderr, plus fail-closed exit 1 on malformed panel JSON, missing panel, and missing `--human-labels`.
+5. Try path: `pip install judge-drift-sentinel` or `pip install -e ".[dev]"`, then the README Quickstart on the repo examples — CI green on 3.10/3.11/3.12.
+
+## NEXT TICK (sunday 2026-08-30)
+
+- **Scaffold / retarget:** Monday active public week repo remains `homayoun-safarpour/judge-drift-sentinel` @ `main` (week Mon 2026-08-31 → Sun 2026-09-06; no retarget).
+- **Item:** Named claim that `import-judgekit` CLI rejects malformed `--human-labels` JSON (`JSONDecodeError`) with exit 1 and an `error:` stderr line when bare ratings require separate gold (carried from daily 2026-08-31).
+- **Why:** Panel-path JSONDecodeError and both OSError surfaces are locked; bad gold JSON on the secondary path is the remaining silent-success footgun on the same `main()` catch.
+- **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Defer:** Extra panel-export formats beyond v1 — only when a real second producer exists.
+
