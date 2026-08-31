@@ -99,7 +99,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-31)
+## NEXT TICK (evening 2026-08-31)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects malformed `--human-labels` JSON (`JSONDecodeError`) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the secondary gold path cannot silently succeed on bad gold JSON.
 - **Why:** Missing `--panel` and missing `--human-labels` OSError surfaces are locked; malformed gold JSON is the remaining operator footgun on the same `main()` `JSONDecodeError` catch for the secondary path.
