@@ -188,3 +188,13 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line (no
 traceback, no output files) when `--panel` points at a missing path, so the
 `OSError` catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 77 tests green, ruff clean.
+
+## 2026-08-31 — import-judgekit CLI missing-human-labels claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`
+asserts `import-judgekit` exits 1 with an `error:` stderr line (no
+traceback, no output files) when bare ratings point `--human-labels` at a
+missing path, so the secondary gold `OSError` catch in `main()` cannot
+silently succeed. README judgekit section cites the claim. 78 tests green,
+ruff clean.

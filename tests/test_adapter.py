@@ -418,6 +418,53 @@ def test_import_judgekit_cli_rejects_missing_panel_file(tmp_path, capsys):
     assert not run_out.exists()
 
 
+def test_import_judgekit_cli_rejects_missing_human_labels_file(tmp_path, capsys):
+    """Named claim: CLI rejects a missing --human-labels file with exit 1 and error: stderr.
+
+    Panel-path OSError is locked. This claim locks the secondary gold path on
+    the same ``main()`` ``OSError`` / ``FileNotFoundError`` catch: bare ratings
+    with a missing ``--human-labels`` path must exit 1 with an ``error:``
+    stderr line, never succeed silently or dump a traceback.
+    """
+    panel_path = tmp_path / "ratings.json"
+    panel_path.write_text(
+        json.dumps(
+            {
+                "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                "a02": {"gpt-4o-judge": ["fail", "fail"]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    gold_path = tmp_path / "does_not_exist_gold.json"
+    anchors_out = tmp_path / "anchors.jsonl"
+    run_out = tmp_path / "run.json"
+    assert not gold_path.exists()
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--human-labels",
+            str(gold_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(anchors_out),
+            "--run-out",
+            str(run_out),
+        ]
+    )
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert code == 1
+    assert "error:" in err_flat
+    assert "Traceback" not in captured.err
+    assert captured.out == ""
+    assert not anchors_out.exists()
+    assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
