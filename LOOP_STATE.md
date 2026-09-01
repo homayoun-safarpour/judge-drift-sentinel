@@ -103,7 +103,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (heartbeat 2026-09-01)
+## NEXT TICK (evening 2026-09-01)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects non-object `--human-labels` JSON (top-level array / scalar) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the secondary gold `ValueError` path cannot silently succeed on valid JSON that is not a labels map.
 - **Why:** Missing and malformed `--human-labels` surfaces are locked; a JSON array or scalar still parses but must fail closed via the adapter `human labels must be a JSON object` gate on the same CLI catch.

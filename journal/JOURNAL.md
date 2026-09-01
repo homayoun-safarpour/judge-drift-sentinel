@@ -208,3 +208,9 @@ traceback, no output files) when bare ratings point `--human-labels` at
 malformed JSON, so the secondary gold `JSONDecodeError` catch in `main()`
 cannot silently succeed. README judgekit section cites the claim.
 79 tests green, ruff clean.
+
+## 2026-09-01 — evening HOLD
+
+HOLD. Gates green (CI 33485149822 on main `464ae5d`). Evening NEXT TICK keeps
+non-object-`--human-labels` CLI ValueError claim — enrichment only, no new
+producer format.
