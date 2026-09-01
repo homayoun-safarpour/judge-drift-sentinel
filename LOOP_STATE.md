@@ -58,10 +58,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`.
 - [x] Named claim that `import-judgekit` CLI rejects a missing `--human-labels` file (`OSError` / `FileNotFoundError`) with exit 1 and an `error:` stderr line when bare ratings require separate gold (cost: S) (touched: 2026-08-31)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`.
+- [x] Named claim that `import-judgekit` CLI rejects malformed `--human-labels` JSON (`JSONDecodeError`) with exit 1 and an `error:` stderr line when bare ratings require separate gold (cost: S) (touched: 2026-09-01)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`.
 - Optional later: more panel-export formats beyond `judgekit.panel_export/v1` (when a real second producer exists).
 
 ## Maintenance log
 
+- 2026-09-01: import-judgekit CLI malformed-human-labels claim - named test asserts malformed `--human-labels` JSON (bare ratings) prints `error:` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 79, ruff clean.
 - 2026-08-31: import-judgekit CLI missing-human-labels claim - named test asserts a missing `--human-labels` path (bare ratings) prints `error:` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 78, ruff clean.
 - 2026-08-30: import-judgekit CLI missing-panel claim - named test asserts a missing `--panel` path prints `error:` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 77, ruff clean.
 - 2026-08-29: import-judgekit CLI malformed-JSON claim - named test asserts malformed panel JSON prints `error:` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 76, ruff clean.
@@ -99,9 +102,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-08-31)
+## NEXT TICK (daily 2026-09-01)
 
-- **Item:** Named claim that `import-judgekit` CLI rejects malformed `--human-labels` JSON (`JSONDecodeError`) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the secondary gold path cannot silently succeed on bad gold JSON.
-- **Why:** Missing `--panel` and missing `--human-labels` OSError surfaces are locked; malformed gold JSON is the remaining operator footgun on the same `main()` `JSONDecodeError` catch for the secondary path.
+- **Item:** Named claim that `import-judgekit` CLI rejects non-object `--human-labels` JSON (top-level array / scalar) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the secondary gold `ValueError` path cannot silently succeed on valid JSON that is not a labels map.
+- **Why:** Missing and malformed `--human-labels` surfaces are locked; a JSON array or scalar still parses but must fail closed via the adapter `human labels must be a JSON object` gate on the same CLI catch.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

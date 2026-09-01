@@ -198,3 +198,13 @@ traceback, no output files) when bare ratings point `--human-labels` at a
 missing path, so the secondary gold `OSError` catch in `main()` cannot
 silently succeed. README judgekit section cites the claim. 78 tests green,
 ruff clean.
+
+## 2026-09-01 — import-judgekit CLI malformed-human-labels claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line (no
+traceback, no output files) when bare ratings point `--human-labels` at
+malformed JSON, so the secondary gold `JSONDecodeError` catch in `main()`
+cannot silently succeed. README judgekit section cites the claim.
+79 tests green, ruff clean.
