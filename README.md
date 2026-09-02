@@ -131,12 +131,14 @@ the same v1-only / bare-ratings escape hatch
 `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`,
 `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`).
 Malformed panel JSON, a missing panel file, a missing `--human-labels`
-file, and malformed `--human-labels` JSON (bare ratings needing separate
-gold) fail the same CLI path: exit 1 with an `error:` stderr line
+file, malformed `--human-labels` JSON, and non-object `--human-labels`
+JSON (top-level array / scalar; bare ratings needing separate gold) fail
+the same CLI path: exit 1 with an `error:` stderr line
 (`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`).
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -196,7 +198,8 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`.
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`.
 
 ## CI: weekly anchor re-score
 

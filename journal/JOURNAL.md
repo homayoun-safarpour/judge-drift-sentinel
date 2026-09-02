@@ -208,3 +208,13 @@ traceback, no output files) when bare ratings point `--human-labels` at
 malformed JSON, so the secondary gold `JSONDecodeError` catch in `main()`
 cannot silently succeed. README judgekit section cites the claim.
 79 tests green, ruff clean.
+
+## 2026-09-02 — import-judgekit CLI non-object-human-labels claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`human labels must be a JSON object` (no traceback, no output files) when
+bare ratings point `--human-labels` at a top-level JSON array or scalar, so
+the secondary gold `ValueError` catch in `main()` cannot silently succeed.
+README judgekit section cites the claim. 80 tests green, ruff clean.
