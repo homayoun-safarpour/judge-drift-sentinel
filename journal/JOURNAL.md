@@ -218,3 +218,9 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 bare ratings point `--human-labels` at a top-level JSON array or scalar, so
 the secondary gold `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 80 tests green, ruff clean.
+
+## 2026-09-03 — evening HOLD
+
+HOLD. Gates green (CI 33606906991 on main `8c0ed2f`). Evening NEXT TICK keeps
+nested non-object-`--human-labels` CLI ValueError claim — enrichment only, no
+new producer format.

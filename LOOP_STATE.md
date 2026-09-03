@@ -106,7 +106,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-02)
+## NEXT TICK (evening 2026-09-03)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects nested non-object `--human-labels` JSON (`{"human_labels": [...]}` / `{"human_labels": "x"}`) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the adapter `'human_labels' must be an object` gate cannot silently succeed on a nested gold map that is not an object.
 - **Why:** Top-level array/scalar `--human-labels` is locked; the nested `{human_labels: ...}` shape documented in README still needs the same CLI fail-closed claim on the inner ValueError path.
