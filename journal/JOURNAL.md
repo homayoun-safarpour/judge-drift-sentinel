@@ -218,3 +218,13 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 bare ratings point `--human-labels` at a top-level JSON array or scalar, so
 the secondary gold `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 80 tests green, ruff clean.
+
+## 2026-09-03 — import-judgekit CLI nested-non-object-human-labels claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`'human_labels' must be an object` (no traceback, no output files) when
+bare ratings point `--human-labels` at nested `{human_labels: array|scalar}`
+JSON, so the secondary gold `ValueError` catch in `main()` cannot silently
+succeed. README judgekit section cites the claim. 81 tests green, ruff clean.
