@@ -109,7 +109,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-03)
+## NEXT TICK (evening 2026-09-04)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects empty `--human-labels` JSON (`{}` or `{"human_labels": {}}`) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the adapter `human_labels are empty` gate cannot silently succeed on a gold map with no labels.
 - **Why:** Nested and top-level non-object gold shapes are locked; empty object gold is the remaining ValueError on the same secondary-gold load path before parse succeeds with zero anchors.
