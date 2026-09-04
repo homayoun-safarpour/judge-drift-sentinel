@@ -64,10 +64,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`.
 - [x] Named claim that `import-judgekit` CLI rejects nested non-object `--human-labels` JSON (`{"human_labels": [...]}` / `{"human_labels": "x"}`) with exit 1 and an `error:` stderr line when bare ratings require separate gold (cost: S) (touched: 2026-09-03)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`.
+- [x] Named claim that `import-judgekit` CLI rejects empty `--human-labels` JSON (`{}` or `{"human_labels": {}}`) with exit 1 and an `error:` stderr line when bare ratings require separate gold (cost: S) (touched: 2026-09-04)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-04: import-judgekit CLI empty-human-labels claim - named test asserts empty `{}` / `{"human_labels": {}}` `--human-labels` JSON (bare ratings) prints `error:` + `human_labels are empty` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 82, ruff clean.
 - 2026-09-03: import-judgekit CLI nested-non-object-human-labels claim - named test asserts nested `{human_labels: array|scalar}` `--human-labels` JSON (bare ratings) prints `error:` + `'human_labels' must be an object` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 81, ruff clean.
 - 2026-09-02: import-judgekit CLI non-object-human-labels claim - named test asserts top-level array/scalar `--human-labels` JSON (bare ratings) prints `error:` + `human labels must be a JSON object` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 80, ruff clean.
 - 2026-09-01: heartbeat — OK on malformed-`--human-labels` claim (named test + README + CI 33485040080); deprioritized multi-format panel export; verdict ENRICH; next tick: non-object `--human-labels` ValueError claim.
@@ -109,9 +112,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-03)
+## NEXT TICK (daily 2026-09-04)
 
-- **Item:** Named claim that `import-judgekit` CLI rejects empty `--human-labels` JSON (`{}` or `{"human_labels": {}}`) with exit 1 and an `error:` stderr line when bare ratings require separate gold, so the adapter `human_labels are empty` gate cannot silently succeed on a gold map with no labels.
-- **Why:** Nested and top-level non-object gold shapes are locked; empty object gold is the remaining ValueError on the same secondary-gold load path before parse succeeds with zero anchors.
+- **Item:** Named claim that `import-judgekit` CLI rejects a top-level non-object panel JSON (array / scalar) with exit 1 and an `error:` stderr line, so the adapter `panel JSON must be an object` gate cannot silently succeed when `--panel` is not a JSON object.
+- **Why:** Secondary-gold load failures (missing / malformed / non-object / nested non-object / empty `--human-labels`) are locked; panel-side top-level shape is the next fail-closed surface on the same `main()` catch.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

@@ -228,3 +228,13 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 bare ratings point `--human-labels` at nested `{human_labels: array|scalar}`
 JSON, so the secondary gold `ValueError` catch in `main()` cannot silently
 succeed. README judgekit section cites the claim. 81 tests green, ruff clean.
+
+## 2026-09-04 — import-judgekit CLI empty-human-labels claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`human_labels are empty` (no traceback, no output files) when bare ratings
+point `--human-labels` at `{}` or `{"human_labels": {}}`, so the secondary
+gold empty-map `ValueError` catch in `main()` cannot silently succeed.
+README judgekit section cites the claim. 82 tests green, ruff clean.
