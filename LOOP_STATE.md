@@ -112,7 +112,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-04)
+## NEXT TICK (evening 2026-09-05)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects a top-level non-object panel JSON (array / scalar) with exit 1 and an `error:` stderr line, so the adapter `panel JSON must be an object` gate cannot silently succeed when `--panel` is not a JSON object.
 - **Why:** Secondary-gold load failures (missing / malformed / non-object / nested non-object / empty `--human-labels`) are locked; panel-side top-level shape is the next fail-closed surface on the same `main()` catch.

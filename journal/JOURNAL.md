@@ -238,3 +238,9 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 point `--human-labels` at `{}` or `{"human_labels": {}}`, so the secondary
 gold empty-map `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 82 tests green, ruff clean.
+
+## 2026-09-05 — evening HOLD
+
+HOLD. Gates green (CI 33851843123 on main `213802d`). Evening NEXT TICK keeps
+top-level non-object `--panel` CLI ValueError claim — enrichment only, no new
+producer format.
