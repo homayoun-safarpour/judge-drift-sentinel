@@ -130,15 +130,17 @@ the same v1-only / bare-ratings escape hatch
 `tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`,
 `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`,
 `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`).
-Malformed panel JSON, a missing panel file, a missing `--human-labels`
-file, malformed `--human-labels` JSON, non-object `--human-labels`
-JSON (top-level array / scalar), nested non-object `--human-labels`
-JSON (`{"human_labels": [...]}` / `{"human_labels": "x"}`), and empty
+Malformed panel JSON, a missing panel file, a top-level non-object panel
+JSON (array / scalar), a missing `--human-labels` file, malformed
+`--human-labels` JSON, non-object `--human-labels` JSON (top-level array
+/ scalar), nested non-object `--human-labels` JSON
+(`{"human_labels": [...]}` / `{"human_labels": "x"}`), and empty
 `--human-labels` JSON (`{}` / `{"human_labels": {}}`; bare ratings
 needing separate gold) fail the same CLI path: exit 1 with an `error:`
 stderr line
 (`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
@@ -202,6 +204,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
@@ -369,7 +372,7 @@ loop repairs the scoreboard the moment it stops being trustworthy. Honest
 - **Zero runtime dependencies.** Standard library only.
 - **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
 - **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`, `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`, `tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`, `tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`, `tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`, `tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`, `tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`, `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`, `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`, and `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`. Loop gate remap + tick wiring: `tests/test_loop_engine_gate_docs.py` (remapper table, `examples/LOOP_STATE.md` snippet, STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits).
+- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`, `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`, `tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`, `tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`, `tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`, `tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`, `tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`, `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`, `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`, and `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`. Loop gate remap + tick wiring: `tests/test_loop_engine_gate_docs.py` (remapper table, `examples/LOOP_STATE.md` snippet, STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits).
 
 ## Field alignment
 

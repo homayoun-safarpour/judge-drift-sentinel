@@ -238,3 +238,13 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 point `--human-labels` at `{}` or `{"human_labels": {}}`, so the secondary
 gold empty-map `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 82 tests green, ruff clean.
+
+## 2026-09-05 — import-judgekit CLI non-object-panel claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`panel JSON must be an object` (no traceback, no output files) when
+`--panel` is a top-level JSON array or scalar, so the adapter top-level
+shape `ValueError` catch in `main()` cannot silently succeed. README
+judgekit section cites the claim. 83 tests green, ruff clean.

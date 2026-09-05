@@ -678,6 +678,48 @@ def test_import_judgekit_cli_rejects_empty_human_labels_json(tmp_path, capsys):
         assert not run_out.exists()
 
 
+def test_import_judgekit_cli_rejects_non_object_panel_json(tmp_path, capsys):
+    """Named claim: CLI rejects top-level non-object panel JSON with exit 1.
+
+    Secondary-gold load failures and malformed/missing panel surfaces are
+    locked. This claim locks the adapter ``panel JSON must be an object``
+    gate on the same ``main()`` ValueError catch: a ``--panel`` file whose
+    top-level JSON is an array or scalar must exit 1 with an ``error:``
+    stderr line, never succeed silently or dump a traceback.
+    """
+    cases = (
+        ("array_panel.json", ["a01", "pass"]),
+        ("scalar_panel.json", "just-a-string"),
+    )
+    for name, payload in cases:
+        panel_path = tmp_path / name
+        panel_path.write_text(json.dumps(payload), encoding="utf-8")
+        anchors_out = tmp_path / f"anchors_{name}.jsonl"
+        run_out = tmp_path / f"run_{name}.json"
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(anchors_out),
+                "--run-out",
+                str(run_out),
+            ]
+        )
+        captured = capsys.readouterr()
+        err_flat = " ".join(captured.err.split())
+        assert code == 1
+        assert "error:" in err_flat
+        assert "panel JSON must be an object" in err_flat
+        assert "Traceback" not in captured.err
+        assert captured.out == ""
+        assert not anchors_out.exists()
+        assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
