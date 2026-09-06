@@ -115,9 +115,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-05)
+## NEXT TICK (evening 2026-09-06)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` field is a non-object (array / scalar) with exit 1 and an `error:` stderr line carrying `'ratings' must be a JSON object`, so the adapter ratings-shape gate cannot silently succeed.
-- **Why:** Top-level panel object shape is locked; field-level `ratings` non-object is the next fail-closed surface on the same `main()` ValueError catch.
+- **Why:** Top-level panel object shape is locked (2026-09-05); field-level `ratings` non-object is the next fail-closed surface on the same `main()` ValueError catch — enrichment only, gates green.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
