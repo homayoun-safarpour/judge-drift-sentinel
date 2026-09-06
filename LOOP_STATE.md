@@ -68,10 +68,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`.
 - [x] Named claim that `import-judgekit` CLI rejects a top-level non-object panel JSON (array / scalar) with exit 1 and an `error:` stderr line (cost: S) (touched: 2026-09-05)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`.
+- [x] Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` field is a non-object (array / scalar) with exit 1 and an `error:` stderr line (cost: S) (touched: 2026-09-06)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_json`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-06: import-judgekit CLI non-object-ratings claim - named test asserts panel envelope with array/scalar `ratings` prints `error:` + `'ratings' must be a JSON object` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 84, ruff clean.
 - 2026-09-05: import-judgekit CLI non-object-panel claim - named test asserts top-level array/scalar `--panel` JSON prints `error:` + `panel JSON must be an object` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 83, ruff clean.
 - 2026-09-04: import-judgekit CLI empty-human-labels claim - named test asserts empty `{}` / `{"human_labels": {}}` `--human-labels` JSON (bare ratings) prints `error:` + `human_labels are empty` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 82, ruff clean.
 - 2026-09-03: import-judgekit CLI nested-non-object-human-labels claim - named test asserts nested `{human_labels: array|scalar}` `--human-labels` JSON (bare ratings) prints `error:` + `'human_labels' must be an object` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 81, ruff clean.
@@ -115,9 +118,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-05)
+## NEXT TICK (daily 2026-09-06)
 
-- **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` field is a non-object (array / scalar) with exit 1 and an `error:` stderr line carrying `'ratings' must be a JSON object`, so the adapter ratings-shape gate cannot silently succeed.
-- **Why:** Top-level panel object shape is locked; field-level `ratings` non-object is the next fail-closed surface on the same `main()` ValueError catch.
+- **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `judges` field is a non-object (array / scalar) with exit 1 and an `error:` stderr line carrying `'judges' must be a JSON object when present`, so the adapter judges-shape gate cannot silently succeed.
+- **Why:** Field-level `ratings` non-object is locked; optional `judges` non-object is the next fail-closed surface on the same `parse_panel_dict` / `main()` ValueError catch.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
