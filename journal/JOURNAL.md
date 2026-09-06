@@ -248,3 +248,9 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 `--panel` is a top-level JSON array or scalar, so the adapter top-level
 shape `ValueError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 83 tests green, ruff clean.
+
+## 2026-09-06 — evening HOLD
+
+Gates green on main (CI 33954277505). HOLD feature work; NEXT TICK remains
+enrichment: lock non-object panel `ratings` CLI fail-closed path before any
+new product scope.
