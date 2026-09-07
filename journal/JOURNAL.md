@@ -258,3 +258,14 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 panel envelope sets `ratings` to a JSON array or scalar, so the adapter
 ratings-shape `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 84 tests green, ruff clean.
+
+## 2026-09-07 — import-judgekit CLI non-object-judges claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_judges_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`'judges' must be a JSON object when present` (no traceback, no output
+files) when a panel envelope sets `judges` to a JSON array or scalar, so
+the adapter judges-shape `ValueError` catch in `main()` cannot silently
+succeed. README judgekit section cites the claim. 85 tests green, ruff
+clean.
