@@ -121,9 +121,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-07)
+## NEXT TICK (evening 2026-09-07)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` object is empty (`{}`) with exit 1 and an `error:` stderr line carrying `ratings are empty`, so the adapter empty-ratings `_normalize_ratings` ValueError catch in `main()` cannot silently succeed.
-- **Why:** Field-level non-object `judges` is locked; empty `ratings` is the next fail-closed surface on the same parse path (parallel to the empty `--human-labels` claim).
+- **Why:** Field-level non-object `judges` is locked (2026-09-07); empty `ratings` is the next fail-closed surface on the same parse path (parallel to the empty `--human-labels` claim) — enrichment only, gates green.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
