@@ -121,8 +121,26 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-07)
+## SUNDAY CLOSE (2026-09-06)
 
+- **CI status:** PASS on main (Python 3.10/3.11/3.12) — https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/34098439740
+- **Local gate:** `ruff check src tests` clean; `pytest -q` → 85 passed (2026-09-07 Sunday usefulness pass)
+- **Claim still true?** Yes. Release gate rows stay PASS. Product claim holds: when judge agreement with frozen human anchors falls, `drift-sentinel check` returns JUDGE_DRIFT (exit 2) so live-metric movement is treated as untrustworthy.
+- **Example still runnable?** Yes. `baseline` + `check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` → JUDGE_DRIFT exit 2 (kappa 0.833 → 0.333; judge pin `frontier-4-2026-05-01@9f2c1a` → `frontier-4-latest@9f2c1a`).
+- **Week usefulness (public):** Adapter fail-closed path locked for non-object panel / ratings / judges plus empty and malformed human-labels shapes; README claims cite named tests; multi-format panel export remains deprioritized (no second real producer).
+- **Week boundary:** Active public week repo stays `homayoun-safarpour/judge-drift-sentinel` @ main (retarget confirmed 2026-09-07).
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge eval score drops after a provider model update, the dashboard cannot tell you whether the system regressed or the judge quietly moved.
+2. Freeze a small human-labeled anchor set once; re-score it with every run; compare agreement to a pinned baseline — zero extra model calls.
+3. `drift-sentinel check` returns STABLE / SYSTEM_CHANGE / JUDGE_DRIFT with CI exit codes so a broken scoreboard fails the gate before you roll back a healthy deploy.
+4. This week hardened `import-judgekit` so malformed panel shapes (non-object panel / ratings / judges, empty or bad human-labels) fail closed with exit 1 and an `error:` line instead of writing half-valid files.
+5. Evidence: CI green on 3.10–3.12, 85 pytest, worked example JUDGE_DRIFT (kappa 0.833→0.333). Public: `pip install judge-drift-sentinel` · github.com/homayoun-safarpour/judge-drift-sentinel
+
+## NEXT TICK (sunday 2026-09-06)
+
+- **Scaffold / retarget:** Monday week boundary — stay on `judge-drift-sentinel` @ main; no repo switch.
 - **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` object is empty (`{}`) with exit 1 and an `error:` stderr line carrying `ratings are empty`, so the adapter empty-ratings `_normalize_ratings` ValueError catch in `main()` cannot silently succeed.
 - **Why:** Field-level non-object `judges` is locked; empty `ratings` is the next fail-closed surface on the same parse path (parallel to the empty `--human-labels` claim).
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
