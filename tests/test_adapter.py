@@ -823,6 +823,51 @@ def test_import_judgekit_cli_rejects_non_object_judges_json(tmp_path, capsys):
         assert not run_out.exists()
 
 
+def test_import_judgekit_cli_rejects_empty_ratings_json(tmp_path, capsys):
+    """Named claim: CLI rejects empty panel ``ratings`` object with exit 1.
+
+    Field-level non-object ``judges`` is locked. This claim locks the adapter
+    ``ratings are empty`` gate on the same ``main()`` ValueError catch: a panel
+    envelope whose ``ratings`` field is ``{}`` must exit 1 with an ``error:``
+    stderr line, never succeed silently or dump a traceback.
+    """
+    panel_path = tmp_path / "empty_ratings.json"
+    panel_path.write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": {"a01": "pass"},
+                "ratings": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    anchors_out = tmp_path / "anchors_empty_ratings.jsonl"
+    run_out = tmp_path / "run_empty_ratings.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(anchors_out),
+            "--run-out",
+            str(run_out),
+        ]
+    )
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert code == 1
+    assert "error:" in err_flat
+    assert "ratings are empty" in err_flat
+    assert "Traceback" not in captured.err
+    assert captured.out == ""
+    assert not anchors_out.exists()
+    assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

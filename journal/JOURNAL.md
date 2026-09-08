@@ -269,3 +269,13 @@ files) when a panel envelope sets `judges` to a JSON array or scalar, so
 the adapter judges-shape `ValueError` catch in `main()` cannot silently
 succeed. README judgekit section cites the claim. 85 tests green, ruff
 clean.
+
+## 2026-09-08 — import-judgekit CLI empty-ratings claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_ratings_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`ratings are empty` (no traceback, no output files) when a panel envelope
+sets `ratings` to `{}`, so the adapter empty-ratings `_normalize_ratings`
+ValueError catch in `main()` cannot silently succeed. README judgekit
+section cites the claim. 86 tests green, ruff clean.
