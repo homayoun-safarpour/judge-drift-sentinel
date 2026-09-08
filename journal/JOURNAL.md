@@ -269,3 +269,7 @@ files) when a panel envelope sets `judges` to a JSON array or scalar, so
 the adapter judges-shape `ValueError` catch in `main()` cannot silently
 succeed. README judgekit section cites the claim. 85 tests green, ruff
 clean.
+
+## 2026-09-08 — evening HOLD
+
+Gates green on main (CI 34098439740 success for non-object-judges `b6f485f`). NEXT TICK refreshed to evening 2026-09-08: empty-`ratings` CLI claim (`ratings are empty`). HOLD — no feature work tonight.
