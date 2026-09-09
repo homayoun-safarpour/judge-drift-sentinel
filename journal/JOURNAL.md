@@ -279,3 +279,14 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 sets `ratings` to `{}`, so the adapter empty-ratings `_normalize_ratings`
 ValueError catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 86 tests green, ruff clean.
+
+## 2026-09-09 — import-judgekit CLI non-object-ratings-item claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`must be an object of judge` (no traceback, no output files) when a panel
+envelope sets a `ratings` item value to a JSON array or scalar, so the
+adapter per-item ratings-shape `_normalize_ratings` ValueError catch in
+`main()` cannot silently succeed. README judgekit section cites the claim.
+87 tests green, ruff clean.

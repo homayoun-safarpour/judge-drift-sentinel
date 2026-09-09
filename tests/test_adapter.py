@@ -868,6 +868,57 @@ def test_import_judgekit_cli_rejects_empty_ratings_json(tmp_path, capsys):
     assert not run_out.exists()
 
 
+def test_import_judgekit_cli_rejects_non_object_ratings_item_json(tmp_path, capsys):
+    """Named claim: CLI rejects non-object per-item ``ratings`` values with exit 1.
+
+    Empty ``ratings`` (``{}``) is locked. This claim locks the adapter
+    ``must be an object of judge`` gate on the same ``main()`` ValueError
+    catch: a panel envelope whose ``ratings`` map contains an item whose
+    value is an array or scalar must exit 1 with an ``error:`` stderr line,
+    never succeed silently or dump a traceback.
+    """
+    cases = (
+        ("array_ratings_item.json", ["pass", "pass"]),
+        ("scalar_ratings_item.json", "just-a-string"),
+    )
+    for name, item_val in cases:
+        panel_path = tmp_path / name
+        panel_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "human_labels": {"a01": "pass"},
+                    "ratings": {"a01": item_val},
+                }
+            ),
+            encoding="utf-8",
+        )
+        anchors_out = tmp_path / f"anchors_{name}.jsonl"
+        run_out = tmp_path / f"run_{name}.json"
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(anchors_out),
+                "--run-out",
+                str(run_out),
+            ]
+        )
+        captured = capsys.readouterr()
+        err_flat = " ".join(captured.err.split())
+        assert code == 1
+        assert "error:" in err_flat
+        assert "must be an object of judge" in err_flat
+        assert "Traceback" not in captured.err
+        assert captured.out == ""
+        assert not anchors_out.exists()
+        assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

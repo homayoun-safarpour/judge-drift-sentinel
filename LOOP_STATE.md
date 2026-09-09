@@ -74,10 +74,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_judges_json`.
 - [x] Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` object is empty (`{}`) with exit 1 and an `error:` stderr line carrying `ratings are empty` (cost: S) (touched: 2026-09-08)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_ratings_json`.
+- [x] Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` map contains an item whose value is a non-object (array / scalar) with exit 1 and an `error:` stderr line carrying `must be an object of judge` (cost: S) (touched: 2026-09-09)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-09: import-judgekit CLI non-object-ratings-item claim - named test asserts panel envelope with array/scalar per-item `ratings` values prints `error:` + `must be an object of judge` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 87, ruff clean.
 - 2026-09-08: import-judgekit CLI empty-ratings claim - named test asserts panel envelope with empty `ratings` (`{}`) prints `error:` + `ratings are empty` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 86, ruff clean.
 - 2026-09-07: import-judgekit CLI non-object-judges claim - named test asserts panel envelope with array/scalar `judges` prints `error:` + `'judges' must be a JSON object when present` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 85, ruff clean.
 - 2026-09-06: import-judgekit CLI non-object-ratings claim - named test asserts panel envelope with array/scalar `ratings` prints `error:` + `'ratings' must be a JSON object` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 84, ruff clean.
@@ -124,9 +127,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-08)
+## NEXT TICK (daily 2026-09-09)
 
-- **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` map contains an item whose value is a non-object (array / scalar) with exit 1 and an `error:` stderr line carrying `must be an object of judge`, so the adapter per-item ratings-shape `_normalize_ratings` ValueError catch in `main()` cannot silently succeed.
-- **Why:** Empty `ratings` (`{}`) is locked; item-level non-object values are the next fail-closed surface on the same `_normalize_ratings` path.
+- **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` map contains a judge entry whose value is not a non-empty list (empty list / scalar / object) with exit 1 and an `error:` stderr line carrying `must be a non-empty list of labels`, so the adapter per-judge replicate-shape `_normalize_ratings` ValueError catch in `main()` cannot silently succeed.
+- **Why:** Per-item non-object ratings values are locked; empty/non-list replicate lists are the next fail-closed surface on the same `_normalize_ratings` path.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
