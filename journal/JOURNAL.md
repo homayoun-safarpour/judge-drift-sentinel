@@ -279,3 +279,7 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 sets `ratings` to `{}`, so the adapter empty-ratings `_normalize_ratings`
 ValueError catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 86 tests green, ruff clean.
+
+## 2026-09-09 — evening HOLD
+
+Gates green on main (CI 34202584751 success for empty-ratings `abb74b9`). NEXT TICK refreshed to evening 2026-09-09: per-item non-object `ratings` CLI claim (`must be an object of judge`). HOLD — no feature work tonight.

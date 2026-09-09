@@ -124,9 +124,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-08)
+## NEXT TICK (evening 2026-09-09)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` map contains an item whose value is a non-object (array / scalar) with exit 1 and an `error:` stderr line carrying `must be an object of judge`, so the adapter per-item ratings-shape `_normalize_ratings` ValueError catch in `main()` cannot silently succeed.
-- **Why:** Empty `ratings` (`{}`) is locked; item-level non-object values are the next fail-closed surface on the same `_normalize_ratings` path.
+- **Why:** Empty `ratings` (`{}`) is locked on main; item-level non-object values remain the next fail-closed surface on the same `_normalize_ratings` path. Gates green — HOLD on feature work until Daily ships this enrichment.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
