@@ -919,6 +919,59 @@ def test_import_judgekit_cli_rejects_non_object_ratings_item_json(tmp_path, caps
         assert not run_out.exists()
 
 
+def test_import_judgekit_cli_rejects_non_list_judge_ratings_json(tmp_path, capsys):
+    """Named claim: CLI rejects non-list / empty per-judge ``ratings`` with exit 1.
+
+    Per-item non-object ``ratings`` values are locked. This claim locks the
+    adapter ``must be a non-empty list of labels`` gate on the same
+    ``main()`` ValueError catch: a panel envelope whose ``ratings`` map
+    contains a judge entry whose value is an empty list, scalar, or object
+    must exit 1 with an ``error:`` stderr line, never succeed silently or
+    dump a traceback.
+    """
+    cases = (
+        ("empty_list_judge_ratings.json", []),
+        ("scalar_judge_ratings.json", "just-a-string"),
+        ("object_judge_ratings.json", {"label": "pass"}),
+    )
+    for name, reps in cases:
+        panel_path = tmp_path / name
+        panel_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "human_labels": {"a01": "pass"},
+                    "ratings": {"a01": {"gpt-4o-judge": reps}},
+                }
+            ),
+            encoding="utf-8",
+        )
+        anchors_out = tmp_path / f"anchors_{name}.jsonl"
+        run_out = tmp_path / f"run_{name}.json"
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(anchors_out),
+                "--run-out",
+                str(run_out),
+            ]
+        )
+        captured = capsys.readouterr()
+        err_flat = " ".join(captured.err.split())
+        assert code == 1
+        assert "error:" in err_flat
+        assert "must be a non-empty list of labels" in err_flat
+        assert "Traceback" not in captured.err
+        assert captured.out == ""
+        assert not anchors_out.exists()
+        assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

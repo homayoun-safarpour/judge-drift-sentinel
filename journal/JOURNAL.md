@@ -290,3 +290,14 @@ envelope sets a `ratings` item value to a JSON array or scalar, so the
 adapter per-item ratings-shape `_normalize_ratings` ValueError catch in
 `main()` cannot silently succeed. README judgekit section cites the claim.
 87 tests green, ruff clean.
+
+## 2026-09-10 — import-judgekit CLI non-list-judge-ratings claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_list_judge_ratings_json`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`must be a non-empty list of labels` (no traceback, no output files) when a
+panel envelope sets a per-judge `ratings` value to an empty list, scalar, or
+object, so the adapter per-judge replicate-shape `_normalize_ratings`
+ValueError catch in `main()` cannot silently succeed. README judgekit
+section cites the claim. 88 tests green, ruff clean.
