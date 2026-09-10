@@ -290,3 +290,7 @@ envelope sets a `ratings` item value to a JSON array or scalar, so the
 adapter per-item ratings-shape `_normalize_ratings` ValueError catch in
 `main()` cannot silently succeed. README judgekit section cites the claim.
 87 tests green, ruff clean.
+
+## 2026-09-10 — evening HOLD
+
+Gates green on main (CI 34327282101 success for per-item non-object ratings `f2ba1f0`). NEXT TICK refreshed to evening 2026-09-10: per-judge non-empty replicate-list CLI claim (`must be a non-empty list of labels`). HOLD — no feature work tonight.
