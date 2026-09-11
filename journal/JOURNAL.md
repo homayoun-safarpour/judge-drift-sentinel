@@ -301,3 +301,14 @@ panel envelope sets a per-judge `ratings` value to an empty list, scalar, or
 object, so the adapter per-judge replicate-shape `_normalize_ratings`
 ValueError catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 88 tests green, ruff clean.
+
+## 2026-09-11 — import-judgekit CLI missing-judge-coverage claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`has no ratings for human-labeled item` (no traceback, no output files) when
+the requested `--judge` lacks ratings for one or more gold items (item absent
+from `ratings`, or judge absent on an item), so the `panel_to_run`
+missing-items `ValueError` catch in `main()` cannot silently succeed. README
+judgekit section cites the claim. 89 tests green, ruff clean.

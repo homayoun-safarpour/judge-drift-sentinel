@@ -78,10 +78,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`.
 - [x] Named claim that `import-judgekit` CLI rejects a panel envelope whose `ratings` map contains a judge entry whose value is not a non-empty list (empty list / scalar / object) with exit 1 and an `error:` stderr line carrying `must be a non-empty list of labels` (cost: S) (touched: 2026-09-10)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_list_judge_ratings_json`.
+- [x] Named claim that `import-judgekit` CLI rejects a panel where the requested `--judge` has no ratings for one or more human-labeled items with exit 1 and an `error:` stderr line carrying `has no ratings for human-labeled item` (cost: S) (touched: 2026-09-11)
+  - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-11: import-judgekit CLI missing-judge-coverage claim - named test asserts panel where `--judge` lacks ratings for one or more gold items (item absent from `ratings`, or judge absent on an item) prints `error:` + `has no ratings for human-labeled item` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 89, ruff clean.
 - 2026-09-10: import-judgekit CLI non-list-judge-ratings claim - named test asserts panel envelope with empty-list/scalar/object per-judge `ratings` values prints `error:` + `must be a non-empty list of labels` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 88, ruff clean.
 - 2026-09-09: import-judgekit CLI non-object-ratings-item claim - named test asserts panel envelope with array/scalar per-item `ratings` values prints `error:` + `must be an object of judge` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 87, ruff clean.
 - 2026-09-08: import-judgekit CLI empty-ratings claim - named test asserts panel envelope with empty `ratings` (`{}`) prints `error:` + `ratings are empty` on stderr, exits 1, writes no outputs, and does not dump a traceback; README cites the claim; pytest 86, ruff clean.
@@ -130,9 +133,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-10)
+## NEXT TICK (daily 2026-09-11)
 
-- **Item:** Named claim that `import-judgekit` CLI rejects a panel where the requested `--judge` has no ratings for one or more human-labeled items with exit 1 and an `error:` stderr line carrying `has no ratings for human-labeled item`, so the `panel_to_run` missing-items `ValueError` catch in `main()` cannot silently succeed.
-- **Why:** Per-judge non-empty list-of-labels shape is locked; missing judge coverage on gold items is the next fail-closed surface on the import path.
+- **Item:** Named claim that `import-judgekit` CLI stderr for missing judge coverage lists the missing human-labeled item id(s) and appends `(+N more)` when more than five gold items lack ratings for `--judge`, so the `panel_to_run` preview truncation contract cannot silently regress.
+- **Why:** Missing-coverage fail-closed exit is locked; the operator-facing item preview / overflow suffix is the next surface on the same path.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

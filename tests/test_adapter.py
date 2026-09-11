@@ -972,6 +972,68 @@ def test_import_judgekit_cli_rejects_non_list_judge_ratings_json(tmp_path, capsy
         assert not run_out.exists()
 
 
+def test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items(
+    tmp_path, capsys
+):
+    """Named claim: CLI rejects missing judge coverage on gold items with exit 1.
+
+    Per-judge non-empty list-of-labels shape is locked. This claim locks the
+    ``panel_to_run`` missing-items ``ValueError`` on the same ``main()``
+    catch: a panel where the requested ``--judge`` has no ratings for one or
+    more human-labeled items must exit 1 with an ``error:`` stderr line
+    carrying ``has no ratings for human-labeled item``, never succeed
+    silently or dump a traceback.
+    """
+    cases = (
+        (
+            "item_absent_from_ratings.json",
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": {"a01": "pass", "a02": "fail"},
+                "ratings": {"a01": {"gpt-4o-judge": ["pass", "pass"]}},
+            },
+        ),
+        (
+            "judge_absent_on_item.json",
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": {"a01": "pass", "a02": "fail"},
+                "ratings": {
+                    "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                    "a02": {"other-judge": ["fail", "fail"]},
+                },
+            },
+        ),
+    )
+    for name, payload in cases:
+        panel_path = tmp_path / name
+        panel_path.write_text(json.dumps(payload), encoding="utf-8")
+        anchors_out = tmp_path / f"anchors_{name}.jsonl"
+        run_out = tmp_path / f"run_{name}.json"
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(anchors_out),
+                "--run-out",
+                str(run_out),
+            ]
+        )
+        captured = capsys.readouterr()
+        err_flat = " ".join(captured.err.split())
+        assert code == 1
+        assert "error:" in err_flat
+        assert "has no ratings for human-labeled item" in err_flat
+        assert "Traceback" not in captured.err
+        assert captured.out == ""
+        assert not anchors_out.exists()
+        assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
