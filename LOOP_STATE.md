@@ -130,9 +130,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-10)
+## NEXT TICK (evening 2026-09-11)
 
 - **Item:** Named claim that `import-judgekit` CLI rejects a panel where the requested `--judge` has no ratings for one or more human-labeled items with exit 1 and an `error:` stderr line carrying `has no ratings for human-labeled item`, so the `panel_to_run` missing-items `ValueError` catch in `main()` cannot silently succeed.
-- **Why:** Per-judge non-empty list-of-labels shape is locked; missing judge coverage on gold items is the next fail-closed surface on the import path.
+- **Why:** Per-judge non-empty list-of-labels shape is locked on main; missing judge coverage on gold items remains the next fail-closed surface on the import path. Gates green — HOLD on feature work until Daily ships this enrichment.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
