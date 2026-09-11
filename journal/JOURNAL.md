@@ -301,3 +301,7 @@ panel envelope sets a per-judge `ratings` value to an empty list, scalar, or
 object, so the adapter per-judge replicate-shape `_normalize_ratings`
 ValueError catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 88 tests green, ruff clean.
+
+## 2026-09-11 — evening HOLD
+
+Gates green on main (CI 34453059506 success for non-list judge ratings `38d35a4`). NEXT TICK refreshed to evening 2026-09-11: missing `--judge` coverage on human-labeled items CLI claim (`has no ratings for human-labeled item`). HOLD — no feature work tonight.
