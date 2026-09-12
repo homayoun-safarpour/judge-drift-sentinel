@@ -312,3 +312,7 @@ the requested `--judge` lacks ratings for one or more gold items (item absent
 from `ratings`, or judge absent on an item), so the `panel_to_run`
 missing-items `ValueError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 89 tests green, ruff clean.
+
+## 2026-09-12 — evening HOLD
+
+Gates green on main (CI 34577629546 success for missing-judge-coverage `981de14`). NEXT TICK refreshed to evening 2026-09-12: missing-coverage stderr item-id preview / `(+N more)` truncation claim. HOLD — no feature work tonight.
