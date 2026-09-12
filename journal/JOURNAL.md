@@ -312,3 +312,13 @@ the requested `--judge` lacks ratings for one or more gold items (item absent
 from `ratings`, or judge absent on an item), so the `panel_to_run`
 missing-items `ValueError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 89 tests green, ruff clean.
+
+## 2026-09-12 — import-judgekit CLI missing-coverage item-preview claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow`
+asserts `import-judgekit` exits 1 with an `error:` stderr line that lists the
+missing human-labeled item id(s) and appends `(+N more)` after the first five
+sorted ids when more than five gold items lack ratings for `--judge`, so the
+`panel_to_run` preview truncation contract cannot silently regress. README
+judgekit section cites the claim. 90 tests green, ruff clean.

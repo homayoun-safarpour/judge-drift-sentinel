@@ -1034,6 +1034,84 @@ def test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items(
         assert not run_out.exists()
 
 
+def test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow(
+    tmp_path, capsys
+):
+    """Named claim: CLI missing-coverage stderr lists item ids and (+N more).
+
+    Exit-1 + ``has no ratings for human-labeled item`` is already locked.
+    This claim locks the ``panel_to_run`` preview truncation that reaches
+    operators via the same ``main()`` catch: stderr must list the missing
+    human-labeled item id(s), and when more than five gold items lack
+    ratings for ``--judge`` it must append ``(+N more)`` after the first
+    five sorted ids so the overflow contract cannot silently regress.
+    """
+    few_labels = {"a01": "pass", "a02": "fail", "a03": "pass"}
+    few_panel = tmp_path / "few_missing.json"
+    few_panel.write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": few_labels,
+                "ratings": {
+                    "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                    "a02": {"other-judge": ["fail", "fail"]},
+                    "a03": {"other-judge": ["pass", "pass"]},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    many_labels = {f"a{i:02d}": ("pass" if i % 2 else "fail") for i in range(1, 8)}
+    many_panel = tmp_path / "many_missing.json"
+    many_panel.write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": many_labels,
+                "ratings": {
+                    iid: {"other-judge": ["pass", "pass"]} for iid in many_labels
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    cases = (
+        (few_panel, ["a02", "a03"], None),
+        (many_panel, ["a01", "a02", "a03", "a04", "a05"], "(+2 more)"),
+    )
+    for panel_path, expected_ids, overflow in cases:
+        anchors_out = tmp_path / f"anchors_{panel_path.stem}.jsonl"
+        run_out = tmp_path / f"run_{panel_path.stem}.json"
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(anchors_out),
+                "--run-out",
+                str(run_out),
+            ]
+        )
+        captured = capsys.readouterr()
+        err_flat = " ".join(captured.err.split())
+        assert code == 1
+        assert "error:" in err_flat
+        assert "has no ratings for human-labeled item" in err_flat
+        assert ", ".join(expected_ids) in err_flat
+        if overflow is None:
+            assert "(+" not in err_flat
+        else:
+            assert overflow in err_flat
+        assert "Traceback" not in captured.err
+        assert captured.out == ""
+        assert not anchors_out.exists()
+        assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
