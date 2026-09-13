@@ -136,7 +136,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-12)
+## NEXT TICK (evening 2026-09-13)
 
 - **Item:** Named claim that `panel_to_run` library `ValueError` lists missing human-labeled item ids in sorted order with the same five-id preview and `(+N more)` overflow as the CLI claim, so direct library callers cannot get a divergent truncation contract.
 - **Why:** CLI stderr preview is locked; the library raise path is the source of that message and still only has a loose phrase match.
