@@ -322,3 +322,13 @@ missing human-labeled item id(s) and appends `(+N more)` after the first five
 sorted ids when more than five gold items lack ratings for `--judge`, so the
 `panel_to_run` preview truncation contract cannot silently regress. README
 judgekit section cites the claim. 90 tests green, ruff clean.
+
+## 2026-09-13 — panel_to_run library missing-coverage item-preview claim
+
+Named claim
+`tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow`
+asserts `panel_to_run` raises `ValueError` listing missing human-labeled item
+ids in sorted order and appending `(+N more)` after the first five when more
+than five gold items lack ratings for the judge (unsorted label insertion
+order still sorts), so library callers cannot diverge from the CLI preview
+contract. README judgekit section cites the claim. 91 tests green, ruff clean.

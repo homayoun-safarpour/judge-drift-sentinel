@@ -1112,6 +1112,64 @@ def test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow
         assert not run_out.exists()
 
 
+def test_panel_to_run_missing_coverage_lists_item_ids_with_overflow():
+    """Named claim: panel_to_run ValueError lists sorted ids and (+N more).
+
+    CLI stderr preview is locked by
+    ``test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow``.
+    This claim locks the library raise path directly: missing human-labeled
+    item ids appear in sorted order, and when more than five gold items lack
+    ratings for the judge it appends ``(+N more)`` after the first five so
+    direct library callers cannot get a divergent truncation contract.
+    """
+    few = parse_panel_dict(
+        {
+            "schema_version": SCHEMA_VERSION,
+            # Insertion order is not sorted; preview must still sort.
+            "human_labels": {"z99": "fail", "a01": "pass", "m50": "pass"},
+            "ratings": {
+                "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                "m50": {"other-judge": ["pass", "pass"]},
+                "z99": {"other-judge": ["fail", "fail"]},
+            },
+        }
+    )
+    with pytest.raises(ValueError) as few_exc:
+        panel_to_run(few, "gpt-4o-judge")
+    few_msg = str(few_exc.value)
+    assert "has no ratings for human-labeled item" in few_msg
+    assert "m50, z99" in few_msg
+    assert "(+" not in few_msg
+
+    many_labels = {
+        "c03": "pass",
+        "a01": "fail",
+        "b02": "pass",
+        "e05": "fail",
+        "d04": "pass",
+        "g07": "fail",
+        "f06": "pass",
+    }
+    many = parse_panel_dict(
+        {
+            "schema_version": SCHEMA_VERSION,
+            "human_labels": many_labels,
+            "ratings": {
+                iid: {"other-judge": ["pass", "pass"]} for iid in many_labels
+            },
+        }
+    )
+    with pytest.raises(ValueError) as many_exc:
+        panel_to_run(many, "gpt-4o-judge")
+    many_msg = str(many_exc.value)
+    assert "has no ratings for human-labeled item" in many_msg
+    assert "a01, b02, c03, d04, e05" in many_msg
+    assert "(+2 more)" in many_msg
+    preview_part = many_msg.split("(+2 more)", maxsplit=1)[0]
+    assert "f06" not in preview_part
+    assert "g07" not in preview_part
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
