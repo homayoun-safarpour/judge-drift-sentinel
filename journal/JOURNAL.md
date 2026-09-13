@@ -322,3 +322,7 @@ missing human-labeled item id(s) and appends `(+N more)` after the first five
 sorted ids when more than five gold items lack ratings for `--judge`, so the
 `panel_to_run` preview truncation contract cannot silently regress. README
 judgekit section cites the claim. 90 tests green, ruff clean.
+
+## 2026-09-13 — evening HOLD
+
+Gates green on main (CI 34682424526 success for missing-coverage item-preview `26d51f8`). NEXT TICK refreshed to evening 2026-09-13: `panel_to_run` library ValueError missing-id preview / `(+N more)` claim matching CLI. HOLD — no feature work tonight.
