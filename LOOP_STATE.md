@@ -139,9 +139,33 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-13)
+## SUNDAY CLOSE (2026-09-13)
 
-- **Item:** Named claim that `panel_to_run` rejects an empty `judge_id` (`""`) with a `ValueError` carrying `judge_id is required`, so library callers cannot pass a blank id and fall through into the missing-coverage path.
-- **Why:** Missing-coverage preview is now locked on both CLI and library paths; empty `judge_id` is the adjacent fail-closed gate still only covered by an untested raise string.
+Usefulness gate for the public week repo (`judge-drift-sentinel` @ main).
+
+| Signal | Result | Evidence |
+| --- | --- | --- |
+| CI (3.10 / 3.11 / 3.12) | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/34746827567 |
+| Local ruff + pytest | PASS | `ruff check src tests` clean; `pytest -q` → 91 passed |
+| Latest claim still true? | YES | `tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow` locked; backlog W1–W8 + adapter fail-closed chain through 2026-09-13 remain checked |
+| Worked example still runnable? | YES | `drift-sentinel baseline` then `check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` → **JUDGE_DRIFT** exit 2 (kappa 0.833 → 0.333) |
+| Week retarget | stay | Active public week repo remains `homayoun-safarpour/judge-drift-sentinel` @ `main` |
+
+Field/external employer demand: not claimed this week (no invented demand).
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge eval score drops after a provider model swap, teams often roll back a healthy deploy — the dashboard cannot tell system regression from judge drift.
+2. A frozen human-labeled anchor set isolates the ruler: if kappa vs humans falls, the scoreboard moved; if kappa holds and the live metric moved, the system moved.
+3. `drift-sentinel check` turns that into a CI gate (STABLE / SYSTEM_CHANGE / JUDGE_DRIFT) with no extra model calls — milliseconds, deterministic, exit codes you can fail builds on.
+4. This week locked the `import-judgekit` / `panel_to_run` fail-closed path further: empty ratings, missing judge coverage, and sorted missing-item preview with `(+N more)` overflow are named claims (91 pytest; CI green on main).
+5. Install: `pip install judge-drift-sentinel` — then `baseline` + `check` on the repo examples reproduce JUDGE_DRIFT (kappa 0.833 → 0.333) in one pass.
+
+## NEXT TICK (sunday 2026-09-13)
+
+- **Week boundary:** Monday scaffold/retarget — stay on `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the active public week repo.
+- **Item:** Named claim that `panel_to_run` rejects an empty `judge_id` (`""`) with a `ValueError` carrying `judge_id is required`, so library callers cannot pass a blank id and fall through into the missing-coverage path. (Carried from daily 2026-09-13.)
+- **Why:** Missing-coverage preview is locked on CLI and library paths; empty `judge_id` is the adjacent fail-closed gate still only covered by an untested raise string.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Defer:** multi-format panel exports until a second real producer exists.
 
