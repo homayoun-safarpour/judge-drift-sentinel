@@ -139,9 +139,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-13)
+## NEXT TICK (evening 2026-09-14)
 
 - **Item:** Named claim that `panel_to_run` rejects an empty `judge_id` (`""`) with a `ValueError` carrying `judge_id is required`, so library callers cannot pass a blank id and fall through into the missing-coverage path.
-- **Why:** Missing-coverage preview is now locked on both CLI and library paths; empty `judge_id` is the adjacent fail-closed gate still only covered by an untested raise string.
+- **Why:** Missing-coverage preview is locked on CLI and library paths (CI 34746827567 green); empty `judge_id` remains the adjacent fail-closed gate still only covered by an untested raise string.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
