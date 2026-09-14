@@ -332,3 +332,7 @@ ids in sorted order and appending `(+N more)` after the first five when more
 than five gold items lack ratings for the judge (unsorted label insertion
 order still sorts), so library callers cannot diverge from the CLI preview
 contract. README judgekit section cites the claim. 91 tests green, ruff clean.
+
+## 2026-09-14 — evening HOLD
+
+Gates green on main (CI 34746827567; panel_to_run missing-coverage preview claim on main). No feature ship. NEXT TICK refreshed to empty `judge_id` required claim for Daily.
