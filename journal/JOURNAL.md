@@ -332,3 +332,12 @@ ids in sorted order and appending `(+N more)` after the first five when more
 than five gold items lack ratings for the judge (unsorted label insertion
 order still sorts), so library callers cannot diverge from the CLI preview
 contract. README judgekit section cites the claim. 91 tests green, ruff clean.
+
+## 2026-09-14 — panel_to_run empty judge_id claim
+
+Named claim
+`tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`
+asserts `panel_to_run` raises `ValueError` carrying `judge_id is required`
+when `judge_id` is `""`, and does not fall through into the
+missing-coverage path that lists gold item ids. README judgekit section
+cites the claim. 92 tests green, ruff clean.

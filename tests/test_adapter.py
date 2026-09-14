@@ -1170,6 +1170,33 @@ def test_panel_to_run_missing_coverage_lists_item_ids_with_overflow():
     assert "g07" not in preview_part
 
 
+def test_panel_to_run_rejects_empty_judge_id():
+    """Named claim: panel_to_run rejects empty judge_id with judge_id is required.
+
+    Missing-coverage preview is locked by
+    ``test_panel_to_run_missing_coverage_lists_item_ids_with_overflow``.
+    This claim locks the adjacent fail-closed gate: an empty ``judge_id``
+    (``""``) must raise ``ValueError`` carrying ``judge_id is required`` and
+    must not fall through into the missing-coverage path that lists gold
+    item ids.
+    """
+    panel = parse_panel_dict(
+        {
+            "schema_version": SCHEMA_VERSION,
+            "human_labels": {"a01": "pass", "a02": "fail"},
+            "ratings": {
+                "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                "a02": {"gpt-4o-judge": ["fail", "fail"]},
+            },
+        }
+    )
+    with pytest.raises(ValueError) as excinfo:
+        panel_to_run(panel, "")
+    msg = str(excinfo.value)
+    assert "judge_id is required" in msg
+    assert "has no ratings for human-labeled item" not in msg
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 
