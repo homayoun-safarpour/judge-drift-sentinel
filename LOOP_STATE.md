@@ -145,7 +145,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-15)
+## NEXT TICK (evening 2026-09-15)
 
 - **Item:** Named claim that `panel_to_run` and `import-judgekit` reject whitespace-only `judge_id` / `--judge` (e.g. `" "`) with `judge_id is required` (library `ValueError`; CLI exit 1 / `error:` stderr), so blank-after-strip cannot bypass the empty-id gate.
 - **Why:** Empty `""` is locked on both library and CLI paths; argparse and callers can still pass whitespace-only strings that currently bypass `if not judge_id`.
