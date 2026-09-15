@@ -352,3 +352,8 @@ present but blank (`""`), so the library empty-id `ValueError` catch in
 `main()` cannot silently succeed or fall through into missing-coverage
 wording. README judgekit section cites the claim. 93 tests green, ruff
 clean.
+
+## 2026-09-15 — evening HOLD
+
+HOLD — gates green (CI 34944987666 success on empty `--judge` claim); no feature
+work. NEXT TICK pointed at whitespace-only `judge_id` / `--judge` strip gate.
