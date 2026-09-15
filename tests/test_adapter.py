@@ -1197,6 +1197,57 @@ def test_panel_to_run_rejects_empty_judge_id():
     assert "has no ratings for human-labeled item" not in msg
 
 
+def test_import_judgekit_cli_rejects_empty_judge(tmp_path, capsys):
+    """Named claim: CLI rejects empty --judge with exit 1 / judge_id is required.
+
+    Library empty ``judge_id`` is locked by
+    ``test_panel_to_run_rejects_empty_judge_id``. This claim locks the adjacent
+    operator path: argparse still accepts a present-but-blank ``--judge``
+    (``""``), so ``import-judgekit`` must surface the same
+    ``judge_id is required`` ``ValueError`` through the ``main()`` catch as
+    exit 1 with an ``error:`` stderr line (no traceback, no outputs).
+    """
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": {"a01": "pass", "a02": "fail"},
+                "ratings": {
+                    "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                    "a02": {"gpt-4o-judge": ["fail", "fail"]},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    anchors_out = tmp_path / "anchors.jsonl"
+    run_out = tmp_path / "run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "",
+            "--anchors-out",
+            str(anchors_out),
+            "--run-out",
+            str(run_out),
+        ]
+    )
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert code == 1
+    assert "error:" in err_flat
+    assert "judge_id is required" in err_flat
+    assert "has no ratings for human-labeled item" not in err_flat
+    assert "Traceback" not in captured.err
+    assert captured.out == ""
+    assert not anchors_out.exists()
+    assert not run_out.exists()
+
+
 def test_import_judgekit_help_locks_v1_only_schema_gate(capsys):
     """Named claim: import-judgekit --help states the v1-only schema gate.
 

@@ -341,3 +341,14 @@ asserts `panel_to_run` raises `ValueError` carrying `judge_id is required`
 when `judge_id` is `""`, and does not fall through into the
 missing-coverage path that lists gold item ids. README judgekit section
 cites the claim. 92 tests green, ruff clean.
+
+## 2026-09-15 — import-judgekit CLI empty --judge claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`
+asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
+`judge_id is required` (no traceback, no output files) when `--judge` is
+present but blank (`""`), so the library empty-id `ValueError` catch in
+`main()` cannot silently succeed or fall through into missing-coverage
+wording. README judgekit section cites the claim. 93 tests green, ruff
+clean.
