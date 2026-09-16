@@ -352,3 +352,14 @@ present but blank (`""`), so the library empty-id `ValueError` catch in
 `main()` cannot silently succeed or fall through into missing-coverage
 wording. README judgekit section cites the claim. 93 tests green, ruff
 clean.
+
+## 2026-09-16 — panel_to_run / import-judgekit whitespace-only judge_id claim
+
+Named claims
+`tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id` and
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`
+assert whitespace-only `judge_id` / `--judge` (e.g. `" "`, tabs, newlines)
+fail closed with `judge_id is required` (library ValueError; CLI exit 1 /
+`error:` stderr, no traceback, no outputs) rather than falling through into
+missing-coverage wording. `panel_to_run` now gates on blank-after-strip.
+README judgekit section cites both claims. 95 tests green, ruff clean.

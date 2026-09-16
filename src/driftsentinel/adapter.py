@@ -198,7 +198,7 @@ def panel_to_run(
     """
     if aggregate not in AGGREGATES:
         raise ValueError(f"aggregate must be one of {sorted(AGGREGATES)}, got {aggregate!r}")
-    if not judge_id:
+    if not judge_id.strip():
         raise ValueError("judge_id is required")
 
     scores: dict[str, str] = {}

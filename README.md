@@ -164,12 +164,14 @@ stderr line
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`).
-An empty `judge_id` (`""`) on `panel_to_run`, and an empty `--judge`
-(`""`) on `import-judgekit`, fail closed with `judge_id is required`
-(library `ValueError`; CLI exit 1 / `error:` stderr) rather than falling
-through into the missing-coverage path
+An empty or whitespace-only `judge_id` (`""`, `" "`) on `panel_to_run`,
+and an empty or whitespace-only `--judge` on `import-judgekit`, fail closed
+with `judge_id is required` (library `ValueError`; CLI exit 1 / `error:`
+stderr) rather than falling through into the missing-coverage path
 (`tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`).
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`,
+`tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
