@@ -363,3 +363,8 @@ fail closed with `judge_id is required` (library ValueError; CLI exit 1 /
 `error:` stderr, no traceback, no outputs) rather than falling through into
 missing-coverage wording. `panel_to_run` now gates on blank-after-strip.
 README judgekit section cites both claims. 95 tests green, ruff clean.
+
+## 2026-09-16 — evening HOLD
+
+HOLD — gates green (CI 35071994197 success on whitespace-only judge_id claim); no feature
+work. NEXT TICK pointed at `panel_to_run` unknown-`aggregate` ValueError claim.
