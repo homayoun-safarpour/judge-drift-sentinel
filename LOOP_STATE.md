@@ -148,7 +148,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-16)
+## NEXT TICK (evening 2026-09-16)
 
 - **Item:** Named claim that `panel_to_run` rejects an unknown `aggregate` value with a `ValueError` carrying `aggregate must be one of` (and listing the allowed set), so library callers cannot bypass the `AGGREGATES` gate silently.
 - **Why:** Empty and whitespace-only `judge_id` are locked on library and CLI; the adjacent `aggregate not in AGGREGATES` raise in `panel_to_run` still lacks a named claim (CLI already uses argparse `choices`).
