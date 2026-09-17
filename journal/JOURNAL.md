@@ -363,3 +363,13 @@ fail closed with `judge_id is required` (library ValueError; CLI exit 1 /
 `error:` stderr, no traceback, no outputs) rather than falling through into
 missing-coverage wording. `panel_to_run` now gates on blank-after-strip.
 README judgekit section cites both claims. 95 tests green, ruff clean.
+
+## 2026-09-17 — panel_to_run unknown aggregate claim
+
+Named claim
+`tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`
+asserts `panel_to_run` raises `ValueError` carrying `aggregate must be one of`
+and listing the sorted `AGGREGATES` set when callers pass a value outside
+`{modal, first}` (e.g. `"mean"`), so library callers cannot bypass the gate
+that CLI argparse `choices` already enforces. README judgekit section cites
+the claim. 96 tests green, ruff clean.

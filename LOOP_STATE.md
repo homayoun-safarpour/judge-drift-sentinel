@@ -90,10 +90,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`.
 - [x] Named claim that `panel_to_run` and `import-judgekit` reject whitespace-only `judge_id` / `--judge` (e.g. `" "`) with `judge_id is required` (library `ValueError`; CLI exit 1 / `error:` stderr) (cost: S) (touched: 2026-09-16)
   - Done: `tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`.
+- [x] Named claim that `panel_to_run` rejects an unknown `aggregate` value with a `ValueError` carrying `aggregate must be one of` (and listing the allowed set) (cost: S) (touched: 2026-09-17)
+  - Done: `tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-17: panel_to_run unknown-aggregate claim - named test asserts `ValueError` carries `aggregate must be one of` plus the sorted `AGGREGATES` set for values outside `{modal, first}`; README cites the claim; pytest 96, ruff clean.
 - 2026-09-16: whitespace-only judge_id / --judge claim - `panel_to_run` uses blank-after-strip gate; named tests assert library + CLI reject `" "` / tabs / newlines with `judge_id is required` (no missing-coverage fall-through, CLI exit 1 / `error:` / no traceback / no outputs); README cites both claims; pytest 95, ruff clean.
 - 2026-09-15: import-judgekit CLI empty `--judge` claim - named test asserts present-but-blank `--judge` (`""`) prints `error:` + `judge_id is required` on stderr, exits 1, writes no outputs, and does not dump a traceback or fall through into missing-coverage wording; README cites the claim; pytest 93, ruff clean.
 - 2026-09-14: panel_to_run empty judge_id claim - named test asserts library ValueError carries `judge_id is required` for `judge_id=""` and does not fall through into the missing-coverage path; README cites the claim; pytest 92, ruff clean.
@@ -148,9 +151,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-16)
+## NEXT TICK (daily 2026-09-17)
 
-- **Item:** Named claim that `panel_to_run` rejects an unknown `aggregate` value with a `ValueError` carrying `aggregate must be one of` (and listing the allowed set), so library callers cannot bypass the `AGGREGATES` gate silently.
-- **Why:** Empty and whitespace-only `judge_id` are locked on library and CLI; the adjacent `aggregate not in AGGREGATES` raise in `panel_to_run` still lacks a named claim (CLI already uses argparse `choices`).
+- **Item:** Named claim that `import-judgekit --aggregate` argparse `choices` equal `sorted(AGGREGATES)` (and `--help` lists both `first` and `modal`), so the CLI cannot drift from the library `AGGREGATES` gate locked by `test_panel_to_run_rejects_unknown_aggregate`.
+- **Why:** Library unknown-aggregate is now locked; the adjacent operator contract is CLI `choices` / help staying in lockstep with `AGGREGATES`.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

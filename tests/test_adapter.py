@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from driftsentinel.adapter import (
+    AGGREGATES,
     SCHEMA_VERSION,
     SUPPORTED_SCHEMA_VERSIONS,
     load_panel_export,
@@ -1272,6 +1273,36 @@ def test_panel_to_run_rejects_whitespace_only_judge_id():
         msg = str(excinfo.value)
         assert "judge_id is required" in msg
         assert "has no ratings for human-labeled item" not in msg
+
+
+def test_panel_to_run_rejects_unknown_aggregate():
+    """Named claim: panel_to_run rejects unknown aggregate with allowed set.
+
+    Empty / whitespace-only ``judge_id`` are locked by adjacent claims. This
+    claim locks the ``aggregate not in AGGREGATES`` gate: an unknown value
+    (e.g. ``"mean"``) must raise ``ValueError`` carrying
+    ``aggregate must be one of`` and listing the sorted allowed set, so
+    library callers cannot bypass the gate that CLI argparse ``choices``
+    already enforces.
+    """
+    panel = parse_panel_dict(
+        {
+            "schema_version": SCHEMA_VERSION,
+            "human_labels": {"a01": "pass", "a02": "fail"},
+            "ratings": {
+                "a01": {"gpt-4o-judge": ["pass", "pass"]},
+                "a02": {"gpt-4o-judge": ["fail", "fail"]},
+            },
+        }
+    )
+    with pytest.raises(ValueError) as excinfo:
+        panel_to_run(panel, "gpt-4o-judge", aggregate="mean")
+    msg = str(excinfo.value)
+    assert "aggregate must be one of" in msg
+    assert str(sorted(AGGREGATES)) in msg
+    assert "mean" in msg
+    for allowed in sorted(AGGREGATES):
+        assert allowed in msg
 
 
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):

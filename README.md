@@ -172,6 +172,9 @@ stderr) rather than falling through into the missing-coverage path
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`,
 `tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`).
+An unknown `aggregate` on `panel_to_run` (anything outside
+`{modal, first}`) fails closed with `aggregate must be one of` listing the
+allowed set (`tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -241,6 +244,9 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow`,
 `tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`,
+`tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`,
+`tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
