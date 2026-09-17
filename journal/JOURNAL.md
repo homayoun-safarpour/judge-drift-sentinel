@@ -373,3 +373,8 @@ and listing the sorted `AGGREGATES` set when callers pass a value outside
 `{modal, first}` (e.g. `"mean"`), so library callers cannot bypass the gate
 that CLI argparse `choices` already enforces. README judgekit section cites
 the claim. 96 tests green, ruff clean.
+
+## 2026-09-17 — evening HOLD
+
+HOLD — gates green (CI 35197633097 success on unknown-aggregate claim); no feature
+work. NEXT TICK pointed at `import-judgekit --aggregate` choices lockstep with `AGGREGATES`.
