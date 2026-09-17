@@ -151,7 +151,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-17)
+## NEXT TICK (evening 2026-09-17)
 
 - **Item:** Named claim that `import-judgekit --aggregate` argparse `choices` equal `sorted(AGGREGATES)` (and `--help` lists both `first` and `modal`), so the CLI cannot drift from the library `AGGREGATES` gate locked by `test_panel_to_run_rejects_unknown_aggregate`.
 - **Why:** Library unknown-aggregate is now locked; the adjacent operator contract is CLI `choices` / help staying in lockstep with `AGGREGATES`.
