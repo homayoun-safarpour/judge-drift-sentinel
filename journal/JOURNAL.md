@@ -383,3 +383,8 @@ asserts `import-judgekit --aggregate` argparse `choices` equal
 cannot drift from the library `AGGREGATES` gate locked by
 `test_panel_to_run_rejects_unknown_aggregate`. README judgekit section cites
 the claim. 97 tests green, ruff clean.
+
+## 2026-09-18 — evening HOLD
+
+HOLD — gates green (CI 35323753164 success on --aggregate choices claim); no feature
+work. NEXT TICK pointed at `import-judgekit` unknown `--aggregate` argparse rejection surface.

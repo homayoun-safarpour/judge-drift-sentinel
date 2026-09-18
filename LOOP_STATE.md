@@ -154,7 +154,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-18)
+## NEXT TICK (evening 2026-09-18)
 
 - **Item:** Named claim that `import-judgekit` rejects an unknown `--aggregate` value (e.g. `mean`) with argparse exit 2 and stderr carrying `invalid choice` plus both `first` and `modal`, so the choices lock cannot silently become a soft accept.
 - **Why:** CLI `--aggregate` choices are now locked to `sorted(AGGREGATES)`; the adjacent operator path is the rejection surface operators actually see when a bad value slips past docs.
