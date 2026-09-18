@@ -92,10 +92,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`.
 - [x] Named claim that `panel_to_run` rejects an unknown `aggregate` value with a `ValueError` carrying `aggregate must be one of` (and listing the allowed set) (cost: S) (touched: 2026-09-17)
   - Done: `tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`.
+- [x] Named claim that `import-judgekit --aggregate` argparse `choices` equal `sorted(AGGREGATES)` (and `--help` lists both `first` and `modal`) (cost: S) (touched: 2026-09-18)
+  - Done: `tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-18: import-judgekit --aggregate choices claim - named test asserts argparse `choices` equal `sorted(AGGREGATES)` and `--help` lists both `first` and `modal`; README cites the claim; pytest 97, ruff clean.
 - 2026-09-17: panel_to_run unknown-aggregate claim - named test asserts `ValueError` carries `aggregate must be one of` plus the sorted `AGGREGATES` set for values outside `{modal, first}`; README cites the claim; pytest 96, ruff clean.
 - 2026-09-16: whitespace-only judge_id / --judge claim - `panel_to_run` uses blank-after-strip gate; named tests assert library + CLI reject `" "` / tabs / newlines with `judge_id is required` (no missing-coverage fall-through, CLI exit 1 / `error:` / no traceback / no outputs); README cites both claims; pytest 95, ruff clean.
 - 2026-09-15: import-judgekit CLI empty `--judge` claim - named test asserts present-but-blank `--judge` (`""`) prints `error:` + `judge_id is required` on stderr, exits 1, writes no outputs, and does not dump a traceback or fall through into missing-coverage wording; README cites the claim; pytest 93, ruff clean.
@@ -151,9 +154,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-17)
+## NEXT TICK (daily 2026-09-18)
 
-- **Item:** Named claim that `import-judgekit --aggregate` argparse `choices` equal `sorted(AGGREGATES)` (and `--help` lists both `first` and `modal`), so the CLI cannot drift from the library `AGGREGATES` gate locked by `test_panel_to_run_rejects_unknown_aggregate`.
-- **Why:** Library unknown-aggregate is now locked; the adjacent operator contract is CLI `choices` / help staying in lockstep with `AGGREGATES`.
+- **Item:** Named claim that `import-judgekit` rejects an unknown `--aggregate` value (e.g. `mean`) with argparse exit 2 and stderr carrying `invalid choice` plus both `first` and `modal`, so the choices lock cannot silently become a soft accept.
+- **Why:** CLI `--aggregate` choices are now locked to `sorted(AGGREGATES)`; the adjacent operator path is the rejection surface operators actually see when a bad value slips past docs.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

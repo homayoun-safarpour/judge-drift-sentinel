@@ -373,3 +373,13 @@ and listing the sorted `AGGREGATES` set when callers pass a value outside
 `{modal, first}` (e.g. `"mean"`), so library callers cannot bypass the gate
 that CLI argparse `choices` already enforces. README judgekit section cites
 the claim. 96 tests green, ruff clean.
+
+## 2026-09-18 — import-judgekit --aggregate choices claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`
+asserts `import-judgekit --aggregate` argparse `choices` equal
+`sorted(AGGREGATES)` and `--help` lists both `first` and `modal`, so the CLI
+cannot drift from the library `AGGREGATES` gate locked by
+`test_panel_to_run_rejects_unknown_aggregate`. README judgekit section cites
+the claim. 97 tests green, ruff clean.

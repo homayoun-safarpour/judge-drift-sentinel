@@ -18,7 +18,7 @@ from driftsentinel.adapter import (
     parse_panel_dict,
     write_anchors_jsonl,
 )
-from driftsentinel.cli import main
+from driftsentinel.cli import build_parser, main
 from driftsentinel.runs import load_run
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
@@ -1303,6 +1303,39 @@ def test_panel_to_run_rejects_unknown_aggregate():
     assert "mean" in msg
     for allowed in sorted(AGGREGATES):
         assert allowed in msg
+
+
+def test_import_judgekit_aggregate_choices_match_aggregates(capsys):
+    """Named claim: import-judgekit --aggregate choices lock to AGGREGATES.
+
+    Library unknown-aggregate is locked by
+    ``test_panel_to_run_rejects_unknown_aggregate``. This claim locks the
+    operator contract: argparse ``choices`` for ``--aggregate`` must equal
+    ``sorted(AGGREGATES)``, and ``--help`` must list both ``first`` and
+    ``modal``, so the CLI cannot drift from the library gate.
+    """
+    parser = build_parser()
+    subparsers = next(
+        action
+        for action in parser._actions
+        if isinstance(getattr(action, "choices", None), dict)
+        and "import-judgekit" in action.choices
+    )
+    adapt = subparsers.choices["import-judgekit"]
+    aggregate_action = next(
+        action for action in adapt._actions if "--aggregate" in action.option_strings
+    )
+    assert list(aggregate_action.choices) == sorted(AGGREGATES)
+
+    with pytest.raises(SystemExit) as excinfo:
+        main(["import-judgekit", "--help"])
+    assert excinfo.value.code == 0
+    help_flat = " ".join(capsys.readouterr().out.split())
+    assert "{first,modal}" in help_flat or (
+        "first" in help_flat and "modal" in help_flat
+    )
+    for allowed in sorted(AGGREGATES):
+        assert allowed in help_flat
 
 
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
