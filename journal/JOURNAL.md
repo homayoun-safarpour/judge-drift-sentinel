@@ -393,3 +393,9 @@ asserts `import-judgekit` exits 2 with argparse stderr carrying
 value outside `AGGREGATES` (e.g. `mean`), so the choices lock cannot
 silently become a soft accept. README judgekit section cites the claim.
 98 tests green, ruff clean.
+
+## 2026-09-19 — evening HOLD
+
+HOLD — gates green (CI 35431690093 success on unknown --aggregate rejection
+claim); no feature work. NEXT TICK pointed at `import-judgekit --aggregate`
+argparse default `modal` lock.
