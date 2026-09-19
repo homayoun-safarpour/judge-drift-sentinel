@@ -157,7 +157,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-19)
+## NEXT TICK (evening 2026-09-19)
 
 - **Item:** Named claim that `import-judgekit --aggregate` argparse default is `modal` (matching `panel_to_run` / help), so omitting the flag cannot silently flip the collapse rule.
 - **Why:** Unknown `--aggregate` rejection and choices are locked; the adjacent operator contract is the default collapse mode operators get when they omit the flag.
