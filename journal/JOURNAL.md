@@ -383,3 +383,13 @@ asserts `import-judgekit --aggregate` argparse `choices` equal
 cannot drift from the library `AGGREGATES` gate locked by
 `test_panel_to_run_rejects_unknown_aggregate`. README judgekit section cites
 the claim. 97 tests green, ruff clean.
+
+## 2026-09-19 — import-judgekit unknown --aggregate rejection claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`
+asserts `import-judgekit` exits 2 with argparse stderr carrying
+`invalid choice` plus both `first` and `modal` when `--aggregate` is a
+value outside `AGGREGATES` (e.g. `mean`), so the choices lock cannot
+silently become a soft accept. README judgekit section cites the claim.
+98 tests green, ruff clean.

@@ -178,6 +178,9 @@ allowed set (`tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate
 CLI `--aggregate` argparse `choices` stay locked to `sorted(AGGREGATES)` and
 `--help` lists both `first` and `modal`
 (`tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`).
+An unknown CLI `--aggregate` (e.g. `mean`) fails closed with argparse exit 2
+and stderr carrying `invalid choice` plus both `first` and `modal`
+(`tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -251,6 +254,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`,
 `tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`,
 `tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`,
+`tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,

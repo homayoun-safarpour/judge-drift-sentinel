@@ -1338,6 +1338,40 @@ def test_import_judgekit_aggregate_choices_match_aggregates(capsys):
         assert allowed in help_flat
 
 
+def test_import_judgekit_cli_rejects_unknown_aggregate(capsys):
+    """Named claim: CLI rejects unknown --aggregate with argparse exit 2.
+
+    Choices are locked to ``sorted(AGGREGATES)`` by
+    ``test_import_judgekit_aggregate_choices_match_aggregates``. This claim
+    locks the operator rejection surface: an unknown value (e.g. ``mean``)
+    must exit 2 with stderr carrying ``invalid choice`` plus both ``first``
+    and ``modal``, so the choices lock cannot silently become a soft accept.
+    """
+    with pytest.raises(SystemExit) as excinfo:
+        main(
+            [
+                "import-judgekit",
+                "--panel",
+                "panel.json",
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                "anchors.jsonl",
+                "--run-out",
+                "run.json",
+                "--aggregate",
+                "mean",
+            ]
+        )
+    assert excinfo.value.code == 2
+    err = capsys.readouterr().err
+    assert "invalid choice" in err
+    assert "mean" in err
+    assert "first" in err
+    assert "modal" in err
+    assert "Traceback" not in err
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
