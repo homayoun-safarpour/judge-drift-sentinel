@@ -1372,6 +1372,54 @@ def test_import_judgekit_cli_rejects_unknown_aggregate(capsys):
     assert "Traceback" not in err
 
 
+def test_import_judgekit_aggregate_default_is_modal(tmp_path, capsys):
+    """Named claim: import-judgekit --aggregate argparse default is modal.
+
+    Unknown ``--aggregate`` rejection is locked by
+    ``test_import_judgekit_cli_rejects_unknown_aggregate``. This claim locks
+    the adjacent operator contract: argparse ``default`` for ``--aggregate``
+    must be ``modal`` (matching ``panel_to_run`` and ``--help``), and omitting
+    the flag must still report ``aggregate: modal`` in the JSON summary so
+    the collapse rule cannot silently flip.
+    """
+    parser = build_parser()
+    subparsers = next(
+        action
+        for action in parser._actions
+        if isinstance(getattr(action, "choices", None), dict)
+        and "import-judgekit" in action.choices
+    )
+    adapt = subparsers.choices["import-judgekit"]
+    aggregate_action = next(
+        action for action in adapt._actions if "--aggregate" in action.option_strings
+    )
+    assert aggregate_action.default == "modal"
+
+    with pytest.raises(SystemExit) as excinfo:
+        main(["import-judgekit", "--help"])
+    assert excinfo.value.code == 0
+    help_flat = " ".join(capsys.readouterr().out.split())
+    assert "modal (default" in help_flat
+
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(PANEL),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(tmp_path / "anchors.jsonl"),
+            "--run-out",
+            str(tmp_path / "run.json"),
+            "--json",
+        ]
+    )
+    assert code == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["aggregate"] == "modal"
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

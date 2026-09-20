@@ -96,10 +96,13 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`.
 - [x] Named claim that `import-judgekit` rejects an unknown `--aggregate` value (e.g. `mean`) with argparse exit 2 and stderr carrying `invalid choice` plus both `first` and `modal` (cost: S) (touched: 2026-09-19)
   - Done: `tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`.
+- [x] Named claim that `import-judgekit --aggregate` argparse default is `modal` (matching `panel_to_run` / help), so omitting the flag cannot silently flip the collapse rule (cost: S) (touched: 2026-09-20)
+  - Done: `tests/test_adapter.py::test_import_judgekit_aggregate_default_is_modal`.
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-20: import-judgekit --aggregate default modal claim - named test asserts argparse default is `modal`, `--help` cites `modal (default`, and omitting the flag reports `aggregate: modal` in the JSON summary; README cites the claim; pytest 99, ruff clean.
 - 2026-09-19: import-judgekit unknown --aggregate rejection claim - named test asserts argparse exit 2 with stderr carrying `invalid choice` plus both `first` and `modal` for values outside `AGGREGATES` (e.g. `mean`); README cites the claim; pytest 98, ruff clean.
 - 2026-09-18: import-judgekit --aggregate choices claim - named test asserts argparse `choices` equal `sorted(AGGREGATES)` and `--help` lists both `first` and `modal`; README cites the claim; pytest 97, ruff clean.
 - 2026-09-17: panel_to_run unknown-aggregate claim - named test asserts `ValueError` carries `aggregate must be one of` plus the sorted `AGGREGATES` set for values outside `{modal, first}`; README cites the claim; pytest 96, ruff clean.
@@ -157,9 +160,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-19)
+## NEXT TICK (daily 2026-09-20)
 
-- **Item:** Named claim that `import-judgekit --aggregate` argparse default is `modal` (matching `panel_to_run` / help), so omitting the flag cannot silently flip the collapse rule.
-- **Why:** Unknown `--aggregate` rejection and choices are locked; the adjacent operator contract is the default collapse mode operators get when they omit the flag.
+- **Item:** Named claim that `panel_to_run` signature default for `aggregate` is `"modal"` (matching CLI argparse default), so library callers omitting the kwarg get the same collapse rule as operators omitting `--aggregate`.
+- **Why:** CLI default is now locked; the adjacent library contract is the function signature default that callers rely on when they omit `aggregate=`.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
