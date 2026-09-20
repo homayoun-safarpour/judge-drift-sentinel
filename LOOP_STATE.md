@@ -160,7 +160,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-20)
+## NEXT TICK (evening 2026-09-20)
 
 - **Item:** Named claim that `panel_to_run` signature default for `aggregate` is `"modal"` (matching CLI argparse default), so library callers omitting the kwarg get the same collapse rule as operators omitting `--aggregate`.
 - **Why:** CLI default is now locked; the adjacent library contract is the function signature default that callers rely on when they omit `aggregate=`.
