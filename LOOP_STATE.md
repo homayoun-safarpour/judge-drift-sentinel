@@ -164,9 +164,33 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-21)
+## SUNDAY CLOSE (2026-09-20)
 
+Week usefulness gate for public repo `judge-drift-sentinel` @ main (retarget unchanged).
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/35575951577 (`a034a91`, panel_to_run aggregate signature default) |
+| Local ruff + pytest | PASS | `ruff check src tests` clean; `pytest -q` -> 100 passed (2026-09-21 Sunday pass) |
+| Claim still true? | YES | Release-gate rows PASS; README worked-example + adapter contract claims still backed by named tests through `test_panel_to_run_aggregate_default_is_modal` |
+| Example still runnable? | YES | `drift-sentinel baseline` then `check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833 -> 0.333) |
+| Field/external demand | Not claimed | No employer demand invented this week |
+
+Week shipped (adapter contract depth, public only): empty / whitespace `judge_id` gates; unknown-`aggregate` library + CLI; `--aggregate` choices / default / signature default locked to `modal`. Multi-format panel export stays deprioritized (no second real producer).
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge eval score drops after a provider `-latest` bump, the dashboard alone cannot tell you whether the system regressed or the ruler moved.
+2. Freeze a small human-labeled anchor set once; if judge agreement with those labels falls, the scoreboard itself is untrustworthy — that is JUDGE_DRIFT, not a rollback signal.
+3. `drift-sentinel check` returns that verdict from score files you already have (no extra model calls); exit 2 is a CI-ready stop.
+4. This week locked the judgekit import path further: blank/whitespace judge ids fail closed, and modal vs first aggregate cannot silently diverge between CLI and library defaults.
+5. Install: `pip install judge-drift-sentinel` · repo: https://github.com/homayoun-safarpour/judge-drift-sentinel · worked example still reproduces JUDGE_DRIFT (kappa 0.833 -> 0.333).
+
+## NEXT TICK (sunday 2026-09-20)
+
+- **Scaffold / retarget:** Stay on public week repo `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the Monday loop.
 - **Item:** Named claim that omitting `aggregate=` on `panel_to_run` yields the same anchor scores as `aggregate="modal"` on a panel where modal and first disagree.
-- **Why:** Signature default is now locked; the adjacent behavioral contract is that omitting the kwarg actually collapses via majority vote, not first-replicate, when the two rules diverge.
+- **Why:** Signature default is locked; the adjacent behavioral contract is that omitting the kwarg actually collapses via majority vote, not first-replicate, when the two rules diverge.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Defer:** More panel-export formats beyond `judgekit.panel_export/v1` until a second real producer exists.
 
