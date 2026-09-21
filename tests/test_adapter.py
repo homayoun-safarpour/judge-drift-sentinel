@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 from pathlib import Path
 
@@ -1418,6 +1419,20 @@ def test_import_judgekit_aggregate_default_is_modal(tmp_path, capsys):
     assert code == 0
     summary = json.loads(capsys.readouterr().out)
     assert summary["aggregate"] == "modal"
+
+
+def test_panel_to_run_aggregate_default_is_modal():
+    """Named claim: panel_to_run signature default for aggregate is modal.
+
+    CLI ``--aggregate`` argparse default is locked by
+    ``test_import_judgekit_aggregate_default_is_modal``. This claim locks the
+    adjacent library contract: the ``aggregate`` parameter default must be
+    ``"modal"``, so callers omitting the kwarg get the same collapse rule as
+    operators omitting ``--aggregate``.
+    """
+    param = inspect.signature(panel_to_run).parameters["aggregate"]
+    assert param.default == "modal"
+    assert param.kind is inspect.Parameter.KEYWORD_ONLY
 
 
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):

@@ -184,6 +184,10 @@ and stderr carrying `invalid choice` plus both `first` and `modal`
 CLI `--aggregate` argparse default stays `modal` (matching `panel_to_run`
 and `--help`); omitting the flag still reports `aggregate: modal`
 (`tests/test_adapter.py::test_import_judgekit_aggregate_default_is_modal`).
+`panel_to_run` signature default for `aggregate` stays `"modal"` (keyword-only),
+matching the CLI default so omitting the kwarg cannot silently flip the
+collapse rule
+(`tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -259,6 +263,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`,
 `tests/test_adapter.py::test_import_judgekit_aggregate_default_is_modal`,
+`tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,

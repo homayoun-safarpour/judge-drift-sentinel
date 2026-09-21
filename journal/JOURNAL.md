@@ -393,3 +393,14 @@ asserts `import-judgekit` exits 2 with argparse stderr carrying
 value outside `AGGREGATES` (e.g. `mean`), so the choices lock cannot
 silently become a soft accept. README judgekit section cites the claim.
 98 tests green, ruff clean.
+
+## 2026-09-21 — panel_to_run aggregate signature default modal claim
+
+Named claim
+`tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`
+asserts `inspect.signature(panel_to_run).parameters["aggregate"].default`
+is `"modal"` and the parameter is keyword-only, so library callers
+omitting the kwarg cannot silently diverge from the CLI
+`--aggregate` argparse default locked by
+`test_import_judgekit_aggregate_default_is_modal`. README judgekit
+section cites the claim. 100 tests green, ruff clean.
