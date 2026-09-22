@@ -164,7 +164,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-21)
+## NEXT TICK (evening 2026-09-22)
 
 - **Item:** Named claim that omitting `aggregate=` on `panel_to_run` yields the same anchor scores as `aggregate="modal"` on a panel where modal and first disagree.
 - **Why:** Signature default is now locked; the adjacent behavioral contract is that omitting the kwarg actually collapses via majority vote, not first-replicate, when the two rules diverge.
