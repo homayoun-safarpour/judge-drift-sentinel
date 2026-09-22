@@ -404,3 +404,10 @@ omitting the kwarg cannot silently diverge from the CLI
 `--aggregate` argparse default locked by
 `test_import_judgekit_aggregate_default_is_modal`. README judgekit
 section cites the claim. 100 tests green, ruff clean.
+
+## 2026-09-22 — evening HOLD
+
+HOLD — gates green (CI 35575951577 success on panel_to_run aggregate
+signature default modal claim); no feature work. NEXT TICK pointed at
+omitting aggregate= vs aggregate="modal" behavioral lock when modal and
+first disagree.
