@@ -1435,6 +1435,36 @@ def test_panel_to_run_aggregate_default_is_modal():
     assert param.kind is inspect.Parameter.KEYWORD_ONLY
 
 
+def test_panel_to_run_omit_aggregate_matches_explicit_modal():
+    """Named claim: omitting aggregate= yields the same scores as aggregate="modal".
+
+    Signature default ``"modal"`` is locked by
+    ``test_panel_to_run_aggregate_default_is_modal``. This claim locks the
+    adjacent behavioral contract: on a panel where modal and first disagree,
+    calling ``panel_to_run`` without ``aggregate=`` must produce the same
+    ``anchor_scores`` as ``aggregate="modal"``, and those scores must differ
+    from ``aggregate="first"``, so the default cannot silently collapse via
+    first-replicate.
+    """
+    # first replicate is "pass"; majority is "fail" -> rules diverge
+    panel = parse_panel_dict(
+        {
+            "schema_version": SCHEMA_VERSION,
+            "human_labels": {"a01": "fail"},
+            "ratings": {"a01": {"gpt-4o-judge": ["pass", "fail", "fail"]}},
+            "judges": {"gpt-4o-judge": {"model": "gpt-4o-judge", "prompt_sha": "omit-agg"}},
+        }
+    )
+    omitted = panel_to_run(panel, "gpt-4o-judge")
+    explicit_modal = panel_to_run(panel, "gpt-4o-judge", aggregate="modal")
+    explicit_first = panel_to_run(panel, "gpt-4o-judge", aggregate="first")
+
+    assert omitted.anchor_scores == explicit_modal.anchor_scores
+    assert omitted.anchor_scores["a01"] == "fail"
+    assert explicit_first.anchor_scores["a01"] == "pass"
+    assert omitted.anchor_scores != explicit_first.anchor_scores
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

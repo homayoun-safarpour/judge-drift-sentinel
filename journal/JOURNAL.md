@@ -404,3 +404,15 @@ omitting the kwarg cannot silently diverge from the CLI
 `--aggregate` argparse default locked by
 `test_import_judgekit_aggregate_default_is_modal`. README judgekit
 section cites the claim. 100 tests green, ruff clean.
+
+## 2026-09-22 — panel_to_run omit-aggregate equals explicit modal claim
+
+Named claim
+`tests/test_adapter.py::test_panel_to_run_omit_aggregate_matches_explicit_modal`
+asserts that omitting `aggregate=` on `panel_to_run` yields the same
+`anchor_scores` as `aggregate="modal"` on a panel where modal and first
+disagree, and that those scores differ from `aggregate="first"`, so the
+signature default locked by
+`test_panel_to_run_aggregate_default_is_modal` cannot silently collapse
+via first-replicate. README judgekit section cites the claim. 101 tests
+green, ruff clean.
