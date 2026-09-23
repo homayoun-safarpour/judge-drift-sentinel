@@ -416,3 +416,7 @@ signature default locked by
 `test_panel_to_run_aggregate_default_is_modal` cannot silently collapse
 via first-replicate. README judgekit section cites the claim. 101 tests
 green, ruff clean.
+
+## 2026-09-23 — evening HOLD
+
+HOLD — gates green (CI 35702836064 success on panel_to_run omit-aggregate equals explicit modal claim); no feature work. NEXT TICK pointed at omitting --aggregate vs --aggregate modal written-score lock when modal and first disagree.
