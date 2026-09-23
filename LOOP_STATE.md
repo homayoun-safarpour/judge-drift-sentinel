@@ -167,7 +167,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-22)
+## NEXT TICK (evening 2026-09-23)
 
 - **Item:** Named claim that omitting `--aggregate` on `import-judgekit` yields the same written `anchor_scores` as `--aggregate modal` on a panel where modal and first disagree.
 - **Why:** Library omit-kwarg already locks modal collapse when rules diverge; the adjacent CLI contract is that operators omitting `--aggregate` get the same written scores as an explicit `--aggregate modal`, not a silent first-replicate flip.
