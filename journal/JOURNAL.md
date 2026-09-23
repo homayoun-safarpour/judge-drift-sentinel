@@ -416,3 +416,15 @@ signature default locked by
 `test_panel_to_run_aggregate_default_is_modal` cannot silently collapse
 via first-replicate. README judgekit section cites the claim. 101 tests
 green, ruff clean.
+
+## 2026-09-23 — import-judgekit omit --aggregate equals explicit modal claim
+
+Named claim
+`tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`
+asserts that omitting `--aggregate` on `import-judgekit` yields the same
+written `anchor_scores` as `--aggregate modal` on a panel where modal and
+first disagree, and that those scores differ from `--aggregate first`, so
+the argparse default locked by
+`test_import_judgekit_aggregate_default_is_modal` cannot silently collapse
+via first-replicate. README judgekit section cites the claim. 102 tests
+green, ruff clean.

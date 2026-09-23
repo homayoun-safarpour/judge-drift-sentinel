@@ -1465,6 +1465,63 @@ def test_panel_to_run_omit_aggregate_matches_explicit_modal():
     assert omitted.anchor_scores != explicit_first.anchor_scores
 
 
+def test_import_judgekit_omit_aggregate_matches_explicit_modal(tmp_path):
+    """Named claim: omitting --aggregate yields the same written scores as modal.
+
+    Library omit-``aggregate=`` behavioral lock is
+    ``test_panel_to_run_omit_aggregate_matches_explicit_modal``. This claim
+    locks the adjacent CLI contract: on a panel where modal and first disagree,
+    omitting ``--aggregate`` must write the same ``anchor_scores`` as
+    ``--aggregate modal``, and those scores must differ from
+    ``--aggregate first``, so the argparse default cannot silently collapse
+    via first-replicate.
+    """
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "human_labels": {"a01": "fail"},
+                "ratings": {"a01": {"gpt-4o-judge": ["pass", "fail", "fail"]}},
+                "judges": {
+                    "gpt-4o-judge": {
+                        "model": "gpt-4o-judge",
+                        "prompt_sha": "omit-cli-agg",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def _run(aggregate_flag: list[str], run_name: str) -> dict:
+        code = main(
+            [
+                "import-judgekit",
+                "--panel",
+                str(panel_path),
+                "--judge",
+                "gpt-4o-judge",
+                "--anchors-out",
+                str(tmp_path / f"{run_name}-anchors.jsonl"),
+                "--run-out",
+                str(tmp_path / f"{run_name}-run.json"),
+                *aggregate_flag,
+            ]
+        )
+        assert code == 0
+        return json.loads((tmp_path / f"{run_name}-run.json").read_text(encoding="utf-8"))
+
+    omitted = _run([], "omit")
+    explicit_modal = _run(["--aggregate", "modal"], "modal")
+    explicit_first = _run(["--aggregate", "first"], "first")
+
+    assert omitted["anchor_scores"] == explicit_modal["anchor_scores"]
+    assert omitted["anchor_scores"]["a01"] == "fail"
+    assert explicit_first["anchor_scores"]["a01"] == "pass"
+    assert omitted["anchor_scores"] != explicit_first["anchor_scores"]
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

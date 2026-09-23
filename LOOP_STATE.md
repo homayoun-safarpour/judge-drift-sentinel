@@ -102,11 +102,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`.
 - [x] Named claim that omitting `aggregate=` on `panel_to_run` yields the same anchor scores as `aggregate="modal"` on a panel where modal and first disagree (cost: S) (touched: 2026-09-22)
   - Done: `tests/test_adapter.py::test_panel_to_run_omit_aggregate_matches_explicit_modal`.
-- [ ] Named claim that omitting `--aggregate` on `import-judgekit` yields the same written `anchor_scores` as `--aggregate modal` on a panel where modal and first disagree (cost: S)
+- [x] Named claim that omitting `--aggregate` on `import-judgekit` yields the same written `anchor_scores` as `--aggregate modal` on a panel where modal and first disagree (cost: S) (touched: 2026-09-23)
+  - Done: `tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`.
+- [ ] Named claim that CLI omit-`--aggregate` and library omit-`aggregate=` write the same `anchor_scores` on a panel where modal and first disagree (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-23: import-judgekit omit-`--aggregate` equals explicit modal claim - named test asserts omitting `--aggregate` yields the same written `anchor_scores` as `--aggregate modal` (and differs from `--aggregate first`) on a panel where modal and first disagree; README cites the claim; pytest 102, ruff clean.
 - 2026-09-22: panel_to_run omit-aggregate equals explicit modal claim - named test asserts omitting `aggregate=` yields the same `anchor_scores` as `aggregate="modal"` (and differs from `aggregate="first"`) on a panel where modal and first disagree; README cites the claim; pytest 101, ruff clean.
 - 2026-09-21: panel_to_run aggregate signature default modal claim - named test asserts `inspect.signature(panel_to_run).parameters["aggregate"].default == "modal"` and keyword-only; README cites the claim; pytest 100, ruff clean.
 - 2026-09-20: import-judgekit --aggregate default modal claim - named test asserts argparse default is `modal`, `--help` cites `modal (default`, and omitting the flag reports `aggregate: modal` in the JSON summary; README cites the claim; pytest 99, ruff clean.
@@ -167,9 +170,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-22)
+## NEXT TICK (daily 2026-09-23)
 
-- **Item:** Named claim that omitting `--aggregate` on `import-judgekit` yields the same written `anchor_scores` as `--aggregate modal` on a panel where modal and first disagree.
-- **Why:** Library omit-kwarg already locks modal collapse when rules diverge; the adjacent CLI contract is that operators omitting `--aggregate` get the same written scores as an explicit `--aggregate modal`, not a silent first-replicate flip.
+- **Item:** Named claim that CLI omit-`--aggregate` and library omit-`aggregate=` write the same `anchor_scores` on a panel where modal and first disagree.
+- **Why:** CLI and library each lock omit→modal independently; the adjacent parity claim is that both omit paths produce identical scores on the same diverge panel, so the two defaults cannot drift apart.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
