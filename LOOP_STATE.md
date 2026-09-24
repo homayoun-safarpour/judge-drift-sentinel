@@ -170,7 +170,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-23)
+## NEXT TICK (evening 2026-09-24)
 
 - **Item:** Named claim that CLI omit-`--aggregate` and library omit-`aggregate=` write the same `anchor_scores` on a panel where modal and first disagree.
 - **Why:** CLI and library each lock omit→modal independently; the adjacent parity claim is that both omit paths produce identical scores on the same diverge panel, so the two defaults cannot drift apart.

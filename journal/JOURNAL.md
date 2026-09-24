@@ -428,3 +428,7 @@ the argparse default locked by
 `test_import_judgekit_aggregate_default_is_modal` cannot silently collapse
 via first-replicate. README judgekit section cites the claim. 102 tests
 green, ruff clean.
+
+## 2026-09-24 — evening HOLD
+
+HOLD — gates green (CI 35835232474 success on import-judgekit omit-aggregate equals explicit modal claim); no feature work. NEXT TICK pointed at CLI omit-`--aggregate` vs library omit-`aggregate=` written-score parity when modal and first disagree.
