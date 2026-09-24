@@ -1522,6 +1522,61 @@ def test_import_judgekit_omit_aggregate_matches_explicit_modal(tmp_path):
     assert omitted["anchor_scores"] != explicit_first["anchor_scores"]
 
 
+def test_omit_aggregate_cli_and_library_write_same_anchor_scores(tmp_path):
+    """Named claim: CLI omit --aggregate and library omit aggregate= match.
+
+    CLI omit→modal and library omit→modal are locked separately by
+    ``test_import_judgekit_omit_aggregate_matches_explicit_modal`` and
+    ``test_panel_to_run_omit_aggregate_matches_explicit_modal``. This claim
+    locks the cross-path parity: on a panel where modal and first disagree,
+    omitting ``--aggregate`` on ``import-judgekit`` must write the same
+    ``anchor_scores`` as calling ``panel_to_run`` without ``aggregate=``,
+    and those shared scores must differ from ``aggregate="first"``, so the
+    two defaults cannot drift apart.
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "human_labels": {"a01": "fail"},
+        "ratings": {"a01": {"gpt-4o-judge": ["pass", "fail", "fail"]}},
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "gpt-4o-judge",
+                "prompt_sha": "omit-parity-agg",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    library_omitted = panel_to_run(parse_panel_dict(panel_dict), "gpt-4o-judge")
+    library_first = panel_to_run(
+        parse_panel_dict(panel_dict), "gpt-4o-judge", aggregate="first"
+    )
+
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(tmp_path / "cli-omit-anchors.jsonl"),
+            "--run-out",
+            str(tmp_path / "cli-omit-run.json"),
+        ]
+    )
+    assert code == 0
+    cli_omitted = json.loads(
+        (tmp_path / "cli-omit-run.json").read_text(encoding="utf-8")
+    )
+
+    assert cli_omitted["anchor_scores"] == library_omitted.anchor_scores
+    assert cli_omitted["anchor_scores"]["a01"] == "fail"
+    assert library_first.anchor_scores["a01"] == "pass"
+    assert cli_omitted["anchor_scores"] != library_first.anchor_scores
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

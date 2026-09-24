@@ -428,3 +428,14 @@ the argparse default locked by
 `test_import_judgekit_aggregate_default_is_modal` cannot silently collapse
 via first-replicate. README judgekit section cites the claim. 102 tests
 green, ruff clean.
+
+## 2026-09-24 — CLI↔library omit-aggregate score parity claim
+
+Named claim
+`tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`
+asserts that omitting `--aggregate` on `import-judgekit` yields the same
+written `anchor_scores` as omitting `aggregate=` on `panel_to_run` on a
+panel where modal and first disagree, and that those shared scores differ
+from `aggregate="first"`, so the two omit→modal defaults cannot drift
+apart. README judgekit section cites the claim. 103 tests green, ruff
+clean.

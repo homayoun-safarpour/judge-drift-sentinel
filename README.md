@@ -196,6 +196,10 @@ Omitting `--aggregate` on `import-judgekit` yields the same written
 `anchor_scores` as `--aggregate modal` on a panel where modal and first
 disagree (and those scores differ from `--aggregate first`)
 (`tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`).
+CLI omit-`--aggregate` and library omit-`aggregate=` write the same
+`anchor_scores` on a panel where modal and first disagree (and those
+scores differ from `aggregate="first"`)
+(`tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -274,6 +278,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`,
 `tests/test_adapter.py::test_panel_to_run_omit_aggregate_matches_explicit_modal`,
 `tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`,
+`tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
