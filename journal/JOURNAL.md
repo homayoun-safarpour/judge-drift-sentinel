@@ -439,3 +439,14 @@ panel where modal and first disagree, and that those shared scores differ
 from `aggregate="first"`, so the two omit→modal defaults cannot drift
 apart. README judgekit section cites the claim. 103 tests green, ruff
 clean.
+
+## 2026-09-25 — CLI↔library --aggregate first score parity claim
+
+Named claim
+`tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`
+asserts that `--aggregate first` on `import-judgekit` yields the same
+written `anchor_scores` as `aggregate="first"` on `panel_to_run` on a
+panel where modal and first disagree, and that those shared scores differ
+from the omit→modal path, so the explicit `first` collapse rule cannot
+drift between CLI and library. README judgekit section cites the claim.
+104 tests green, ruff clean.

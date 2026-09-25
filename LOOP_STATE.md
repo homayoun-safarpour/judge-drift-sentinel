@@ -106,11 +106,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`.
 - [x] Named claim that CLI omit-`--aggregate` and library omit-`aggregate=` write the same `anchor_scores` on a panel where modal and first disagree (cost: S) (touched: 2026-09-24)
   - Done: `tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`.
-- [ ] Named claim that CLI `--aggregate first` and library `aggregate="first"` write the same `anchor_scores` on a panel where modal and first disagree (cost: S)
+- [x] Named claim that CLI `--aggregate first` and library `aggregate="first"` write the same `anchor_scores` on a panel where modal and first disagree (cost: S) (touched: 2026-09-25)
+  - Done: `tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`.
+- [ ] Named claim that CLI `--aggregate modal` and library `aggregate="modal"` write the same `anchor_scores` on a panel where modal and first disagree (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-25: CLI↔library `--aggregate first` score parity claim - named test asserts `--aggregate first` on `import-judgekit` yields the same written `anchor_scores` as `aggregate="first"` on `panel_to_run` (and differs from omit→modal) on a panel where modal and first disagree; README cites the claim; pytest 104, ruff clean.
 - 2026-09-24: CLI↔library omit-aggregate score parity claim - named test asserts omitting `--aggregate` on `import-judgekit` yields the same written `anchor_scores` as omitting `aggregate=` on `panel_to_run` (and differs from `aggregate="first"`) on a panel where modal and first disagree; README cites the claim; pytest 103, ruff clean.
 - 2026-09-23: import-judgekit omit-`--aggregate` equals explicit modal claim - named test asserts omitting `--aggregate` yields the same written `anchor_scores` as `--aggregate modal` (and differs from `--aggregate first`) on a panel where modal and first disagree; README cites the claim; pytest 102, ruff clean.
 - 2026-09-22: panel_to_run omit-aggregate equals explicit modal claim - named test asserts omitting `aggregate=` yields the same `anchor_scores` as `aggregate="modal"` (and differs from `aggregate="first"`) on a panel where modal and first disagree; README cites the claim; pytest 101, ruff clean.
@@ -173,9 +176,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-24)
+## NEXT TICK (daily 2026-09-25)
 
-- **Item:** Named claim that CLI `--aggregate first` and library `aggregate="first"` write the same `anchor_scores` on a panel where modal and first disagree.
-- **Why:** Omit-path CLI↔library parity is locked; the adjacent claim is that the explicit `first` collapse rule also matches across CLI and library on the same diverge panel, so the non-default path cannot drift either.
+- **Item:** Named claim that CLI `--aggregate modal` and library `aggregate="modal"` write the same `anchor_scores` on a panel where modal and first disagree.
+- **Why:** Omit-path and explicit-`first` CLI↔library score parity are locked; the remaining adjacent claim is that the explicit `modal` path also matches across CLI and library on the same diverge panel, so neither allowed aggregate can drift between surfaces.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
