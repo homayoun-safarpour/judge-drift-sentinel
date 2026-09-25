@@ -450,3 +450,7 @@ panel where modal and first disagree, and that those shared scores differ
 from the omit→modal path, so the explicit `first` collapse rule cannot
 drift between CLI and library. README judgekit section cites the claim.
 104 tests green, ruff clean.
+
+## 2026-09-25 — evening HOLD
+
+HOLD — gates green (CI 36111736832 success on aggregate-first CLI and library score parity claim); no feature work. NEXT TICK pointed at CLI `--aggregate modal` vs library `aggregate="modal"` written-score parity when modal and first disagree.
