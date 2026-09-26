@@ -108,11 +108,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`.
 - [x] Named claim that CLI `--aggregate first` and library `aggregate="first"` write the same `anchor_scores` on a panel where modal and first disagree (cost: S) (touched: 2026-09-25)
   - Done: `tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`.
-- [ ] Named claim that CLI `--aggregate modal` and library `aggregate="modal"` write the same `anchor_scores` on a panel where modal and first disagree (cost: S)
+- [x] Named claim that CLI `--aggregate modal` and library `aggregate="modal"` write the same `anchor_scores` on a panel where modal and first disagree (cost: S) (touched: 2026-09-26)
+  - Done: `tests/test_adapter.py::test_aggregate_modal_cli_and_library_write_same_anchor_scores`.
+- [ ] Named claim that CLI `--anchors-out` and library `write_anchors_jsonl(panel_to_anchors(...))` write the same JSONL rows for a given panel (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-26: CLI↔library `--aggregate modal` score parity claim - named test asserts `--aggregate modal` on `import-judgekit` yields the same written `anchor_scores` as `aggregate="modal"` on `panel_to_run` (and differs from `aggregate="first"`) on a panel where modal and first disagree; README cites the claim; pytest 105, ruff clean.
 - 2026-09-25: CLI↔library `--aggregate first` score parity claim - named test asserts `--aggregate first` on `import-judgekit` yields the same written `anchor_scores` as `aggregate="first"` on `panel_to_run` (and differs from omit→modal) on a panel where modal and first disagree; README cites the claim; pytest 104, ruff clean.
 - 2026-09-24: CLI↔library omit-aggregate score parity claim - named test asserts omitting `--aggregate` on `import-judgekit` yields the same written `anchor_scores` as omitting `aggregate=` on `panel_to_run` (and differs from `aggregate="first"`) on a panel where modal and first disagree; README cites the claim; pytest 103, ruff clean.
 - 2026-09-23: import-judgekit omit-`--aggregate` equals explicit modal claim - named test asserts omitting `--aggregate` yields the same written `anchor_scores` as `--aggregate modal` (and differs from `--aggregate first`) on a panel where modal and first disagree; README cites the claim; pytest 102, ruff clean.
@@ -176,9 +179,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-25)
+## NEXT TICK (daily 2026-09-26)
 
-- **Item:** Named claim that CLI `--aggregate modal` and library `aggregate="modal"` write the same `anchor_scores` on a panel where modal and first disagree.
-- **Why:** Omit-path and explicit-`first` CLI↔library score parity are locked; the remaining adjacent claim is that the explicit `modal` path also matches across CLI and library on the same diverge panel, so neither allowed aggregate can drift between surfaces.
+- **Item:** Named claim that CLI `--anchors-out` and library `write_anchors_jsonl(panel_to_anchors(...))` write the same JSONL rows for a given panel.
+- **Why:** Both allowed aggregates now have CLI↔library `anchor_scores` parity on the run JSON; the adjacent import surface is the anchors JSONL side, so human-label rows cannot drift between `import-judgekit --anchors-out` and the library write path.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 

@@ -1633,6 +1633,64 @@ def test_aggregate_first_cli_and_library_write_same_anchor_scores(tmp_path):
     assert cli_first["anchor_scores"] != library_omitted.anchor_scores
 
 
+def test_aggregate_modal_cli_and_library_write_same_anchor_scores(tmp_path):
+    """Named claim: CLI --aggregate modal and library aggregate="modal" match.
+
+    Explicit-``first`` CLI↔library parity is locked by
+    ``test_aggregate_first_cli_and_library_write_same_anchor_scores``. This claim
+    locks the remaining allowed aggregate: on a panel where modal and first
+    disagree, ``import-judgekit --aggregate modal`` must write the same
+    ``anchor_scores`` as ``panel_to_run(..., aggregate="modal")``, and those
+    shared scores must differ from ``aggregate="first"``, so the explicit
+    ``modal`` collapse rule cannot drift between CLI and library.
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "human_labels": {"a01": "fail"},
+        "ratings": {"a01": {"gpt-4o-judge": ["pass", "fail", "fail"]}},
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "gpt-4o-judge",
+                "prompt_sha": "modal-parity-agg",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    library_modal = panel_to_run(
+        parse_panel_dict(panel_dict), "gpt-4o-judge", aggregate="modal"
+    )
+    library_first = panel_to_run(
+        parse_panel_dict(panel_dict), "gpt-4o-judge", aggregate="first"
+    )
+
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--aggregate",
+            "modal",
+            "--anchors-out",
+            str(tmp_path / "cli-modal-anchors.jsonl"),
+            "--run-out",
+            str(tmp_path / "cli-modal-run.json"),
+        ]
+    )
+    assert code == 0
+    cli_modal = json.loads(
+        (tmp_path / "cli-modal-run.json").read_text(encoding="utf-8")
+    )
+
+    assert cli_modal["anchor_scores"] == library_modal.anchor_scores
+    assert cli_modal["anchor_scores"]["a01"] == "fail"
+    assert library_first.anchor_scores["a01"] == "pass"
+    assert cli_modal["anchor_scores"] != library_first.anchor_scores
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
