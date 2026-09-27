@@ -1691,6 +1691,69 @@ def test_aggregate_modal_cli_and_library_write_same_anchor_scores(tmp_path):
     assert cli_modal["anchor_scores"] != library_first.anchor_scores
 
 
+def test_anchors_out_cli_and_library_write_same_jsonl_rows(tmp_path):
+    """Named claim: CLI --anchors-out and library write_anchors_jsonl match.
+
+    Run-JSON ``anchor_scores`` CLI↔library parity is locked for both allowed
+    aggregates. This claim locks the adjacent anchors surface: on a panel with
+    unsorted human-label insertion order, ``import-judgekit --anchors-out``
+    must write the same JSONL rows (sorted ``{id, label}`` lines, trailing
+    newline) as ``write_anchors_jsonl(panel_to_anchors(...))``, so human-label
+    rows cannot drift between the CLI and library write paths.
+    """
+    # Insertion order deliberately unsorted so both paths must sort by id.
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "gpt-4o-judge",
+                "prompt_sha": "anchors-out-parity",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    cli_anchors = tmp_path / "cli-anchors.jsonl"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(cli_anchors),
+            "--run-out",
+            str(tmp_path / "cli-run.json"),
+        ]
+    )
+    assert code == 0
+
+    library_anchors = tmp_path / "library-anchors.jsonl"
+    write_anchors_jsonl(
+        library_anchors, panel_to_anchors(parse_panel_dict(panel_dict))
+    )
+
+    cli_text = cli_anchors.read_text(encoding="utf-8")
+    library_text = library_anchors.read_text(encoding="utf-8")
+    assert cli_text == library_text
+    assert cli_text.endswith("\n")
+
+    rows = [json.loads(line) for line in cli_text.splitlines()]
+    assert rows == [
+        {"id": "a01", "label": "pass"},
+        {"id": "m05", "label": "pass"},
+        {"id": "z09", "label": "fail"},
+    ]
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

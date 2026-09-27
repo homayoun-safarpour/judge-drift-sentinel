@@ -450,3 +450,14 @@ panel where modal and first disagree, and that those shared scores differ
 from the omit→modal path, so the explicit `first` collapse rule cannot
 drift between CLI and library. README judgekit section cites the claim.
 104 tests green, ruff clean.
+
+## 2026-09-27 — CLI↔library --anchors-out JSONL parity claim
+
+Named claim
+`tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`
+asserts that `--anchors-out` on `import-judgekit` yields the same JSONL
+rows as `write_anchors_jsonl(panel_to_anchors(...))` on a panel with
+unsorted human-label insertion order (sorted `{id, label}` lines, trailing
+newline), so human-label rows cannot drift between CLI and library write
+paths. README judgekit section cites the claim. 106 tests green, ruff
+clean.
