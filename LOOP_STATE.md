@@ -179,7 +179,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-26)
+## NEXT TICK (evening 2026-09-27)
 
 - **Item:** Named claim that CLI `--anchors-out` and library `write_anchors_jsonl(panel_to_anchors(...))` write the same JSONL rows for a given panel.
 - **Why:** Both allowed aggregates now have CLI↔library `anchor_scores` parity on the run JSON; the adjacent import surface is the anchors JSONL side, so human-label rows cannot drift between `import-judgekit --anchors-out` and the library write path.
