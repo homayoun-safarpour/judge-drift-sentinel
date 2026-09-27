@@ -450,3 +450,7 @@ panel where modal and first disagree, and that those shared scores differ
 from the omit→modal path, so the explicit `first` collapse rule cannot
 drift between CLI and library. README judgekit section cites the claim.
 104 tests green, ruff clean.
+
+## 2026-09-27 — evening HOLD
+
+HOLD — gates green (CI 36229284323 success on aggregate-modal CLI and library score parity claim); no feature work. NEXT TICK pointed at CLI `--anchors-out` vs library `write_anchors_jsonl(panel_to_anchors(...))` JSONL row parity for a given panel.
