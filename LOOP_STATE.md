@@ -182,7 +182,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-27)
+## NEXT TICK (evening 2026-09-28)
 
 - **Item:** Named claim that CLI `--run-out` and library `write_run_json(panel_to_run(...))` write the same run JSON for a given panel.
 - **Why:** Anchors JSONL CLI↔library write parity is locked; the remaining import write surface is the run JSON side, so judge scores / fingerprints cannot drift between `import-judgekit --run-out` and the library write path.

@@ -461,3 +461,7 @@ unsorted human-label insertion order (sorted `{id, label}` lines, trailing
 newline), so human-label rows cannot drift between CLI and library write
 paths. README judgekit section cites the claim. 106 tests green, ruff
 clean.
+
+## 2026-09-28 — evening HOLD
+
+HOLD — gates green (CI 36304981324 success on anchors-out CLI and library JSONL parity claim); no feature work. NEXT TICK pointed at CLI `--run-out` vs library `write_run_json(panel_to_run(...))` run JSON parity for a given panel.
