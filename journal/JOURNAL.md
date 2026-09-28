@@ -461,3 +461,14 @@ unsorted human-label insertion order (sorted `{id, label}` lines, trailing
 newline), so human-label rows cannot drift between CLI and library write
 paths. README judgekit section cites the claim. 106 tests green, ruff
 clean.
+
+## 2026-09-28 — CLI↔library --run-out run JSON parity claim
+
+Named claim
+`tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`
+asserts that `--run-out` on `import-judgekit` yields the same run JSON as
+`write_run_json(panel_to_run(...))` on a panel with unsorted human-label
+insertion order (indent-2, trailing newline, sorted `anchor_scores`,
+`created` / `live_metric` / judge fingerprints), so judge scores and
+fingerprints cannot drift between CLI and library write paths. README
+judgekit section cites the claim. 107 tests green, ruff clean.

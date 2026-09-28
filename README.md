@@ -211,6 +211,9 @@ scores differ from `aggregate="first"`)
 CLI `--anchors-out` and library `write_anchors_jsonl(panel_to_anchors(...))`
 write the same JSONL rows for a given panel
 (`tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`).
+CLI `--run-out` and library `write_run_json(panel_to_run(...))` write the
+same run JSON for a given panel
+(`tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -293,6 +296,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`,
 `tests/test_adapter.py::test_aggregate_modal_cli_and_library_write_same_anchor_scores`,
 `tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`,
+`tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,

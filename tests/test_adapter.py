@@ -18,6 +18,7 @@ from driftsentinel.adapter import (
     panel_to_run,
     parse_panel_dict,
     write_anchors_jsonl,
+    write_run_json,
 )
 from driftsentinel.cli import build_parser, main
 from driftsentinel.runs import load_run
@@ -1752,6 +1753,73 @@ def test_anchors_out_cli_and_library_write_same_jsonl_rows(tmp_path):
         {"id": "m05", "label": "pass"},
         {"id": "z09", "label": "fail"},
     ]
+
+
+def test_run_out_cli_and_library_write_same_run_json(tmp_path):
+    """Named claim: CLI --run-out and library write_run_json match.
+
+    Anchors JSONL CLI↔library write parity is locked. This claim locks the
+    adjacent run surface: on a panel with unsorted human-label insertion
+    order plus ``created`` / ``live_metric`` / judge fingerprints,
+    ``import-judgekit --run-out`` must write the same run JSON (indent-2,
+    trailing newline) as ``write_run_json(panel_to_run(...))``, so judge
+    scores and fingerprints cannot drift between the CLI and library write
+    paths.
+    """
+    # Insertion order deliberately unsorted so both paths must sort scores by id.
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-09-28",
+        "live_metric": 0.77,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "gpt-4o-judge",
+                "prompt_sha": "run-out-parity",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    cli_run = tmp_path / "cli-run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--anchors-out",
+            str(tmp_path / "cli-anchors.jsonl"),
+            "--run-out",
+            str(cli_run),
+        ]
+    )
+    assert code == 0
+
+    library_run = tmp_path / "library-run.json"
+    write_run_json(
+        library_run, panel_to_run(parse_panel_dict(panel_dict), "gpt-4o-judge")
+    )
+
+    cli_text = cli_run.read_text(encoding="utf-8")
+    library_text = library_run.read_text(encoding="utf-8")
+    assert cli_text == library_text
+    assert cli_text.endswith("\n")
+
+    payload = json.loads(cli_text)
+    assert payload == {
+        "judge": {"model": "gpt-4o-judge", "prompt_sha": "run-out-parity"},
+        "created": "2026-09-28",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.77,
+    }
 
 
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
