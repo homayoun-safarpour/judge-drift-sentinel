@@ -182,9 +182,33 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-27)
+## SUNDAY CLOSE (2026-09-27)
 
+Week usefulness gate for public repo `judge-drift-sentinel` @ main (retarget unchanged).
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/36304981324 (`90ea296`, anchors-out CLI↔library JSONL parity) |
+| Local ruff + pytest | PASS | `ruff check src tests` clean; `pytest -q` -> 106 passed (2026-09-28 Sunday pass) |
+| Claim still true? | YES | Release-gate rows PASS; README worked-example + adapter contract claims still backed by named tests through `test_anchors_out_cli_and_library_write_same_jsonl_rows` |
+| Example still runnable? | YES | `drift-sentinel baseline` then `check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833 -> 0.333) |
+| Field/external demand | Not claimed | No employer demand invented this week |
+
+Week shipped (adapter CLI↔library parity, public only): omit-`aggregate` equals modal (library + CLI + cross-path); `--aggregate first` / `modal` CLI↔library score parity; `--anchors-out` CLI↔library JSONL row parity. Multi-format panel export stays deprioritized (no second real producer).
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge eval score drops after a provider `-latest` bump, the dashboard alone cannot tell you whether the system regressed or the ruler moved.
+2. Freeze a small human-labeled anchor set once; if judge agreement with those labels falls, the scoreboard itself is untrustworthy — that is JUDGE_DRIFT, not a rollback signal.
+3. `drift-sentinel check` returns that verdict from score files you already have (no extra model calls); exit 2 is a CI-ready stop.
+4. This week locked judgekit import write/score parity: omit-aggregate cannot silently flip to first, and CLI vs library paths agree on modal/first scores and anchors JSONL rows.
+5. Install: `pip install judge-drift-sentinel` · repo: https://github.com/homayoun-safarpour/judge-drift-sentinel · worked example still reproduces JUDGE_DRIFT (kappa 0.833 -> 0.333).
+
+## NEXT TICK (sunday 2026-09-27)
+
+- **Scaffold / retarget:** Stay on public week repo `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the Monday loop.
 - **Item:** Named claim that CLI `--run-out` and library `write_run_json(panel_to_run(...))` write the same run JSON for a given panel.
 - **Why:** Anchors JSONL CLI↔library write parity is locked; the remaining import write surface is the run JSON side, so judge scores / fingerprints cannot drift between `import-judgekit --run-out` and the library write path.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Defer:** More panel-export formats beyond `judgekit.panel_export/v1` until a second real producer exists.
 
