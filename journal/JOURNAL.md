@@ -472,3 +472,14 @@ insertion order (indent-2, trailing newline, sorted `anchor_scores`,
 `created` / `live_metric` / judge fingerprints), so judge scores and
 fingerprints cannot drift between CLI and library write paths. README
 judgekit section cites the claim. 107 tests green, ruff clean.
+
+## 2026-09-29 — CLI↔library fingerprint override parity claim
+
+Named claim
+`tests/test_adapter.py::test_fingerprint_override_cli_and_library_write_same_run_json`
+asserts that `--model` / `--prompt-sha` on `import-judgekit` yield the
+same written run JSON fingerprints as `model=` / `prompt_sha=` on
+`panel_to_run` via `--run-out` / `write_run_json` on a panel whose judge
+meta fingerprints differ from the override values, so operator fingerprint
+overrides cannot drift between CLI and library write paths. README
+judgekit section cites the claim. 108 tests green, ruff clean.

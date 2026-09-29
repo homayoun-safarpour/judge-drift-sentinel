@@ -1822,6 +1822,87 @@ def test_run_out_cli_and_library_write_same_run_json(tmp_path):
     }
 
 
+def test_fingerprint_override_cli_and_library_write_same_run_json(tmp_path):
+    """Named claim: CLI --model/--prompt-sha and library kwargs match.
+
+    Default-fingerprint run JSON CLI↔library write parity is locked. This
+    claim locks the operator override knobs: on a panel whose judge meta
+    fingerprints differ from the override values, ``import-judgekit
+    --model`` / ``--prompt-sha`` with ``--run-out`` must write the same run
+    JSON as ``write_run_json(panel_to_run(..., model=..., prompt_sha=...))``,
+    so override fingerprints cannot drift between the CLI and library write
+    paths.
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-09-29",
+        "live_metric": 0.64,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    cli_run = tmp_path / "cli-run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "override-model",
+            "--prompt-sha",
+            "override-sha",
+            "--anchors-out",
+            str(tmp_path / "cli-anchors.jsonl"),
+            "--run-out",
+            str(cli_run),
+        ]
+    )
+    assert code == 0
+
+    library_run = tmp_path / "library-run.json"
+    write_run_json(
+        library_run,
+        panel_to_run(
+            parse_panel_dict(panel_dict),
+            "gpt-4o-judge",
+            model="override-model",
+            prompt_sha="override-sha",
+        ),
+    )
+
+    cli_text = cli_run.read_text(encoding="utf-8")
+    library_text = library_run.read_text(encoding="utf-8")
+    assert cli_text == library_text
+    assert cli_text.endswith("\n")
+
+    payload = json.loads(cli_text)
+    assert payload == {
+        "judge": {"model": "override-model", "prompt_sha": "override-sha"},
+        "created": "2026-09-29",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.64,
+    }
+    # Overrides must replace panel fingerprints, not append or fall through.
+    assert payload["judge"] != {
+        "model": "panel-model",
+        "prompt_sha": "panel-sha",
+    }
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

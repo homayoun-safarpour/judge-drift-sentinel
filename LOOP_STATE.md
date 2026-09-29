@@ -114,11 +114,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`.
 - [x] Named claim that CLI `--run-out` and library `write_run_json(panel_to_run(...))` write the same run JSON for a given panel (cost: S) (touched: 2026-09-28)
   - Done: `tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`.
-- [ ] Named claim that CLI `--model` / `--prompt-sha` overrides and library `model=` / `prompt_sha=` write the same run JSON fingerprints via `--run-out` / `write_run_json` (cost: S)
+- [x] Named claim that CLI `--model` / `--prompt-sha` overrides and library `model=` / `prompt_sha=` write the same run JSON fingerprints via `--run-out` / `write_run_json` (cost: S) (touched: 2026-09-29)
+  - Done: `tests/test_adapter.py::test_fingerprint_override_cli_and_library_write_same_run_json`.
+- [ ] Named claim that CLI `--model` alone (omit `--prompt-sha`) and library `model=` (omit `prompt_sha=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `prompt_sha` (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-09-29: CLI↔library `--model` / `--prompt-sha` fingerprint override parity claim - named test asserts `--model` / `--prompt-sha` on `import-judgekit` yield the same written run JSON fingerprints as `model=` / `prompt_sha=` on `panel_to_run` via `--run-out` / `write_run_json` (and differ from panel meta fingerprints); README cites the claim; pytest 108, ruff clean.
 - 2026-09-28: CLI↔library `--run-out` run JSON parity claim - named test asserts `--run-out` on `import-judgekit` yields the same run JSON as `write_run_json(panel_to_run(...))` (indent-2, trailing newline, sorted `anchor_scores`, `created` / `live_metric` / judge fingerprints) on a panel with unsorted human-label insertion order; README cites the claim; pytest 107, ruff clean.
 - 2026-09-27: CLI↔library `--anchors-out` JSONL parity claim - named test asserts `--anchors-out` on `import-judgekit` yields the same JSONL rows as `write_anchors_jsonl(panel_to_anchors(...))` (sorted `{id, label}` lines) on a panel with unsorted human-label insertion order; README cites the claim; pytest 106, ruff clean.
 - 2026-09-26: CLI↔library `--aggregate modal` score parity claim - named test asserts `--aggregate modal` on `import-judgekit` yields the same written `anchor_scores` as `aggregate="modal"` on `panel_to_run` (and differs from `aggregate="first"`) on a panel where modal and first disagree; README cites the claim; pytest 105, ruff clean.
@@ -185,9 +188,9 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-28)
+## NEXT TICK (daily 2026-09-29)
 
-- **Item:** Named claim that CLI `--model` / `--prompt-sha` overrides and library `model=` / `prompt_sha=` write the same run JSON fingerprints via `--run-out` / `write_run_json`.
-- **Why:** Default-fingerprint run JSON CLI↔library write parity is locked; the remaining import write knob is operator fingerprint overrides, so `--model` / `--prompt-sha` cannot drift from library `model=` / `prompt_sha=` on the written run.
+- **Item:** Named claim that CLI `--model` alone (omit `--prompt-sha`) and library `model=` (omit `prompt_sha=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `prompt_sha`.
+- **Why:** Dual fingerprint override parity is locked; the remaining surface is partial override so `--model` cannot silently clear or rewrite panel `prompt_sha` when `--prompt-sha` is omitted.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
