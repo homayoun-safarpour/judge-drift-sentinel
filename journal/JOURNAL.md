@@ -472,3 +472,7 @@ insertion order (indent-2, trailing newline, sorted `anchor_scores`,
 `created` / `live_metric` / judge fingerprints), so judge scores and
 fingerprints cannot drift between CLI and library write paths. README
 judgekit section cites the claim. 107 tests green, ruff clean.
+
+## 2026-09-29 — evening HOLD
+
+HOLD — gates green (CI 36395174881 success on run-out CLI and library JSON parity claim; weekly re-score 36428684615 success); no feature work. NEXT TICK pointed at CLI `--model` / `--prompt-sha` vs library `model=` / `prompt_sha=` run JSON fingerprint parity via `--run-out` / `write_run_json`.
