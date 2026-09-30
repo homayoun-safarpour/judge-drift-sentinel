@@ -188,7 +188,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-09-29)
+## NEXT TICK (evening 2026-09-30)
 
 - **Item:** Named claim that CLI `--model` alone (omit `--prompt-sha`) and library `model=` (omit `prompt_sha=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `prompt_sha`.
 - **Why:** Dual fingerprint override parity is locked; the remaining surface is partial override so `--model` cannot silently clear or rewrite panel `prompt_sha` when `--prompt-sha` is omitted.
