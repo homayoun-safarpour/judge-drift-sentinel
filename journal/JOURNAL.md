@@ -483,3 +483,7 @@ same written run JSON fingerprints as `model=` / `prompt_sha=` on
 meta fingerprints differ from the override values, so operator fingerprint
 overrides cannot drift between CLI and library write paths. README
 judgekit section cites the claim. 108 tests green, ruff clean.
+
+## 2026-09-30 — evening HOLD
+
+Gates green (CI 36541676553). NEXT TICK refreshed to evening 2026-09-30 for partial `--model` override parity (omit `--prompt-sha`). HOLD.
