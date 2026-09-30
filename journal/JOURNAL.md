@@ -483,3 +483,14 @@ same written run JSON fingerprints as `model=` / `prompt_sha=` on
 meta fingerprints differ from the override values, so operator fingerprint
 overrides cannot drift between CLI and library write paths. README
 judgekit section cites the claim. 108 tests green, ruff clean.
+
+## 2026-09-30 — CLI↔library model-only override retains panel prompt_sha
+
+Named claim
+`tests/test_adapter.py::test_model_only_override_cli_and_library_retain_panel_prompt_sha`
+asserts that `--model` alone (omit `--prompt-sha`) on `import-judgekit`
+yields the same written run JSON fingerprints as `model=` (omit
+`prompt_sha=`) on `panel_to_run` via `--run-out` / `write_run_json`,
+retaining the panel `prompt_sha` so a model-only override cannot silently
+clear or rewrite it between CLI and library write paths. README judgekit
+section cites the claim. 109 tests green, ruff clean.
