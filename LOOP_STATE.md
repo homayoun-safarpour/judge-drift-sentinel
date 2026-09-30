@@ -1,4 +1,4 @@
-﻿# judge-drift-sentinel : project backlog
+# judge-drift-sentinel : project backlog
 
 Bounded engineering backlog for this repository. One checkbox per increment.
 
@@ -196,4 +196,8 @@ Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 fa
 - **Item:** Named claim that CLI `--prompt-sha` alone (omit `--model`) and library `prompt_sha=` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model`.
 - **Why:** Model-only partial override parity is locked; the mirror surface is prompt-sha-only so `--prompt-sha` cannot silently clear or rewrite panel `model` when `--model` is omitted.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+
+## First-screen restyle 2026-09-30
+
+H1 is `drift-sentinel`. Stranger run is `examples/run_current.json` -> `JUDGE_DRIFT` exit 2, locked by `tests/test_readme.py`. Interview pack stays below the first screen. GFI #9 already exists; do not open a twin.
 

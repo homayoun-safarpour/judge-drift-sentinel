@@ -1,10 +1,29 @@
-﻿# judge-drift-sentinel
+# drift-sentinel
 
-**Your LLM-judge eval score dropped after a provider model update, not because your system regressed. `drift-sentinel check` tells you in one command whether the movement is real, judge drift, or noise, using a frozen human-labeled anchor set (no extra model calls).**
+**Eval score moved after a provider model update. You cannot tell whether the system regressed or the judge did.**
 
 [![CI](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+
+Attribute eval-score movement to the system or the LLM judge using a frozen human anchor set and kappa.
+
+```bash
+git clone https://github.com/homayoun-safarpour/judge-drift-sentinel
+cd judge-drift-sentinel && pip install -e .
+drift-sentinel check --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current.json
+```
+
+```text
+verdict      : JUDGE_DRIFT
+anchor kappa : 0.833 -> 0.333
+anchor flips : 25.0% of frozen anchors changed label
+judge pin    : CHANGED frontier-4-2026-05-01@9f2c1a -> frontier-4-latest@9f2c1a
+live metric  : moved -0.150
+reason       : agreement with the frozen human labels fell (0.833 -> 0.333); the ruler moved, not the system
+```
+
+That command exits 2. On PyPI: `pip install judge-drift-sentinel`. Contributors also need `pip install -e ".[dev]"`.
 
 ## The problem
 
