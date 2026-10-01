@@ -505,3 +505,7 @@ yields the same written run JSON fingerprints as `prompt_sha=` (omit
 retaining the panel `model` so a prompt-sha-only override cannot silently
 clear or rewrite it between CLI and library write paths. README judgekit
 section cites the claim. 113 tests green, ruff clean.
+
+## 2026-10-01 — evening HOLD
+
+Gates green (CI 36834187040, heartbeat 36834487237). NEXT TICK refreshed to evening 2026-10-01 for empty-string `--model` / `--prompt-sha` override parity (explicit `""` is not omit). HOLD.
