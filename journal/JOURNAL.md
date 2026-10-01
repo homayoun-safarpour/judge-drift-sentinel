@@ -494,3 +494,14 @@ yields the same written run JSON fingerprints as `model=` (omit
 retaining the panel `prompt_sha` so a model-only override cannot silently
 clear or rewrite it between CLI and library write paths. README judgekit
 section cites the claim. 109 tests green, ruff clean.
+
+## 2026-10-01 — CLI↔library prompt-sha-only override retains panel model
+
+Named claim
+`tests/test_adapter.py::test_prompt_sha_only_override_cli_and_library_retain_panel_model`
+asserts that `--prompt-sha` alone (omit `--model`) on `import-judgekit`
+yields the same written run JSON fingerprints as `prompt_sha=` (omit
+`model=`) on `panel_to_run` via `--run-out` / `write_run_json`,
+retaining the panel `model` so a prompt-sha-only override cannot silently
+clear or rewrite it between CLI and library write paths. README judgekit
+section cites the claim. 113 tests green, ruff clean.
