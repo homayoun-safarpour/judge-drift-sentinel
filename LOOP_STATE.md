@@ -198,7 +198,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-02)
+## NEXT TICK (evening 2026-10-02)
 
 - **Item:** Named claim that CLI whitespace-only `--model` / `--prompt-sha` and library `model=" "` / `prompt_sha=" "` write the same run JSON fingerprints via `--run-out` / `write_run_json` (whitespace is not treated as omit or stripped).
 - **Why:** Empty-string None-vs-`""` is locked; the remaining adjacent footgun is whitespace-only overrides, which are truthy so they must not silently strip or fall through to panel meta.
