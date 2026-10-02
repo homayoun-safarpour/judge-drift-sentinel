@@ -505,3 +505,16 @@ yields the same written run JSON fingerprints as `prompt_sha=` (omit
 retaining the panel `model` so a prompt-sha-only override cannot silently
 clear or rewrite it between CLI and library write paths. README judgekit
 section cites the claim. 113 tests green, ruff clean.
+
+## 2026-10-02 — CLI↔library empty-string fingerprint override claim
+
+Named claim
+`tests/test_adapter.py::test_empty_string_override_cli_and_library_write_same_run_json`
+asserts that explicit empty-string `--model` / `--prompt-sha` on
+`import-judgekit` are not treated as omit: empty `--prompt-sha` /
+`prompt_sha=""` with a non-empty model override write the same run JSON
+via `--run-out` / `write_run_json` (cleared sha, `@unversioned`
+fingerprint), and empty `--model` / `model=""` reject with `run is
+missing a judge model id` (CLI exit 1 / library ValueError) rather than
+falling through to panel meta. README judgekit section cites the claim.
+114 tests green, ruff clean.

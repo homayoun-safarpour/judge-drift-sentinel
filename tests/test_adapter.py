@@ -2055,6 +2055,127 @@ def test_prompt_sha_only_override_cli_and_library_retain_panel_model(tmp_path):
     assert payload["judge"]["model"] == "panel-model"
 
 
+def test_empty_string_override_cli_and_library_write_same_run_json(tmp_path, capsys):
+    """Named claim: CLI empty-string --model/--prompt-sha and library kwargs match.
+
+    Dual and partial fingerprint overrides are locked. This claim locks the
+    None-vs-``""`` footgun: on a panel whose judge meta fingerprints are
+    non-empty, explicit empty-string ``--model`` / ``--prompt-sha`` must not
+    silently fall through to panel meta the way omit does.
+
+    Empty ``--prompt-sha`` / ``prompt_sha=""`` with a non-empty ``--model`` /
+    ``model=`` write the same run JSON via ``--run-out`` /
+    ``write_run_json`` with ``prompt_sha`` cleared to ``""`` (fingerprint
+    ``override-model@unversioned``). Empty ``--model`` / ``model=""`` is
+    rejected on both paths with ``run is missing a judge model id`` (CLI exit
+    1 / ``error:`` stderr; library ``ValueError``) rather than retaining the
+    panel model.
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-02",
+        "live_metric": 0.71,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+    panel = parse_panel_dict(panel_dict)
+
+    # Empty prompt_sha is not omit: clear the panel sha; CLI and library match.
+    cli_run = tmp_path / "cli-run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "override-model",
+            "--prompt-sha",
+            "",
+            "--anchors-out",
+            str(tmp_path / "cli-anchors.jsonl"),
+            "--run-out",
+            str(cli_run),
+        ]
+    )
+    assert code == 0
+
+    library_run = tmp_path / "library-run.json"
+    write_run_json(
+        library_run,
+        panel_to_run(
+            panel,
+            "gpt-4o-judge",
+            model="override-model",
+            prompt_sha="",
+        ),
+    )
+
+    cli_text = cli_run.read_text(encoding="utf-8")
+    library_text = library_run.read_text(encoding="utf-8")
+    assert cli_text == library_text
+    assert cli_text.endswith("\n")
+
+    payload = json.loads(cli_text)
+    assert payload == {
+        "judge": {"model": "override-model", "prompt_sha": ""},
+        "created": "2026-10-02",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.71,
+    }
+    assert payload["judge"]["prompt_sha"] != "panel-sha"
+    assert payload["judge"]["model"] != "panel-model"
+
+    # Empty model is not omit: reject rather than fall through to panel model.
+    with pytest.raises(ValueError, match="run is missing a judge model id"):
+        panel_to_run(panel, "gpt-4o-judge", model="")
+
+    empty_model_run = tmp_path / "empty-model-run.json"
+    empty_model_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "",
+            "--prompt-sha",
+            "",
+            "--anchors-out",
+            str(tmp_path / "empty-model-anchors.jsonl"),
+            "--run-out",
+            str(empty_model_run),
+        ]
+    )
+    assert empty_model_code == 1
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert "error:" in err_flat
+    assert "run is missing a judge model id" in err_flat
+    assert "Traceback" not in captured.err
+    assert not empty_model_run.exists()
+    assert not (tmp_path / "empty-model-anchors.jsonl").exists()
+
+    # Contrast: omit model (None) retains panel model / panel prompt_sha.
+    omitted = panel_to_run(panel, "gpt-4o-judge")
+    assert omitted.model == "panel-model"
+    assert omitted.prompt_sha == "panel-sha"
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

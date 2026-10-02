@@ -120,11 +120,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_model_only_override_cli_and_library_retain_panel_prompt_sha`.
 - [x] Named claim that CLI `--prompt-sha` alone (omit `--model`) and library `prompt_sha=` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` (cost: S) (touched: 2026-10-01)
   - Done: `tests/test_adapter.py::test_prompt_sha_only_override_cli_and_library_retain_panel_model`.
-- [ ] Named claim that CLI empty-string `--model` / `--prompt-sha` and library `model=""` / `prompt_sha=""` write the same run JSON fingerprints via `--run-out` / `write_run_json` (explicit empty string is not treated as omit) (cost: S)
+- [x] Named claim that CLI empty-string `--model` / `--prompt-sha` and library `model=""` / `prompt_sha=""` write the same run JSON fingerprints via `--run-out` / `write_run_json` (explicit empty string is not treated as omit) (cost: S) (touched: 2026-10-02)
+  - Done: `tests/test_adapter.py::test_empty_string_override_cli_and_library_write_same_run_json`.
+- [ ] Named claim that CLI whitespace-only `--model` / `--prompt-sha` and library `model=" "` / `prompt_sha=" "` write the same run JSON fingerprints via `--run-out` / `write_run_json` (whitespace is not treated as omit or stripped) (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-10-02: CLI↔library empty-string fingerprint override claim - named test asserts explicit `""` is not omit: `--prompt-sha ""` / `prompt_sha=""` with a non-empty model override write the same run JSON via `--run-out` / `write_run_json` (cleared sha, `@unversioned` fingerprint); empty `--model` / `model=""` reject with `run is missing a judge model id` (CLI exit 1 / library ValueError) rather than falling through to panel meta; README cites the claim; pytest 114, ruff clean.
 - 2026-10-01: heartbeat — OK on prompt-sha-only override claim (5e87ace: named test + README + CI 36834187040); no repair opened; multi-format panel export remains deprioritized; verdict ENRICH; next tick: empty-string `--model` / `--prompt-sha` override parity (explicit `""` is not omit).
 - 2026-10-01: CLI↔library `--prompt-sha`-only fingerprint override parity claim - named test asserts `--prompt-sha` alone (omit `--model`) on `import-judgekit` yields the same written run JSON fingerprints as `prompt_sha=` (omit `model=`) on `panel_to_run` via `--run-out` / `write_run_json`, retaining the panel `model`; README cites the claim; pytest 113, ruff clean.
 - 2026-09-30: CLI↔library `--model`-only fingerprint override parity claim - named test asserts `--model` alone (omit `--prompt-sha`) on `import-judgekit` yields the same written run JSON fingerprints as `model=` (omit `prompt_sha=`) on `panel_to_run` via `--run-out` / `write_run_json`, retaining the panel `prompt_sha`; README cites the claim; pytest 109, ruff clean.
@@ -195,10 +198,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (heartbeat 2026-10-01)
+## NEXT TICK (daily 2026-10-02)
 
-- **Item:** Named claim that CLI empty-string `--model` / `--prompt-sha` and library `model=""` / `prompt_sha=""` write the same run JSON fingerprints via `--run-out` / `write_run_json` (explicit empty string is not treated as omit).
-- **Why:** Partial and dual fingerprint overrides are locked; the remaining footgun is None-vs-`""` so an explicit empty override cannot silently fall through to panel meta the way omit does.
+- **Item:** Named claim that CLI whitespace-only `--model` / `--prompt-sha` and library `model=" "` / `prompt_sha=" "` write the same run JSON fingerprints via `--run-out` / `write_run_json` (whitespace is not treated as omit or stripped).
+- **Why:** Empty-string None-vs-`""` is locked; the remaining adjacent footgun is whitespace-only overrides, which are truthy so they must not silently strip or fall through to panel meta.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
