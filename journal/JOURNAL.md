@@ -518,3 +518,15 @@ fingerprint), and empty `--model` / `model=""` reject with `run is
 missing a judge model id` (CLI exit 1 / library ValueError) rather than
 falling through to panel meta. README judgekit section cites the claim.
 114 tests green, ruff clean.
+
+## 2026-10-03 — CLI↔library whitespace-only fingerprint override claim
+
+Named claim
+`tests/test_adapter.py::test_whitespace_only_override_cli_and_library_write_same_run_json`
+asserts that whitespace-only `--model` / `--prompt-sha` on
+`import-judgekit` are not treated as omit or stripped: `--model " "` /
+`--prompt-sha " "` yield the same written run JSON fingerprints as
+`model=" "` / `prompt_sha=" "` on `panel_to_run` via `--run-out` /
+`write_run_json` (literal whitespace fingerprints; panel meta does not
+leak through). README judgekit section cites the claim. 115 tests green,
+ruff clean.
