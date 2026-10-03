@@ -518,3 +518,7 @@ fingerprint), and empty `--model` / `model=""` reject with `run is
 missing a judge model id` (CLI exit 1 / library ValueError) rather than
 falling through to panel meta. README judgekit section cites the claim.
 114 tests green, ruff clean.
+
+## 2026-10-03 — evening HOLD
+
+Gates green (CI 36981810262 on e319dac empty-string override). NEXT TICK refreshed to evening 2026-10-03 for whitespace-only `--model` / `--prompt-sha` override parity (whitespace is not omit or strip). HOLD.
