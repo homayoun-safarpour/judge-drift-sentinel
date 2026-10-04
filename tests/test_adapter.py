@@ -2264,6 +2264,93 @@ def test_whitespace_only_override_cli_and_library_write_same_run_json(tmp_path):
     assert omitted.prompt_sha == "panel-sha"
 
 
+def test_whitespace_model_only_override_cli_and_library_retain_panel_prompt_sha(
+    tmp_path,
+):
+    """Named claim: CLI whitespace-only --model alone retains panel prompt_sha.
+
+    Dual whitespace fingerprint override CLI↔library write parity is locked.
+    This claim locks the partial-override surface: on a panel whose judge meta
+    fingerprints are non-empty, ``import-judgekit --model " "`` (omit
+    ``--prompt-sha``) with ``--run-out`` must write the same run JSON as
+    ``write_run_json(panel_to_run(..., model=" "))`` (omit ``prompt_sha=``),
+    writing the literal whitespace model and retaining the panel
+    ``prompt_sha`` so a whitespace model-only override cannot silently strip,
+    omit, clear, or rewrite the panel sha.
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-04",
+        "live_metric": 0.74,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+    panel = parse_panel_dict(panel_dict)
+
+    cli_run = tmp_path / "cli-run.json"
+    code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            " ",
+            "--anchors-out",
+            str(tmp_path / "cli-anchors.jsonl"),
+            "--run-out",
+            str(cli_run),
+        ]
+    )
+    assert code == 0
+
+    library_run = tmp_path / "library-run.json"
+    write_run_json(
+        library_run,
+        panel_to_run(
+            panel,
+            "gpt-4o-judge",
+            model=" ",
+        ),
+    )
+
+    cli_text = cli_run.read_text(encoding="utf-8")
+    library_text = library_run.read_text(encoding="utf-8")
+    assert cli_text == library_text
+    assert cli_text.endswith("\n")
+
+    payload = json.loads(cli_text)
+    assert payload == {
+        "judge": {"model": " ", "prompt_sha": "panel-sha"},
+        "created": "2026-10-04",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.74,
+    }
+    # Whitespace model is not omit/stripped; panel prompt_sha must be retained.
+    assert payload["judge"]["model"] == " "
+    assert payload["judge"]["model"] != "panel-model"
+    assert payload["judge"]["model"].strip() == ""
+    assert payload["judge"]["prompt_sha"] == "panel-sha"
+
+    # Contrast: omit model (None) retains panel model / panel prompt_sha.
+    omitted = panel_to_run(panel, "gpt-4o-judge")
+    assert omitted.model == "panel-model"
+    assert omitted.prompt_sha == "panel-sha"
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
