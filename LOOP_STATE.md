@@ -204,7 +204,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-04)
+## NEXT TICK (evening 2026-10-04)
 
 - **Item:** Named claim that CLI whitespace-only `--prompt-sha` alone (omit `--model`) and library `prompt_sha=" "` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` and writing the literal whitespace prompt_sha (not stripped, not omit).
 - **Why:** Whitespace model-only override parity is locked; the mirror footgun is a partial whitespace `--prompt-sha` that must not clear or rewrite the panel `model`.
