@@ -530,3 +530,7 @@ asserts that whitespace-only `--model` / `--prompt-sha` on
 `write_run_json` (literal whitespace fingerprints; panel meta does not
 leak through). README judgekit section cites the claim. 115 tests green,
 ruff clean.
+
+## 2026-10-05 — evening HOLD
+
+Gates green (CI 37187610344 on 0f3d118 whitespace model-only override). NEXT TICK refreshed to evening 2026-10-05 for whitespace-only `--prompt-sha` alone override parity (retain panel `model`; whitespace is not omit or strip). HOLD.
