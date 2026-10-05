@@ -204,11 +204,35 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-04)
+## SUNDAY CLOSE (2026-10-04)
 
+Week usefulness gate for public repo `judge-drift-sentinel` @ main (retarget unchanged).
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/37187610344 (`0f3d118`, whitespace model-only fingerprint override) |
+| Local ruff + pytest | PASS | `ruff check src tests` clean; `pytest -q` -> 116 passed (2026-10-05 Sunday pass) |
+| Claim still true? | YES | Release-gate rows PASS; README worked-example + adapter contract claims still backed by named tests through `test_whitespace_model_only_override_cli_and_library_retain_panel_prompt_sha` |
+| Example still runnable? | YES | `drift-sentinel check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833 -> 0.333) |
+| Field/external demand | Not claimed | No employer demand invented this week |
+
+Week shipped (adapter CLI↔library fingerprint / run-write parity, public only): `--run-out` run JSON parity; `--model` / `--prompt-sha` fingerprint overrides (both, model-only, prompt-sha-only); empty-string and whitespace-only overrides treated as literal not omit; whitespace model-only retains panel `prompt_sha`. Multi-format panel export stays deprioritized (no second real producer).
+
+### LinkedIn draft (5 bullets — field pain first)
+
+1. When an LLM-judge eval score drops after a provider `-latest` bump, the dashboard alone cannot tell you whether the system regressed or the ruler moved.
+2. Freeze a small human-labeled anchor set once; if judge agreement with those labels falls, the scoreboard itself is untrustworthy — that is JUDGE_DRIFT, not a rollback signal.
+3. `drift-sentinel check` returns that verdict from score files you already have (no extra model calls); exit 2 is a CI-ready stop.
+4. This week locked judgekit import fingerprint parity: CLI `--model` / `--prompt-sha` overrides (including empty and whitespace literals) write the same run JSON as the library path, so a partial override cannot silently clear the other fingerprint.
+5. Install: `pip install judge-drift-sentinel` · repo: https://github.com/homayoun-safarpour/judge-drift-sentinel · worked example still reproduces JUDGE_DRIFT (kappa 0.833 -> 0.333).
+
+## NEXT TICK (sunday 2026-10-04)
+
+- **Scaffold / retarget:** Stay on public week repo `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the Monday loop.
 - **Item:** Named claim that CLI whitespace-only `--prompt-sha` alone (omit `--model`) and library `prompt_sha=" "` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` and writing the literal whitespace prompt_sha (not stripped, not omit).
 - **Why:** Whitespace model-only override parity is locked; the mirror footgun is a partial whitespace `--prompt-sha` that must not clear or rewrite the panel `model`.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Defer:** More panel-export formats beyond `judgekit.panel_export/v1` until a second real producer exists.
 
 ## First-screen restyle 2026-09-30
 
