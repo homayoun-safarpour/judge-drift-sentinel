@@ -530,3 +530,15 @@ asserts that whitespace-only `--model` / `--prompt-sha` on
 `write_run_json` (literal whitespace fingerprints; panel meta does not
 leak through). README judgekit section cites the claim. 115 tests green,
 ruff clean.
+
+## 2026-10-05 — CLI↔library whitespace prompt-sha-only override retains panel model
+
+Named claim
+`tests/test_adapter.py::test_whitespace_prompt_sha_only_override_cli_and_library_retain_panel_model`
+asserts that `--prompt-sha " "` alone (omit `--model`) on
+`import-judgekit` yields the same written run JSON fingerprints as
+`prompt_sha=" "` (omit `model=`) on `panel_to_run` via `--run-out` /
+`write_run_json`, writing the literal whitespace prompt_sha and retaining
+the panel `model` so a whitespace prompt-sha-only override cannot silently
+strip, omit, clear, or rewrite it between CLI and library write paths.
+README judgekit section cites the claim. 117 tests green, ruff clean.
