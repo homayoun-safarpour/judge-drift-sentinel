@@ -542,3 +542,7 @@ asserts that `--prompt-sha " "` alone (omit `--model`) on
 the panel `model` so a whitespace prompt-sha-only override cannot silently
 strip, omit, clear, or rewrite it between CLI and library write paths.
 README judgekit section cites the claim. 117 tests green, ruff clean.
+
+## 2026-10-06 — evening HOLD
+
+Gates green (CI 37281555325 on 8b337dd whitespace prompt-sha-only override). NEXT TICK refreshed to evening 2026-10-06 for empty-string `--prompt-sha` alone override parity (retain panel `model`; explicit empty sha is not omit). HOLD.

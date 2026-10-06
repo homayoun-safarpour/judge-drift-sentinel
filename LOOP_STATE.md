@@ -207,7 +207,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-05)
+## NEXT TICK (evening 2026-10-06)
 
 - **Item:** Named claim that CLI empty-string `--prompt-sha` alone (omit `--model`) and library `prompt_sha=""` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` (explicit empty sha is not omit).
 - **Why:** Whitespace prompt-sha-only override parity is locked; the adjacent footgun is a partial empty-string `--prompt-sha` that must clear the sha while retaining the panel `model` (not fall through to panel sha).
