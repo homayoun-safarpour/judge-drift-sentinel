@@ -128,11 +128,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_whitespace_model_only_override_cli_and_library_retain_panel_prompt_sha`.
 - [x] Named claim that CLI whitespace-only `--prompt-sha` alone (omit `--model`) and library `prompt_sha=" "` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` (whitespace prompt_sha is not stripped or omit) (cost: S) (touched: 2026-10-05)
   - Done: `tests/test_adapter.py::test_whitespace_prompt_sha_only_override_cli_and_library_retain_panel_model`.
-- [ ] Named claim that CLI empty-string `--prompt-sha` alone (omit `--model`) and library `prompt_sha=""` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` (explicit empty sha is not omit) (cost: S)
+- [x] Named claim that CLI empty-string `--prompt-sha` alone (omit `--model`) and library `prompt_sha=""` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` (explicit empty sha is not omit) (cost: S) (touched: 2026-10-06)
+  - Done: `tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`.
+- [ ] Named claim that CLI empty-string `--model` alone (omit `--prompt-sha`) and library `model=""` (omit `prompt_sha=`) are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than retaining the panel `model` as omit would (explicit empty model is not omit) (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-10-06: CLI↔library empty-string `--prompt-sha`-alone fingerprint override claim - named test asserts `--prompt-sha ""` (omit `--model`) and `prompt_sha=""` (omit `model=`) write the same run JSON via `--run-out` / `write_run_json` (cleared sha; panel `model` retained); README cites the claim; pytest 118, ruff clean.
 - 2026-10-05: CLI↔library whitespace-only `--prompt-sha`-alone fingerprint override claim - named test asserts `--prompt-sha " "` (omit `--model`) and `prompt_sha=" "` (omit `model=`) write the same run JSON via `--run-out` / `write_run_json` (literal whitespace prompt_sha; panel `model` retained); README cites the claim; pytest 117, ruff clean.
 - 2026-10-04: CLI↔library whitespace-only `--model`-alone fingerprint override claim - named test asserts `--model " "` (omit `--prompt-sha`) and `model=" "` (omit `prompt_sha=`) write the same run JSON via `--run-out` / `write_run_json` (literal whitespace model; panel `prompt_sha` retained); README cites the claim; pytest 116, ruff clean.
 - 2026-10-03: CLI↔library whitespace-only fingerprint override claim - named test asserts explicit `" "` is not omit and not stripped: `--model " "` / `--prompt-sha " "` and `model=" "` / `prompt_sha=" "` write the same run JSON via `--run-out` / `write_run_json` (literal whitespace fingerprints; panel meta does not leak); README cites the claim; pytest 115, ruff clean.
@@ -207,10 +210,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-05)
+## NEXT TICK (daily 2026-10-06)
 
-- **Item:** Named claim that CLI empty-string `--prompt-sha` alone (omit `--model`) and library `prompt_sha=""` (omit `model=`) write the same run JSON fingerprints via `--run-out` / `write_run_json`, retaining the panel `model` (explicit empty sha is not omit).
-- **Why:** Whitespace prompt-sha-only override parity is locked; the adjacent footgun is a partial empty-string `--prompt-sha` that must clear the sha while retaining the panel `model` (not fall through to panel sha).
+- **Item:** Named claim that CLI empty-string `--model` alone (omit `--prompt-sha`) and library `model=""` (omit `prompt_sha=`) are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than retaining the panel `model` as omit would (explicit empty model is not omit).
+- **Why:** Empty-string prompt-sha-only override parity is locked; the adjacent footgun is a partial empty-string `--model` that must reject rather than fall through to the panel model.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30

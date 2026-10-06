@@ -542,3 +542,15 @@ asserts that `--prompt-sha " "` alone (omit `--model`) on
 the panel `model` so a whitespace prompt-sha-only override cannot silently
 strip, omit, clear, or rewrite it between CLI and library write paths.
 README judgekit section cites the claim. 117 tests green, ruff clean.
+
+## 2026-10-06 — CLI↔library empty-string prompt-sha-only override retains panel model
+
+Named claim
+`tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`
+asserts that `--prompt-sha ""` alone (omit `--model`) on
+`import-judgekit` yields the same written run JSON fingerprints as
+`prompt_sha=""` (omit `model=`) on `panel_to_run` via `--run-out` /
+`write_run_json`, clearing `prompt_sha` to `""` and retaining the panel
+`model` so an explicit empty prompt-sha-only override cannot silently fall
+through to the panel sha the way omit does. README judgekit section cites
+the claim. 118 tests green, ruff clean.
