@@ -210,7 +210,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-06)
+## NEXT TICK (evening 2026-10-07)
 
 - **Item:** Named claim that CLI empty-string `--model` alone (omit `--prompt-sha`) and library `model=""` (omit `prompt_sha=`) are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than retaining the panel `model` as omit would (explicit empty model is not omit).
 - **Why:** Empty-string prompt-sha-only override parity is locked; the adjacent footgun is a partial empty-string `--model` that must reject rather than fall through to the panel model.

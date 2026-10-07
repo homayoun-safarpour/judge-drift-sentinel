@@ -554,3 +554,7 @@ asserts that `--prompt-sha ""` alone (omit `--model`) on
 `model` so an explicit empty prompt-sha-only override cannot silently fall
 through to the panel sha the way omit does. README judgekit section cites
 the claim. 118 tests green, ruff clean.
+
+## 2026-10-07 — evening HOLD
+
+Gates green (CI 37435270639 on c205671 empty-string prompt-sha-only override). NEXT TICK refreshed to evening 2026-10-07 for empty-string `--model` alone rejection (`run is missing a judge model id`; explicit empty model is not omit). HOLD.
