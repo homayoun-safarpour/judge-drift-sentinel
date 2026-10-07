@@ -554,3 +554,14 @@ asserts that `--prompt-sha ""` alone (omit `--model`) on
 `model` so an explicit empty prompt-sha-only override cannot silently fall
 through to the panel sha the way omit does. README judgekit section cites
 the claim. 118 tests green, ruff clean.
+
+## 2026-10-07 — CLI↔library empty-string model-only override rejects
+
+Named claim
+`tests/test_adapter.py::test_empty_string_model_only_override_cli_and_library_reject`
+asserts that `--model ""` alone (omit `--prompt-sha`) on
+`import-judgekit` and `model=""` (omit `prompt_sha=`) on `panel_to_run`
+reject with `run is missing a judge model id` (CLI exit 1 / `error:`
+stderr; library `ValueError`) rather than retaining the panel `model` the
+way omit does. README judgekit section cites the claim. 119 tests green,
+ruff clean.
