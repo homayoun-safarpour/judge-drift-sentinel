@@ -132,11 +132,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`.
 - [x] Named claim that CLI empty-string `--model` alone (omit `--prompt-sha`) and library `model=""` (omit `prompt_sha=`) are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than retaining the panel `model` as omit would (explicit empty model is not omit) (cost: S) (touched: 2026-10-07)
   - Done: `tests/test_adapter.py::test_empty_string_model_only_override_cli_and_library_reject`.
-- [ ] Named claim that CLI empty-string `--model` with a non-empty `--prompt-sha` and library `model=""` with a non-empty `prompt_sha=` are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than writing a run with a cleared model and override sha (explicit empty model is not omit even when sha is set) (cost: S)
+- [x] Named claim that CLI empty-string `--model` with a non-empty `--prompt-sha` and library `model=""` with a non-empty `prompt_sha=` are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than writing a run with a cleared model and override sha (explicit empty model is not omit even when sha is set) (cost: S) (touched: 2026-10-08)
+  - Done: `tests/test_adapter.py::test_empty_string_model_with_prompt_sha_override_cli_and_library_reject`.
+- [ ] Named claim that CLI empty-string `--model` with whitespace-only `--prompt-sha` and library `model=""` with whitespace-only `prompt_sha=` are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than writing a run with a cleared model and whitespace sha (explicit empty model is not omit even when sha is whitespace) (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-10-08: CLI↔library empty-string `--model` with non-empty `--prompt-sha` rejection claim - named test asserts `--model "" --prompt-sha override-sha` and `model=""`, `prompt_sha="override-sha"` reject with `run is missing a judge model id` (CLI exit 1 / `error:` stderr; library `ValueError`) rather than writing a cleared-model run; README cites the claim; pytest 120, ruff clean.
 - 2026-10-07: CLI↔library empty-string `--model`-alone rejection claim - named test asserts `--model ""` (omit `--prompt-sha`) and `model=""` (omit `prompt_sha=`) reject with `run is missing a judge model id` (CLI exit 1 / `error:` stderr; library `ValueError`) rather than retaining the panel model; README cites the claim; pytest 119, ruff clean.
 - 2026-10-06: CLI↔library empty-string `--prompt-sha`-alone fingerprint override claim - named test asserts `--prompt-sha ""` (omit `--model`) and `prompt_sha=""` (omit `model=`) write the same run JSON via `--run-out` / `write_run_json` (cleared sha; panel `model` retained); README cites the claim; pytest 118, ruff clean.
 - 2026-10-05: CLI↔library whitespace-only `--prompt-sha`-alone fingerprint override claim - named test asserts `--prompt-sha " "` (omit `--model`) and `prompt_sha=" "` (omit `model=`) write the same run JSON via `--run-out` / `write_run_json` (literal whitespace prompt_sha; panel `model` retained); README cites the claim; pytest 117, ruff clean.
@@ -213,10 +216,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-07)
+## NEXT TICK (daily 2026-10-08)
 
-- **Item:** Named claim that CLI empty-string `--model` with a non-empty `--prompt-sha` and library `model=""` with a non-empty `prompt_sha=` are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than writing a run with a cleared model and override sha.
-- **Why:** Empty-string `--model`-alone rejection is locked; the remaining corner is empty model paired with an explicit sha override, which must still reject rather than write.
+- **Item:** Named claim that CLI empty-string `--model` with whitespace-only `--prompt-sha` and library `model=""` with whitespace-only `prompt_sha=` are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than writing a run with a cleared model and whitespace sha.
+- **Why:** Empty-model rejection with a non-empty sha override is locked; the remaining corner is empty model paired with a whitespace-only sha, which must still reject rather than write.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
