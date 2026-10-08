@@ -565,3 +565,7 @@ reject with `run is missing a judge model id` (CLI exit 1 / `error:`
 stderr; library `ValueError`) rather than retaining the panel `model` the
 way omit does. README judgekit section cites the claim. 119 tests green,
 ruff clean.
+
+## 2026-10-08 — evening HOLD
+
+Gates green (CI 37591097158 on 609948d empty-string model-only override rejection). NEXT TICK refreshed to evening 2026-10-08 for empty-string `--model` with non-empty `--prompt-sha` rejection (`run is missing a judge model id`; explicit empty model is not omit even when sha is set). HOLD.
