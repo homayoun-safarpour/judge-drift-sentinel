@@ -216,7 +216,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-08)
+## NEXT TICK (evening 2026-10-09)
 
 - **Item:** Named claim that CLI empty-string `--model` with whitespace-only `--prompt-sha` and library `model=""` with whitespace-only `prompt_sha=` are rejected with `run is missing a judge model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`), rather than writing a run with a cleared model and whitespace sha.
 - **Why:** Empty-model rejection with a non-empty sha override is locked; the remaining corner is empty model paired with a whitespace-only sha, which must still reject rather than write.
