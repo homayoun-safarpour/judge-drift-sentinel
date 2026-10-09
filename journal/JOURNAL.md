@@ -576,3 +576,7 @@ asserts that `--model "" --prompt-sha override-sha` on
 `error:` stderr; library `ValueError`) rather than writing a run with a
 cleared model and override sha. README judgekit section cites the claim.
 120 tests green, ruff clean.
+
+## 2026-10-09 — evening HOLD
+
+Gates green (CI 37747904509 on f263166 empty-string model with prompt-sha override rejection). NEXT TICK refreshed to evening 2026-10-09 for empty-string `--model` with whitespace-only `--prompt-sha` rejection (`run is missing a judge model id`; explicit empty model is not omit even when sha is whitespace-only). HOLD.
