@@ -2682,6 +2682,94 @@ def test_empty_string_model_with_prompt_sha_override_cli_and_library_reject(
     assert omitted.prompt_sha == "panel-sha"
 
 
+def test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject(
+    tmp_path, capsys
+):
+    """Named claim: empty --model with whitespace --prompt-sha rejects both paths.
+
+    Empty-model rejection with a non-empty sha override is locked. This claim
+    locks the remaining corner: on a panel whose judge meta fingerprints are
+    non-empty, ``import-judgekit --model "" --prompt-sha " "`` and
+    ``panel_to_run(..., model="", prompt_sha=" ")`` must reject with
+    ``run is missing a judge model id`` (CLI exit 1 / ``error:`` stderr;
+    library ``ValueError``) rather than writing a run with a cleared model and
+    whitespace sha. Explicit empty model is not omit even when sha is
+    whitespace.
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-09",
+        "live_metric": 0.78,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+    panel = parse_panel_dict(panel_dict)
+
+    # Empty model with whitespace sha is not omit: reject rather than write.
+    with pytest.raises(ValueError, match="run is missing a judge model id"):
+        panel_to_run(
+            panel,
+            "gpt-4o-judge",
+            model="",
+            prompt_sha=" ",
+        )
+
+    empty_model_run = tmp_path / "empty-model-run.json"
+    empty_model_anchors = tmp_path / "empty-model-anchors.jsonl"
+    empty_model_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "",
+            "--prompt-sha",
+            " ",
+            "--anchors-out",
+            str(empty_model_anchors),
+            "--run-out",
+            str(empty_model_run),
+        ]
+    )
+    assert empty_model_code == 1
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert "error:" in err_flat
+    assert "run is missing a judge model id" in err_flat
+    assert "Traceback" not in captured.err
+    assert not empty_model_run.exists()
+    assert not empty_model_anchors.exists()
+
+    # Contrast: whitespace model with the same whitespace sha writes successfully.
+    written = panel_to_run(
+        panel,
+        "gpt-4o-judge",
+        model=" ",
+        prompt_sha=" ",
+    )
+    assert written.model == " "
+    assert written.prompt_sha == " "
+
+    # Contrast: omit model (None) retains panel model / panel prompt_sha.
+    omitted = panel_to_run(panel, "gpt-4o-judge")
+    assert omitted.model == "panel-model"
+    assert omitted.prompt_sha == "panel-sha"
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

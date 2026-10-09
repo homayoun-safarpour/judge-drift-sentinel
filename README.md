@@ -281,6 +281,12 @@ a judge model id` on both paths (CLI exit 1 / `error:` stderr; library
 `ValueError`) rather than writing a run with a cleared model and override sha
 (explicit empty model is not omit even when sha is set)
 (`tests/test_adapter.py::test_empty_string_model_with_prompt_sha_override_cli_and_library_reject`).
+CLI empty-string `--model` with whitespace-only `--prompt-sha` and library
+`model=""` with whitespace-only `prompt_sha=` are rejected with `run is
+missing a judge model id` on both paths (CLI exit 1 / `error:` stderr;
+library `ValueError`) rather than writing a run with a cleared model and
+whitespace sha (explicit empty model is not omit even when sha is whitespace)
+(`tests/test_adapter.py::test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -374,6 +380,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`,
 `tests/test_adapter.py::test_empty_string_model_only_override_cli_and_library_reject`,
 `tests/test_adapter.py::test_empty_string_model_with_prompt_sha_override_cli_and_library_reject`,
+`tests/test_adapter.py::test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,

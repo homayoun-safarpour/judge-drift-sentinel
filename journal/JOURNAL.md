@@ -576,3 +576,14 @@ asserts that `--model "" --prompt-sha override-sha` on
 `error:` stderr; library `ValueError`) rather than writing a run with a
 cleared model and override sha. README judgekit section cites the claim.
 120 tests green, ruff clean.
+
+## 2026-10-09 — CLI↔library empty-string model with whitespace prompt-sha rejects
+
+Named claim
+`tests/test_adapter.py::test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject`
+asserts that `--model "" --prompt-sha " "` on
+`import-judgekit` and `model=""`, `prompt_sha=" "` on
+`panel_to_run` reject with `run is missing a judge model id` (CLI exit 1 /
+`error:` stderr; library `ValueError`) rather than writing a run with a
+cleared model and whitespace sha. README judgekit section cites the claim.
+121 tests green, ruff clean.
