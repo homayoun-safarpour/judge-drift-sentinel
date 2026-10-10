@@ -219,7 +219,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-09)
+## NEXT TICK (evening 2026-10-10)
 
 - **Item:** Named claim that CLI whitespace-only `--model` with empty-string `--prompt-sha` and library `model=" "` with `prompt_sha=""` write the same run JSON fingerprints via `--run-out` / `write_run_json` (whitespace model is not omit or stripped; empty sha clears the panel sha).
 - **Why:** Empty-model rejection across omit / non-empty / whitespace sha is locked; the next fingerprint corner is a present whitespace model paired with an explicit empty sha clear.

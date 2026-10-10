@@ -587,3 +587,7 @@ asserts that `--model "" --prompt-sha " "` on
 `error:` stderr; library `ValueError`) rather than writing a run with a
 cleared model and whitespace sha. README judgekit section cites the claim.
 121 tests green, ruff clean.
+
+## 2026-10-10 — evening HOLD
+
+Gates green (CI 37902738662 on 2a00788 empty-string model with whitespace prompt-sha rejection). NEXT TICK refreshed to evening 2026-10-10 for whitespace-only `--model` with empty-string `--prompt-sha` fingerprint parity (whitespace model is not omit or stripped; empty sha clears the panel sha). HOLD.
