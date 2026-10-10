@@ -587,3 +587,15 @@ asserts that `--model "" --prompt-sha " "` on
 `error:` stderr; library `ValueError`) rather than writing a run with a
 cleared model and whitespace sha. README judgekit section cites the claim.
 121 tests green, ruff clean.
+
+## 2026-10-10 — CLI↔library whitespace model with empty prompt-sha write parity
+
+Named claim
+`tests/test_adapter.py::test_whitespace_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`
+asserts that `--model " " --prompt-sha ""` on
+`import-judgekit` yields the same written run JSON fingerprints as
+`model=" "`, `prompt_sha=""` on `panel_to_run` via `--run-out` /
+`write_run_json`, writing the literal whitespace model and clearing
+`prompt_sha` to `""` so a present whitespace model is not omit or stripped
+while an explicit empty sha clears the panel sha. README judgekit section
+cites the claim. 122 tests green, ruff clean.
