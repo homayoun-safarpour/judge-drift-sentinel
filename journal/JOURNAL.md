@@ -599,3 +599,15 @@ asserts that `--model " " --prompt-sha ""` on
 `prompt_sha` to `""` so a present whitespace model is not omit or stripped
 while an explicit empty sha clears the panel sha. README judgekit section
 cites the claim. 122 tests green, ruff clean.
+
+## 2026-10-11 — CLI↔library whitespace model with non-empty prompt-sha write parity
+
+Named claim
+`tests/test_adapter.py::test_whitespace_model_with_prompt_sha_override_cli_and_library_write_same_run_json`
+asserts that `--model " " --prompt-sha override-sha` on
+`import-judgekit` yields the same written run JSON fingerprints as
+`model=" "`, `prompt_sha="override-sha"` on `panel_to_run` via `--run-out` /
+`write_run_json`, writing the literal whitespace model and replacing
+`prompt_sha` with the override so a present whitespace model is not omit or
+stripped while an explicit non-empty sha replaces the panel sha. README
+judgekit section cites the claim. 123 tests green, ruff clean.
