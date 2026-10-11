@@ -611,3 +611,7 @@ asserts that `--model " " --prompt-sha override-sha` on
 `prompt_sha` with the override so a present whitespace model is not omit or
 stripped while an explicit non-empty sha replaces the panel sha. README
 judgekit section cites the claim. 123 tests green, ruff clean.
+
+## 2026-10-11 — evening HOLD
+
+Gates green (CI 38123394871 on ee68ce3 whitespace model with non-empty prompt-sha write parity). NEXT TICK refreshed to evening 2026-10-11 for non-empty `--model` with empty-string `--prompt-sha` fingerprint parity (override model replaces the panel model; empty sha clears the panel sha). HOLD.
