@@ -611,3 +611,7 @@ asserts that `--model " " --prompt-sha override-sha` on
 `prompt_sha` with the override so a present whitespace model is not omit or
 stripped while an explicit non-empty sha replaces the panel sha. README
 judgekit section cites the claim. 123 tests green, ruff clean.
+
+## 2026-10-12 — evening HOLD
+
+Gates green on main (CI 38123394871 / `ee68ce3`); whitespace model with non-empty prompt-sha write parity locked. No repair. NEXT TICK refreshed to evening 2026-10-12 pointing at open Next: non-empty `--model` + empty `--prompt-sha` write parity. Multi-format panel export remains deprioritized. Verdict HOLD.
