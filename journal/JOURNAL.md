@@ -622,3 +622,14 @@ asserts that `--model override-model --prompt-sha ""` on
 `write_run_json`, replacing the panel model with the override and clearing
 `prompt_sha` to `""` so an explicit empty sha clears the panel sha rather than
 omitting. README judgekit section cites the claim. 124 tests green, ruff clean.
+
+## 2026-10-13 — CLI↔library non-empty model with whitespace prompt-sha write parity
+
+Named claim
+`tests/test_adapter.py::test_nonempty_model_with_whitespace_prompt_sha_override_cli_and_library_write_same_run_json`
+asserts that `--model override-model --prompt-sha " "` on
+`import-judgekit` yields the same written run JSON fingerprints as
+`model="override-model"`, `prompt_sha=" "` on `panel_to_run` via `--run-out` /
+`write_run_json`, replacing the panel model with the override and writing
+literal whitespace `prompt_sha` so a present whitespace sha is not omit or
+stripped. README judgekit section cites the claim. 125 tests green, ruff clean.
