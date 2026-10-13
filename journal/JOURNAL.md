@@ -622,3 +622,11 @@ asserts that `--model override-model --prompt-sha ""` on
 `write_run_json`, replacing the panel model with the override and clearing
 `prompt_sha` to `""` so an explicit empty sha clears the panel sha rather than
 omitting. README judgekit section cites the claim. 124 tests green, ruff clean.
+
+## 2026-10-13 — evening HOLD
+
+Gates green on main (CI 38221320376 / `402d89a`); nonempty model with empty
+prompt-sha write parity locked. No repair. NEXT TICK refreshed to evening
+2026-10-13 pointing at open Next: non-empty `--model` + whitespace
+`--prompt-sha` write parity. Multi-format panel export remains deprioritized.
+Verdict HOLD.
