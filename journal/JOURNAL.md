@@ -633,3 +633,11 @@ asserts that `--model override-model --prompt-sha " "` on
 `write_run_json`, replacing the panel model with the override and writing
 literal whitespace `prompt_sha` so a present whitespace sha is not omit or
 stripped. README judgekit section cites the claim. 125 tests green, ruff clean.
+
+## 2026-10-14 — evening HOLD
+
+Gates green on main (CI 38366731896 / `132299d`); nonempty model with whitespace
+prompt-sha write parity locked. No repair. NEXT TICK refreshed to evening
+2026-10-14 pointing at open Next: non-empty `--model` whitespace vs empty
+`--prompt-sha` fingerprint distinctness. Multi-format panel export remains
+deprioritized. Verdict HOLD.

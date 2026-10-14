@@ -231,7 +231,7 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-13)
+## NEXT TICK (evening 2026-10-14)
 
 - **Item:** Named claim that CLI non-empty `--model` with whitespace-only `--prompt-sha` and the same `--model` with empty-string `--prompt-sha` write different run JSON fingerprints (whitespace sha is not normalized to empty; empty sha clears to `""`).
 - **Why:** Non-empty model with whitespace-sha write parity is locked; the next corner is proving `" "` and `""` stay distinct so whitespace is never collapsed into the empty-sha clear path.
