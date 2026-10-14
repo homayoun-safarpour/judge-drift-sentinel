@@ -3134,6 +3134,110 @@ def test_nonempty_model_with_whitespace_prompt_sha_override_cli_and_library_writ
     assert omitted.prompt_sha == "panel-sha"
 
 
+def test_nonempty_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json(
+    tmp_path,
+):
+    """Named claim: whitespace --prompt-sha is not normalized to empty.
+
+    Non-empty model with whitespace-sha write parity and non-empty model with
+    empty-sha write parity are locked. This claim locks the distinctness
+    corner: on a panel whose judge meta fingerprints are non-empty,
+    ``import-judgekit --model override-model --prompt-sha " "`` with
+    ``--run-out`` must write a different run JSON than the same
+    ``--model override-model`` with ``--prompt-sha ""``, so whitespace sha is
+    never collapsed into the empty-sha clear path (``" "`` stays literal;
+    ``""`` clears to empty).
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-14",
+        "live_metric": 0.79,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    whitespace_run = tmp_path / "whitespace-run.json"
+    empty_run = tmp_path / "empty-run.json"
+
+    whitespace_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "override-model",
+            "--prompt-sha",
+            " ",
+            "--anchors-out",
+            str(tmp_path / "whitespace-anchors.jsonl"),
+            "--run-out",
+            str(whitespace_run),
+        ]
+    )
+    assert whitespace_code == 0
+
+    empty_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "override-model",
+            "--prompt-sha",
+            "",
+            "--anchors-out",
+            str(tmp_path / "empty-anchors.jsonl"),
+            "--run-out",
+            str(empty_run),
+        ]
+    )
+    assert empty_code == 0
+
+    whitespace_text = whitespace_run.read_text(encoding="utf-8")
+    empty_text = empty_run.read_text(encoding="utf-8")
+    assert whitespace_text.endswith("\n")
+    assert empty_text.endswith("\n")
+    assert whitespace_text != empty_text
+
+    whitespace_payload = json.loads(whitespace_text)
+    empty_payload = json.loads(empty_text)
+    assert whitespace_payload == {
+        "judge": {"model": "override-model", "prompt_sha": " "},
+        "created": "2026-10-14",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    assert empty_payload == {
+        "judge": {"model": "override-model", "prompt_sha": ""},
+        "created": "2026-10-14",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    # Same override model; whitespace sha is not normalized to empty.
+    assert whitespace_payload["judge"]["model"] == empty_payload["judge"]["model"]
+    assert whitespace_payload["judge"]["prompt_sha"] == " "
+    assert empty_payload["judge"]["prompt_sha"] == ""
+    assert whitespace_payload["judge"]["prompt_sha"] != empty_payload["judge"]["prompt_sha"]
+    assert whitespace_payload["judge"]["prompt_sha"].strip() == ""
+    assert whitespace_payload["judge"]["prompt_sha"] != ""
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
