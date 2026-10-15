@@ -643,3 +643,7 @@ asserts that `--model override-model --prompt-sha " "` on
 `--model override-model` with `--prompt-sha ""`, so whitespace sha is not
 normalized to empty while empty sha clears to `""`. README judgekit section
 cites the claim. 126 tests green, ruff clean.
+
+## 2026-10-15 — evening HOLD
+
+Gates green on main (CI 38532636182 / `0664609`). HOLD feature work. NEXT TICK points Daily at library nonempty-model whitespace-vs-empty prompt-sha distinctness via write_run_json.
