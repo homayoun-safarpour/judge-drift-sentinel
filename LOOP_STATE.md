@@ -146,11 +146,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_nonempty_model_with_whitespace_prompt_sha_override_cli_and_library_write_same_run_json`.
 - [x] Named claim that CLI non-empty `--model` with whitespace-only `--prompt-sha` and the same `--model` with empty-string `--prompt-sha` write different run JSON fingerprints (whitespace sha is not normalized to empty; empty sha clears to `""`) (cost: S) (touched: 2026-10-14)
   - Done: `tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`.
-- [ ] Named claim that library `model=` with whitespace-only `prompt_sha=` and the same `model=` with empty-string `prompt_sha=` write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty; empty sha clears to `""`) (cost: S)
+- [x] Named claim that library `model=` with whitespace-only `prompt_sha=` and the same `model=` with empty-string `prompt_sha=` write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty; empty sha clears to `""`) (cost: S) (touched: 2026-10-15)
+  - Done: `tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`.
+- [ ] Named claim that CLI whitespace-only `--model` with empty-string `--prompt-sha` and non-empty `--model` with empty-string `--prompt-sha` write different run JSON fingerprints via `--run-out` (whitespace model is not normalized to a concrete override model under a cleared sha) (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-10-15: Library non-empty `model=` whitespace-vs-empty `prompt_sha=` distinctness claim - named test asserts `model="override-model"`, `prompt_sha=" "` and `model="override-model"`, `prompt_sha=""` write different run JSON via `write_run_json` (literal whitespace sha is not normalized to empty; empty sha clears to `""`); README cites the claim; pytest 127, ruff clean.
 - 2026-10-14: CLI non-empty `--model` whitespace-vs-empty `--prompt-sha` distinctness claim - named test asserts `--model override-model --prompt-sha " "` and `--model override-model --prompt-sha ""` write different run JSON via `--run-out` (literal whitespace sha is not normalized to empty; empty sha clears to `""`); README cites the claim; pytest 126, ruff clean.
 - 2026-10-13: CLI↔library non-empty `--model` with whitespace-only `--prompt-sha` write parity claim - named test asserts `--model override-model --prompt-sha " "` and `model="override-model"`, `prompt_sha=" "` write the same run JSON via `--run-out` / `write_run_json` (override model replaces panel model; whitespace sha is not omit or stripped; panel meta does not leak); README cites the claim; pytest 125, ruff clean.
 - 2026-10-12: CLI↔library non-empty `--model` with empty-string `--prompt-sha` write parity claim - named test asserts `--model override-model --prompt-sha ""` and `model="override-model"`, `prompt_sha=""` write the same run JSON via `--run-out` / `write_run_json` (override model replaces panel model; empty sha clears panel sha; panel meta does not leak); README cites the claim; pytest 124, ruff clean.
@@ -234,10 +237,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-14)
+## NEXT TICK (daily 2026-10-15)
 
-- **Item:** Named claim that library `model=` with whitespace-only `prompt_sha=` and the same `model=` with empty-string `prompt_sha=` write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty; empty sha clears to `""`).
-- **Why:** CLI whitespace-vs-empty prompt-sha distinctness under non-empty `--model` is locked; the next corner mirrors that gate on the library `panel_to_run` / `write_run_json` path.
+- **Item:** Named claim that CLI whitespace-only `--model` with empty-string `--prompt-sha` and non-empty `--model` with empty-string `--prompt-sha` write different run JSON fingerprints via `--run-out` (whitespace model is not normalized to a concrete override model under a cleared sha).
+- **Why:** Prompt-sha whitespace-vs-empty distinctness is locked on both CLI and library under non-empty model; the next corner locks model whitespace-vs-nonempty distinctness under cleared sha on the CLI path.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30

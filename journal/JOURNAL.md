@@ -643,3 +643,13 @@ asserts that `--model override-model --prompt-sha " "` on
 `--model override-model` with `--prompt-sha ""`, so whitespace sha is not
 normalized to empty while empty sha clears to `""`. README judgekit section
 cites the claim. 126 tests green, ruff clean.
+
+## 2026-10-15 — Library nonempty model whitespace vs empty prompt-sha distinctness
+
+Named claim
+`tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`
+asserts that `model="override-model"`, `prompt_sha=" "` on `panel_to_run`
+writes a different run JSON via `write_run_json` than the same
+`model="override-model"` with `prompt_sha=""`, so whitespace sha is not
+normalized to empty while empty sha clears to `""`. README judgekit section
+cites the claim. 127 tests green, ruff clean.
