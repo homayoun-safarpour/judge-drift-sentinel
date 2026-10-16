@@ -664,3 +664,7 @@ asserts that `--model " " --prompt-sha ""` on
 normalized to a concrete override model while empty sha clears to `""`
 on both paths. README judgekit section cites the claim. 128 tests green,
 ruff clean.
+
+## 2026-10-16 — evening HOLD
+
+Gates green on main (CI 38871304695 / `7b8eb91`). HOLD feature work. NEXT TICK points Daily at library whitespace-vs-nonempty model distinctness under empty prompt_sha via write_run_json.
