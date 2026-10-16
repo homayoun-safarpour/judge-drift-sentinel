@@ -240,10 +240,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-16)
+## NEXT TICK (evening 2026-10-16)
 
 - **Item:** Named claim that library `model=" "` with `prompt_sha=""` and `model=` with `prompt_sha=""` write different run JSON fingerprints via `write_run_json` (whitespace model is not normalized to a concrete override model under a cleared sha).
-- **Why:** CLI whitespace-vs-nonempty model distinctness under cleared sha is locked; the next corner locks the same distinctness on the library `panel_to_run` / `write_run_json` path.
+- **Why:** CLI whitespace-vs-nonempty model distinctness under cleared sha is locked (`7b8eb91`, CI 38871304695); open Next checkbox is the library `panel_to_run` / `write_run_json` mirror—do not invent new product scope.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
