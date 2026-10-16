@@ -653,3 +653,14 @@ writes a different run JSON via `write_run_json` than the same
 `model="override-model"` with `prompt_sha=""`, so whitespace sha is not
 normalized to empty while empty sha clears to `""`. README judgekit section
 cites the claim. 127 tests green, ruff clean.
+
+## 2026-10-16 — CLI whitespace vs nonempty model under empty prompt-sha distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_cli_write_different_run_json`
+asserts that `--model " " --prompt-sha ""` on
+`import-judgekit` writes a different run JSON via `--run-out` than
+`--model override-model --prompt-sha ""`, so whitespace model is not
+normalized to a concrete override model while empty sha clears to `""`
+on both paths. README judgekit section cites the claim. 128 tests green,
+ruff clean.
