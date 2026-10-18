@@ -675,3 +675,7 @@ writes a different run JSON via `write_run_json` than
 normalized to a concrete override model while empty sha clears to `""`
 on both paths. README judgekit section cites the claim. 129 tests green,
 ruff clean.
+
+## 2026-10-18 — evening HOLD
+
+Gates green on main (CI 39015852322 / `f4de663`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-vs-nonempty model distinctness under a set prompt-sha via --run-out.
