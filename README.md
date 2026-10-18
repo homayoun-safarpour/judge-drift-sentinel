@@ -326,6 +326,11 @@ Library `model=" "` with `prompt_sha=""` and `model=` with `prompt_sha=""`
 write different run JSON fingerprints via `write_run_json` (whitespace model
 is not normalized to a concrete override model under a cleared sha)
 (`tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_library_write_different_run_json`).
+CLI whitespace-only `--model` with non-empty `--prompt-sha` and non-empty
+`--model` with the same `--prompt-sha` write different run JSON fingerprints
+via `--run-out` (whitespace model is not normalized to a concrete override
+model under a set sha)
+(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_cli_write_different_run_json`).
 Bare ratings + `--human-labels` remain supported without a schema_version:
 
 ```json
@@ -428,6 +433,7 @@ fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
 `tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`,
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_cli_write_different_run_json`,
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_library_write_different_run_json`,
+`tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_cli_write_different_run_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
