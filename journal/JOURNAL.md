@@ -686,3 +686,7 @@ asserts that `--model " " --prompt-sha override-sha` on
 normalized to a concrete override model while both paths replace the panel
 sha with `override-sha`. README judgekit section cites the claim. 130 tests
 green, ruff clean.
+
+## 2026-10-19 — evening HOLD
+
+Gates green on main (CI 39109859563 / `36ab9eb`). HOLD feature work. NEXT TICK points Daily at library whitespace-vs-nonempty model distinctness under a set prompt-sha via write_run_json.
