@@ -708,3 +708,14 @@ asserts that `--model override-model --prompt-sha " "` on
 normalized to a concrete override sha while both paths replace the panel
 model with `override-model`. README judgekit section cites the claim. 132
 tests green, ruff clean.
+
+## 2026-10-21 — Library whitespace vs nonempty prompt-sha under set model distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_library_write_different_run_json`
+asserts that `model="override-model"`, `prompt_sha=" "` on `panel_to_run`
+writes a different run JSON via `write_run_json` than
+`prompt_sha="override-sha"` with the same `model="override-model"`, so
+whitespace sha is not normalized to a concrete override sha while both
+paths replace the panel model with `override-model`. README judgekit section
+cites the claim. 133 tests green, ruff clean.
