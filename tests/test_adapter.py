@@ -3903,6 +3903,111 @@ def test_whitespace_vs_nonempty_prompt_sha_set_model_library_write_different_run
     assert whitespace_payload["judge"]["prompt_sha"] != ""
 
 
+def test_whitespace_vs_nonempty_prompt_sha_alone_cli_write_different_run_json(
+    tmp_path,
+):
+    """Named claim: whitespace --prompt-sha alone is not normalized to nonempty.
+
+    Whitespace-vs-nonempty prompt-sha distinctness under a set ``--model`` is
+    locked by
+    ``test_whitespace_vs_nonempty_prompt_sha_set_model_cli_write_different_run_json``
+    and
+    ``test_whitespace_vs_nonempty_prompt_sha_set_model_library_write_different_run_json``.
+    This claim locks the omit-``--model`` corner: on a panel whose judge meta
+    fingerprints are non-empty, ``import-judgekit --prompt-sha " "`` (omit
+    ``--model``) with ``--run-out`` must write a different run JSON than
+    ``--prompt-sha override-sha`` alone, so whitespace sha is never collapsed
+    into a concrete override sha while both paths retain the panel ``model``
+    (``" "`` stays literal; ``override-sha`` stays concrete; both keep
+    ``panel-model``).
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-22",
+        "live_metric": 0.79,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    whitespace_run = tmp_path / "whitespace-run.json"
+    nonempty_run = tmp_path / "nonempty-run.json"
+
+    whitespace_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--prompt-sha",
+            " ",
+            "--anchors-out",
+            str(tmp_path / "whitespace-anchors.jsonl"),
+            "--run-out",
+            str(whitespace_run),
+        ]
+    )
+    assert whitespace_code == 0
+
+    nonempty_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--prompt-sha",
+            "override-sha",
+            "--anchors-out",
+            str(tmp_path / "nonempty-anchors.jsonl"),
+            "--run-out",
+            str(nonempty_run),
+        ]
+    )
+    assert nonempty_code == 0
+
+    whitespace_text = whitespace_run.read_text(encoding="utf-8")
+    nonempty_text = nonempty_run.read_text(encoding="utf-8")
+    assert whitespace_text.endswith("\n")
+    assert nonempty_text.endswith("\n")
+    assert whitespace_text != nonempty_text
+
+    whitespace_payload = json.loads(whitespace_text)
+    nonempty_payload = json.loads(nonempty_text)
+    assert whitespace_payload == {
+        "judge": {"model": "panel-model", "prompt_sha": " "},
+        "created": "2026-10-22",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    assert nonempty_payload == {
+        "judge": {"model": "panel-model", "prompt_sha": "override-sha"},
+        "created": "2026-10-22",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    # Panel model retained; whitespace sha is not normalized to concrete override.
+    assert whitespace_payload["judge"]["model"] == nonempty_payload["judge"]["model"]
+    assert whitespace_payload["judge"]["model"] == "panel-model"
+    assert whitespace_payload["judge"]["prompt_sha"] == " "
+    assert nonempty_payload["judge"]["prompt_sha"] == "override-sha"
+    assert whitespace_payload["judge"]["prompt_sha"] != nonempty_payload["judge"]["prompt_sha"]
+    assert whitespace_payload["judge"]["prompt_sha"].strip() == ""
+    assert whitespace_payload["judge"]["prompt_sha"] != ""
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
