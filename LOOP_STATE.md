@@ -261,10 +261,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-23)
+## NEXT TICK (evening 2026-10-23)
 
 - **Item:** Named claim that CLI whitespace-only `--model` alone (omit `--prompt-sha`) and non-empty `--model` alone write different run JSON fingerprints via `--run-out` (whitespace model is not normalized to a concrete override model while both retain the panel `prompt_sha`).
-- **Why:** Prompt-sha-alone whitespace-vs-nonempty distinctness is locked on both CLI and library; the next corner mirrors that omit-sha surface for `--model` alone on the CLI path.
+- **Why:** Library whitespace-vs-nonempty `prompt_sha=` alone is locked (`8844fae`, CI 39922130848); open Next checkbox is the CLI model-alone mirror via `--run-out`—do not invent new product scope.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
