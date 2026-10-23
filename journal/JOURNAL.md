@@ -729,3 +729,13 @@ writes a different run JSON via `--run-out` than `--prompt-sha override-sha`
 alone, so whitespace sha is not normalized to a concrete override sha while
 both paths retain the panel `model`. README judgekit section cites the claim.
 134 tests green, ruff clean.
+
+## 2026-10-23 — Library whitespace vs nonempty prompt-sha alone distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_library_write_different_run_json`
+asserts that `prompt_sha=" "` (omit `model=`) on `panel_to_run`
+writes a different run JSON via `write_run_json` than
+`prompt_sha="override-sha"` alone, so whitespace sha is not normalized to a
+concrete override sha while both paths retain the panel `model`. README
+judgekit section cites the claim. 135 tests green, ruff clean.
