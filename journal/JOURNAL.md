@@ -739,3 +739,7 @@ writes a different run JSON via `write_run_json` than
 `prompt_sha="override-sha"` alone, so whitespace sha is not normalized to a
 concrete override sha while both paths retain the panel `model`. README
 judgekit section cites the claim. 135 tests green, ruff clean.
+
+## 2026-10-23 — evening HOLD
+
+Gates green on main (CI 39922130848 / `8844fae`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-vs-nonempty model alone (omit --prompt-sha) distinctness via --run-out.
