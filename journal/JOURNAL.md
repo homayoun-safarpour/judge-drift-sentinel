@@ -759,3 +759,7 @@ writes a different run JSON via `write_run_json` than
 `model="override-model"` alone, so whitespace model is not normalized to a
 concrete override model while both paths retain the panel `prompt_sha`.
 README judgekit section cites the claim. 137 tests green, ruff clean.
+
+## 2026-10-25 — evening HOLD
+
+Gates green on main (CI 40175130329 / `d8b5910`). HOLD feature work. NEXT TICK points Daily at library whitespace-model write vs empty-model reject (omit prompt_sha=) via write_run_json / ValueError.
