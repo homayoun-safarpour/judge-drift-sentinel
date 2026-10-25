@@ -749,3 +749,13 @@ writes a different run JSON via `--run-out` than `--model override-model`
 alone, so whitespace model is not normalized to a concrete override model
 while both paths retain the panel `prompt_sha`. README judgekit section
 cites the claim. 136 tests green, ruff clean.
+
+## 2026-10-25 — Library whitespace vs nonempty model alone distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_library_write_different_run_json`
+asserts that `model=" "` (omit `prompt_sha=`) on `panel_to_run`
+writes a different run JSON via `write_run_json` than
+`model="override-model"` alone, so whitespace model is not normalized to a
+concrete override model while both paths retain the panel `prompt_sha`.
+README judgekit section cites the claim. 137 tests green, ruff clean.
