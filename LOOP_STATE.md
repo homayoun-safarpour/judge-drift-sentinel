@@ -267,11 +267,36 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-25)
+## SUNDAY CLOSE (2026-10-25)
 
+Usefulness gate (ran 2026-10-26 Monday cron against `origin/main` @ `d8b5910`):
+
+| Signal | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/40175130329 |
+| Named claim tests + ruff | PASS | local `python3 -m ruff check src tests` clean; `python3 -m pytest -q` -> 137 passed |
+| Worked example | PASS | `drift-sentinel check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833->0.333) |
+| Claim still true? | YES | Release-gate claims hold; latest locked claim is library whitespace-vs-nonempty `model=` alone distinctness (`test_whitespace_vs_nonempty_model_alone_library_write_different_run_json`); open Next checkbox remains whitespace model write vs empty-string reject on the same omit-`prompt_sha=` surface |
+| Example still runnable? | YES | stranger run still JUDGE_DRIFT exit 2; judge pin CHANGED; live metric moved -0.150 untrustworthy under drift |
+| Week repo | stay | active public week repo remains `homayoun-safarpour/judge-drift-sentinel` @ `main` (no Boss retarget this week) |
+
+### LinkedIn 5-bullet draft (field pain first; Homayoun posts)
+
+1. Your eval score moved after a provider model update. That alone does not tell you whether the system regressed or the judge did.
+2. drift-sentinel freezes a small human-labeled anchor set and re-scores it with the same judge files you already keep - zero extra LLM calls.
+3. The stranger clone path exits 2 with JUDGE_DRIFT: kappa 0.833 -> 0.333 on the shipped examples (the ruler moved).
+4. Exit codes are the contract: 2 = distrust the scoreboard, 3 = SYSTEM_CHANGE (movement is real), 0 = STABLE.
+5. Repo (MIT, PyPI `judge-drift-sentinel`): https://github.com/homayoun-safarpour/judge-drift-sentinel
+
+No employer demand invented. No private research/SLR content.
+
+## NEXT TICK (sunday 2026-10-25)
+
+- **Week boundary:** stay on `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the public week repo.
 - **Item:** Named claim that library whitespace-only `model=` alone (omit `prompt_sha=`) writes a run retaining panel `prompt_sha`, while empty-string `model=` alone raises `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path).
-- **Why:** Model-alone whitespace-vs-nonempty distinctness is locked on CLI and library; the next corner locks that literal `" "` still writes while `""` rejects on the same omit-`prompt_sha=` surface.
+- **Why:** Model-alone whitespace-vs-nonempty distinctness is locked on CLI and library; the next corner locks that literal `" "` still writes while `""` rejects on the same omit-`prompt_sha=` surface. Carry forward from daily NEXT TICK 2026-10-25.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Defer:** multi-format panel exports remain deprioritized until a second real producer exists.
 
 ## First-screen restyle 2026-09-30
 
