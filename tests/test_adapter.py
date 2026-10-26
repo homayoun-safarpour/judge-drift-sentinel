@@ -4283,6 +4283,68 @@ def test_whitespace_vs_nonempty_model_alone_library_write_different_run_json(
     assert whitespace_payload["judge"]["model"] != ""
 
 
+def test_whitespace_vs_empty_model_alone_library_write_vs_reject(tmp_path):
+    """Named claim: library whitespace model alone writes; empty alone rejects.
+
+    Library whitespace-vs-nonempty model-alone distinctness (omit
+    ``prompt_sha=``) is locked by
+    ``test_whitespace_vs_nonempty_model_alone_library_write_different_run_json``.
+    Empty-string model-alone rejection is locked by
+    ``test_empty_string_model_only_override_cli_and_library_reject``.
+    This claim locks the asymmetry on the same omit-``prompt_sha=`` surface:
+    on a panel whose judge meta fingerprints are non-empty,
+    ``write_run_json(panel_to_run(..., model=" "))`` must write a run that
+    retains the panel ``prompt_sha``, while ``panel_to_run(..., model="")``
+    must raise ``ValueError`` carrying ``run is missing a judge model id``.
+    Whitespace model is never normalized into the empty-reject path
+    (``" "`` stays literal and writes; ``""`` rejects).
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-26",
+        "live_metric": 0.79,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel = parse_panel_dict(panel_dict)
+
+    whitespace_run = tmp_path / "whitespace-run.json"
+    write_run_json(
+        whitespace_run,
+        panel_to_run(
+            panel,
+            "gpt-4o-judge",
+            model=" ",
+        ),
+    )
+    whitespace_text = whitespace_run.read_text(encoding="utf-8")
+    assert whitespace_text.endswith("\n")
+    whitespace_payload = json.loads(whitespace_text)
+    assert whitespace_payload == {
+        "judge": {"model": " ", "prompt_sha": "panel-sha"},
+        "created": "2026-10-26",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    assert whitespace_payload["judge"]["model"] == " "
+    assert whitespace_payload["judge"]["model"].strip() == ""
+    assert whitespace_payload["judge"]["model"] != ""
+    assert whitespace_payload["judge"]["prompt_sha"] == "panel-sha"
+
+    with pytest.raises(ValueError, match="run is missing a judge model id"):
+        panel_to_run(panel, "gpt-4o-judge", model="")
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 

@@ -759,3 +759,13 @@ writes a different run JSON via `write_run_json` than
 `model="override-model"` alone, so whitespace model is not normalized to a
 concrete override model while both paths retain the panel `prompt_sha`.
 README judgekit section cites the claim. 137 tests green, ruff clean.
+
+## 2026-10-26 — Library whitespace vs empty model alone asymmetry
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_model_alone_library_write_vs_reject`
+asserts that `model=" "` (omit `prompt_sha=`) on `panel_to_run` writes a
+run retaining the panel `prompt_sha` via `write_run_json`, while
+`model=""` alone raises `run is missing a judge model id`, so whitespace
+model is not normalized into the empty-reject path. README judgekit
+section cites the claim. 138 tests green, ruff clean.
