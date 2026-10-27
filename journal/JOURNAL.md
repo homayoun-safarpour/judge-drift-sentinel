@@ -769,3 +769,13 @@ run retaining the panel `prompt_sha` via `write_run_json`, while
 `model=""` alone raises `run is missing a judge model id`, so whitespace
 model is not normalized into the empty-reject path. README judgekit
 section cites the claim. 138 tests green, ruff clean.
+
+## 2026-10-27 — CLI whitespace vs empty model alone asymmetry
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_model_alone_cli_write_vs_reject`
+asserts that `--model " "` (omit `--prompt-sha`) on `import-judgekit`
+writes a run retaining the panel `prompt_sha` via `--run-out`, while
+`--model ""` alone exits 1 with `error:` / `run is missing a judge model id`,
+so whitespace model is not normalized into the empty-reject path. README
+judgekit section cites the claim. 139 tests green, ruff clean.
