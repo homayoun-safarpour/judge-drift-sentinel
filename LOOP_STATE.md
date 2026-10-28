@@ -172,11 +172,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_whitespace_vs_empty_model_alone_library_write_vs_reject`.
 - [x] Named claim that CLI whitespace-only `--model` alone (omit `--prompt-sha`) writes a run retaining panel `prompt_sha` via `--run-out`, while empty-string `--model` alone exits 1 with `error:` / `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path) (cost: S) (touched: 2026-10-27)
   - Done: `tests/test_adapter.py::test_whitespace_vs_empty_model_alone_cli_write_vs_reject`.
-- [ ] Named claim that library whitespace-only `model=` with empty-string `prompt_sha=` writes a run via `write_run_json`, while empty-string `model=` with empty-string `prompt_sha=` raises `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path under a cleared sha) (cost: S)
+- [x] Named claim that library whitespace-only `model=` with empty-string `prompt_sha=` writes a run via `write_run_json`, while empty-string `model=` with empty-string `prompt_sha=` raises `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path under a cleared sha) (cost: S) (touched: 2026-10-28)
+  - Done: `tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject`.
+- [ ] Named claim that CLI whitespace-only `--model` with empty-string `--prompt-sha` writes a run via `--run-out`, while empty-string `--model` with empty-string `--prompt-sha` exits 1 with `error:` / `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path under a cleared sha) (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-10-28: Library whitespace-vs-empty `model=` under empty `prompt_sha=` asymmetry claim - named test asserts `model=" "`, `prompt_sha=""` writes run JSON with cleared sha via `write_run_json` while `model=""`, `prompt_sha=""` raises `run is missing a judge model id` (literal whitespace model is not normalized into the empty-reject path under a cleared sha); README cites the claim; pytest 140, ruff clean.
 - 2026-10-27: CLI whitespace-vs-empty `--model` alone (omit `--prompt-sha`) asymmetry claim - named test asserts `--model " "` writes run JSON retaining panel prompt_sha via `--run-out` while `--model ""` exits 1 with `error:` / `run is missing a judge model id` (literal whitespace model is not normalized into the empty-reject path); README cites the claim; pytest 139, ruff clean.
 - 2026-10-26: Library whitespace-vs-empty `model=` alone (omit `prompt_sha=`) asymmetry claim - named test asserts `model=" "` writes run JSON retaining panel prompt_sha via `write_run_json` while `model=""` raises `run is missing a judge model id` (literal whitespace model is not normalized into the empty-reject path); README cites the claim; pytest 138, ruff clean.
 - 2026-10-25: Library whitespace-vs-nonempty `model=` alone (omit `prompt_sha=`) distinctness claim - named test asserts `model=" "` and `model="override-model"` write different run JSON via `write_run_json` (literal whitespace model is not normalized to a concrete override while both retain the panel prompt_sha); README cites the claim; pytest 137, ruff clean.
@@ -273,10 +276,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-27)
+## NEXT TICK (daily 2026-10-28)
 
-- **Item:** Named claim that library whitespace-only `model=` with empty-string `prompt_sha=` writes a run via `write_run_json`, while empty-string `model=` with empty-string `prompt_sha=` raises `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path under a cleared sha).
-- **Why:** Model-alone whitespace-vs-empty write/reject is locked on both CLI and library; the cleared-sha surface is the next adjacent asymmetry.
+- **Item:** Named claim that CLI whitespace-only `--model` with empty-string `--prompt-sha` writes a run via `--run-out`, while empty-string `--model` with empty-string `--prompt-sha` exits 1 with `error:` / `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path under a cleared sha).
+- **Why:** Library cleared-sha whitespace-vs-empty model asymmetry is locked; the matching CLI `--run-out` / exit-1 surface completes the pair.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30

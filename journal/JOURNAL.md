@@ -779,3 +779,13 @@ writes a run retaining the panel `prompt_sha` via `--run-out`, while
 `--model ""` alone exits 1 with `error:` / `run is missing a judge model id`,
 so whitespace model is not normalized into the empty-reject path. README
 judgekit section cites the claim. 139 tests green, ruff clean.
+
+## 2026-10-28 — Library whitespace vs empty model under cleared sha asymmetry
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject`
+asserts that `model=" "`, `prompt_sha=""` on `panel_to_run` writes a run
+with cleared `prompt_sha` via `write_run_json`, while `model=""`,
+`prompt_sha=""` raises `run is missing a judge model id`, so whitespace
+model is not normalized into the empty-reject path under a cleared sha.
+README judgekit section cites the claim. 140 tests green, ruff clean.
