@@ -4506,6 +4506,108 @@ def test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject(tmp_
         panel_to_run(panel, "gpt-4o-judge", model="", prompt_sha="")
 
 
+def test_whitespace_vs_empty_model_empty_prompt_sha_cli_write_vs_reject(tmp_path, capsys):
+    """Named claim: CLI whitespace model + empty sha writes; empty+empty rejects.
+
+    Library whitespace-vs-empty model under cleared ``prompt_sha=`` asymmetry is
+    locked by
+    ``test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject``.
+    Empty-string model with empty-string prompt-sha rejection is locked by
+    ``test_empty_string_override_cli_and_library_write_same_run_json``.
+    This claim locks the matching CLI corner on the same cleared-``--prompt-sha``
+    surface: on a panel whose judge meta fingerprints are non-empty,
+    ``import-judgekit --model " " --prompt-sha ""`` with ``--run-out`` must write
+    a run with literal whitespace model and cleared ``prompt_sha``, while
+    ``--model "" --prompt-sha ""`` must exit 1 with ``error:`` stderr carrying
+    ``run is missing a judge model id``. Whitespace model is never normalized
+    into the empty-reject path under a cleared sha (``" "`` stays literal and
+    writes; ``""`` rejects).
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-10-29",
+        "live_metric": 0.79,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel_path = tmp_path / "panel.json"
+    panel_path.write_text(json.dumps(panel_dict), encoding="utf-8")
+
+    whitespace_run = tmp_path / "whitespace-run.json"
+    whitespace_anchors = tmp_path / "whitespace-anchors.jsonl"
+    whitespace_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            " ",
+            "--prompt-sha",
+            "",
+            "--anchors-out",
+            str(whitespace_anchors),
+            "--run-out",
+            str(whitespace_run),
+        ]
+    )
+    assert whitespace_code == 0
+    whitespace_text = whitespace_run.read_text(encoding="utf-8")
+    assert whitespace_text.endswith("\n")
+    whitespace_payload = json.loads(whitespace_text)
+    assert whitespace_payload == {
+        "judge": {"model": " ", "prompt_sha": ""},
+        "created": "2026-10-29",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    assert whitespace_payload["judge"]["model"] == " "
+    assert whitespace_payload["judge"]["model"].strip() == ""
+    assert whitespace_payload["judge"]["model"] != ""
+    assert whitespace_payload["judge"]["prompt_sha"] == ""
+    assert whitespace_payload["judge"]["prompt_sha"] != "panel-sha"
+    assert whitespace_anchors.exists()
+
+    empty_model_run = tmp_path / "empty-model-run.json"
+    empty_model_anchors = tmp_path / "empty-model-anchors.jsonl"
+    empty_model_code = main(
+        [
+            "import-judgekit",
+            "--panel",
+            str(panel_path),
+            "--judge",
+            "gpt-4o-judge",
+            "--model",
+            "",
+            "--prompt-sha",
+            "",
+            "--anchors-out",
+            str(empty_model_anchors),
+            "--run-out",
+            str(empty_model_run),
+        ]
+    )
+    assert empty_model_code == 1
+    captured = capsys.readouterr()
+    err_flat = " ".join(captured.err.split())
+    assert "error:" in err_flat
+    assert "run is missing a judge model id" in err_flat
+    assert "Traceback" not in captured.err
+    assert not empty_model_run.exists()
+    assert not empty_model_anchors.exists()
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
