@@ -789,3 +789,8 @@ with cleared `prompt_sha` via `write_run_json`, while `model=""`,
 `prompt_sha=""` raises `run is missing a judge model id`, so whitespace
 model is not normalized into the empty-reject path under a cleared sha.
 README judgekit section cites the claim. 140 tests green, ruff clean.
+
+
+## 2026-10-29 — evening HOLD
+
+Gates green on main (CI 40654147787 / `ccab8cf`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-model write vs empty-model reject under cleared prompt_sha via --run-out / exit-1.
