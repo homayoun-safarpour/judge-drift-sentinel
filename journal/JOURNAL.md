@@ -800,3 +800,14 @@ writes a run with cleared `prompt_sha` via `--run-out`, while
 `run is missing a judge model id`, so whitespace model is not normalized
 into the empty-reject path under a cleared sha. README judgekit section
 cites the claim. 141 tests green, ruff clean.
+
+## 2026-10-30 — Library whitespace vs empty model under set sha asymmetry
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_library_write_vs_reject`
+asserts that `model=" "`, `prompt_sha="override-sha"` on `panel_to_run`
+writes a run with override `prompt_sha` via `write_run_json`, while
+`model=""`, `prompt_sha="override-sha"` raises `run is missing a judge
+model id`, so whitespace model is not normalized into the empty-reject
+path under a set sha. README judgekit section cites the claim. 142 tests
+green, ruff clean.
