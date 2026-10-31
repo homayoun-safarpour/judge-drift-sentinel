@@ -811,3 +811,14 @@ writes a run with override `prompt_sha` via `write_run_json`, while
 model id`, so whitespace model is not normalized into the empty-reject
 path under a set sha. README judgekit section cites the claim. 142 tests
 green, ruff clean.
+
+## 2026-10-31 — CLI whitespace vs empty model under set sha asymmetry
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_cli_write_vs_reject`
+asserts that `--model " "`, `--prompt-sha override-sha` on `import-judgekit`
+writes a run with override `prompt_sha` via `--run-out`, while
+`--model ""`, `--prompt-sha override-sha` exits 1 with `error:` /
+`run is missing a judge model id`, so whitespace model is not normalized
+into the empty-reject path under a set sha. README judgekit section
+cites the claim. 143 tests green, ruff clean.
