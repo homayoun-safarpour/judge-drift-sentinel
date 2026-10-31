@@ -811,3 +811,7 @@ writes a run with override `prompt_sha` via `write_run_json`, while
 model id`, so whitespace model is not normalized into the empty-reject
 path under a set sha. README judgekit section cites the claim. 142 tests
 green, ruff clean.
+
+## 2026-10-31 — evening HOLD
+
+Gates green on main (CI 41023962128 / `07cf34a`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-model write vs empty-model reject under set prompt_sha via --run-out / exit 1.
