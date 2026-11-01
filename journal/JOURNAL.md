@@ -822,3 +822,7 @@ writes a run with override `prompt_sha` via `--run-out`, while
 `run is missing a judge model id`, so whitespace model is not normalized
 into the empty-reject path under a set sha. README judgekit section
 cites the claim. 143 tests green, ruff clean.
+
+## 2026-11-01 — evening HOLD
+
+Gates green on main (CI 41183167041 / `5967430`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-vs-empty `--prompt-sha` alone distinctness via `--run-out`.

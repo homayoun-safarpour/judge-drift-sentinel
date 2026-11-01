@@ -285,10 +285,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-10-31)
+## NEXT TICK (evening 2026-11-01)
 
 - **Item:** Named claim that CLI whitespace-only `--prompt-sha` alone (omit `--model`) and empty-string `--prompt-sha` alone write different run JSON fingerprints via `--run-out` (whitespace sha is not normalized to empty while both retain the panel `model`).
-- **Why:** Model whitespace-vs-empty write/reject matrix is complete across alone/cleared-sha/set-sha CLI+library; the alone surface still lacks whitespace-vs-empty `prompt_sha` distinctness (nonempty-model pair already locked).
+- **Why:** Model whitespace-vs-empty write/reject matrix is complete across alone/cleared-sha/set-sha CLI+library (`5967430`, CI 41183167041); open Next checkbox is the alone-surface whitespace-vs-empty `prompt_sha` distinctness—do not invent new product scope.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
