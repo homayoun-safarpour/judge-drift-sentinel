@@ -187,6 +187,7 @@ Bounded engineering backlog for this repository. One checkbox per increment.
 
 ## Maintenance log
 
+- 2026-11-01: heartbeat — OK on CLI whitespace-vs-empty `--prompt-sha` alone claim (`5a28c23`: named test + README + CI 41287169429); no repair opened; multi-format panel export remains deprioritized; verdict ENRICH; next tick: library whitespace-vs-empty `prompt_sha=` alone (omit `model=`) distinctness via `write_run_json`.
 - 2026-11-01: CLI whitespace-vs-empty `--prompt-sha` alone (omit `--model`) distinctness claim - named test asserts `--prompt-sha " "` and `--prompt-sha ""` write different run JSON via `--run-out` (literal whitespace sha is not normalized to empty while both retain the panel model); README cites the claim; pytest 144, ruff clean.
 - 2026-10-31: CLI whitespace-vs-empty `--model` under non-empty `--prompt-sha` asymmetry claim - named test asserts `--model " "`, `--prompt-sha override-sha` writes run JSON with override sha via `--run-out` while `--model ""`, `--prompt-sha override-sha` exits 1 with `error:` / `run is missing a judge model id` (literal whitespace model is not normalized into the empty-reject path under a set sha); README cites the claim; pytest 143, ruff clean.
 - 2026-10-30: Library whitespace-vs-empty `model=` under non-empty `prompt_sha=` asymmetry claim - named test asserts `model=" "`, `prompt_sha="override-sha"` writes run JSON with override sha via `write_run_json` while `model=""`, `prompt_sha="override-sha"` raises `run is missing a judge model id` (literal whitespace model is not normalized into the empty-reject path under a set sha); README cites the claim; pytest 142, ruff clean.
@@ -288,11 +289,11 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-11-01)
+## NEXT TICK (heartbeat 2026-11-01)
 
 - **Item:** Named claim that library whitespace-only `prompt_sha=` alone (omit `model=`) and empty-string `prompt_sha=` alone write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty while both retain the panel `model`).
-- **Why:** CLI alone-surface whitespace-vs-empty `prompt_sha` distinctness is locked; the matching library omit-`model=` pair closes the alone-surface matrix (nonempty-model whitespace-vs-empty sha already locked).
-- **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py`
+- **Why:** CLI alone-surface whitespace-vs-empty `prompt_sha` distinctness is locked; the matching library omit-`model=` pair closes the alone-surface matrix.
+- **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
 
