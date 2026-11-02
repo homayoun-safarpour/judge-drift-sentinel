@@ -289,11 +289,36 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (heartbeat 2026-11-01)
+## SUNDAY CLOSE (2026-11-01)
 
+Usefulness gate (ran 2026-11-02 Monday cron against `origin/main` @ `6c30424`):
+
+| Signal | Result | Evidence |
+| --- | --- | --- |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/41287314043 |
+| Named claim tests + ruff | PASS | local `python3 -m ruff check src tests` clean; `python3 -m pytest -q` -> 144 passed |
+| Worked example | PASS | `drift-sentinel check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833->0.333) |
+| Claim still true? | YES | Release-gate claims hold; latest locked claim is CLI whitespace-vs-empty `--prompt-sha` alone distinctness (`test_whitespace_vs_empty_prompt_sha_alone_cli_write_different_run_json`); open Next checkbox remains the matching library omit-`model=` pair |
+| Example still runnable? | YES | stranger run still JUDGE_DRIFT exit 2; judge pin CHANGED; live metric moved -0.150 untrustworthy under drift |
+| Week repo | stay | active public week repo remains `homayoun-safarpour/judge-drift-sentinel` @ `main` (no Boss retarget this week) |
+
+### LinkedIn 5-bullet draft (field pain first; Homayoun posts)
+
+1. Your eval score moved after a provider model update. That alone does not tell you whether the system regressed or the judge did.
+2. drift-sentinel freezes a small human-labeled anchor set and re-scores it with the same judge files you already keep - zero extra LLM calls.
+3. The stranger clone path exits 2 with JUDGE_DRIFT: kappa 0.833 -> 0.333 on the shipped examples (the ruler moved).
+4. Exit codes are the contract: 2 = distrust the scoreboard, 3 = SYSTEM_CHANGE (movement is real), 0 = STABLE.
+5. Repo (MIT, PyPI `judge-drift-sentinel`): https://github.com/homayoun-safarpour/judge-drift-sentinel
+
+No employer demand invented. No private research/SLR content.
+
+## NEXT TICK (sunday 2026-11-01)
+
+- **Week boundary:** stay on `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the public week repo.
 - **Item:** Named claim that library whitespace-only `prompt_sha=` alone (omit `model=`) and empty-string `prompt_sha=` alone write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty while both retain the panel `model`).
-- **Why:** CLI alone-surface whitespace-vs-empty `prompt_sha` distinctness is locked; the matching library omit-`model=` pair closes the alone-surface matrix.
+- **Why:** CLI alone-surface whitespace-vs-empty `prompt_sha` distinctness is locked; the matching library omit-`model=` pair closes the alone-surface matrix. Carry forward from daily NEXT TICK 2026-11-01.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json tests/test_adapter.py`
+- **Defer:** multi-format panel exports remain deprioritized until a second real producer exists.
 
 ## First-screen restyle 2026-09-30
 
