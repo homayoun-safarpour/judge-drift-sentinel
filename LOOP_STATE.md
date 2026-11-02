@@ -182,11 +182,14 @@ Bounded engineering backlog for this repository. One checkbox per increment.
   - Done: `tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_cli_write_vs_reject`.
 - [x] Named claim that CLI whitespace-only `--prompt-sha` alone (omit `--model`) and empty-string `--prompt-sha` alone write different run JSON fingerprints via `--run-out` (whitespace sha is not normalized to empty while both retain the panel `model`) (cost: S) (touched: 2026-11-01)
   - Done: `tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_cli_write_different_run_json`.
-- [ ] Named claim that library whitespace-only `prompt_sha=` alone (omit `model=`) and empty-string `prompt_sha=` alone write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty while both retain the panel `model`) (cost: S)
+- [x] Named claim that library whitespace-only `prompt_sha=` alone (omit `model=`) and empty-string `prompt_sha=` alone write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty while both retain the panel `model`) (cost: S) (touched: 2026-11-02)
+  - Done: `tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json`.
+- [ ] Named claim that CLI whitespace-only `--model` with whitespace-only `--prompt-sha` and the same whitespace-only `--model` with empty-string `--prompt-sha` write different run JSON fingerprints via `--run-out` (whitespace sha is not normalized to empty under a whitespace model) (cost: S)
 - [DEPRIORITIZED: no second real panel-export producer yet] Optional later: more panel-export formats beyond `judgekit.panel_export/v1`.
 
 ## Maintenance log
 
+- 2026-11-02: Library whitespace-vs-empty `prompt_sha=` alone (omit `model=`) distinctness claim - named test asserts `prompt_sha=" "` and `prompt_sha=""` write different run JSON via `write_run_json` (literal whitespace sha is not normalized to empty while both retain the panel model); README cites the claim; pytest 145, ruff clean.
 - 2026-11-01: heartbeat — OK on CLI whitespace-vs-empty `--prompt-sha` alone claim (`5a28c23`: named test + README + CI 41287169429); no repair opened; multi-format panel export remains deprioritized; verdict ENRICH; next tick: library whitespace-vs-empty `prompt_sha=` alone (omit `model=`) distinctness via `write_run_json`.
 - 2026-11-01: CLI whitespace-vs-empty `--prompt-sha` alone (omit `--model`) distinctness claim - named test asserts `--prompt-sha " "` and `--prompt-sha ""` write different run JSON via `--run-out` (literal whitespace sha is not normalized to empty while both retain the panel model); README cites the claim; pytest 144, ruff clean.
 - 2026-10-31: CLI whitespace-vs-empty `--model` under non-empty `--prompt-sha` asymmetry claim - named test asserts `--model " "`, `--prompt-sha override-sha` writes run JSON with override sha via `--run-out` while `--model ""`, `--prompt-sha override-sha` exits 1 with `error:` / `run is missing a judge model id` (literal whitespace model is not normalized into the empty-reject path under a set sha); README cites the claim; pytest 143, ruff clean.
@@ -291,14 +294,14 @@ Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 fa
 
 ## SUNDAY CLOSE (2026-11-01)
 
-Usefulness gate (ran 2026-11-02 Monday cron against `origin/main` @ `6c30424`):
+Usefulness gate (ran 2026-11-02 Monday cron against `origin/main` @ `d07fa0d`):
 
 | Signal | Result | Evidence |
 | --- | --- | --- |
-| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/41287314043 |
-| Named claim tests + ruff | PASS | local `python3 -m ruff check src tests` clean; `python3 -m pytest -q` -> 144 passed |
+| CI 3.10/3.11/3.12 | PASS | https://github.com/homayoun-safarpour/judge-drift-sentinel/actions/runs/41410141805 |
+| Named claim tests + ruff | PASS | local `python3 -m ruff check src tests` clean; `python3 -m pytest -q` -> 145 passed |
 | Worked example | PASS | `drift-sentinel check` on `examples/{anchors.jsonl,run_baseline.json,run_current.json}` -> JUDGE_DRIFT exit 2 (kappa 0.833->0.333) |
-| Claim still true? | YES | Release-gate claims hold; latest locked claim is CLI whitespace-vs-empty `--prompt-sha` alone distinctness (`test_whitespace_vs_empty_prompt_sha_alone_cli_write_different_run_json`); open Next checkbox remains the matching library omit-`model=` pair |
+| Claim still true? | YES | Release-gate claims hold; latest locked claim is library whitespace-vs-empty `prompt_sha=` alone distinctness (`test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json`); open Next checkbox remains CLI whitespace-model whitespace-vs-empty `--prompt-sha` distinctness |
 | Example still runnable? | YES | stranger run still JUDGE_DRIFT exit 2; judge pin CHANGED; live metric moved -0.150 untrustworthy under drift |
 | Week repo | stay | active public week repo remains `homayoun-safarpour/judge-drift-sentinel` @ `main` (no Boss retarget this week) |
 
@@ -315,9 +318,9 @@ No employer demand invented. No private research/SLR content.
 ## NEXT TICK (sunday 2026-11-01)
 
 - **Week boundary:** stay on `homayoun-safarpour/judge-drift-sentinel` @ `main` unless Boss retargets the public week repo.
-- **Item:** Named claim that library whitespace-only `prompt_sha=` alone (omit `model=`) and empty-string `prompt_sha=` alone write different run JSON fingerprints via `write_run_json` (whitespace sha is not normalized to empty while both retain the panel `model`).
-- **Why:** CLI alone-surface whitespace-vs-empty `prompt_sha` distinctness is locked; the matching library omit-`model=` pair closes the alone-surface matrix. Carry forward from daily NEXT TICK 2026-11-01.
-- **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json tests/test_adapter.py`
+- **Item:** Named claim that CLI whitespace-only `--model` with whitespace-only `--prompt-sha` and the same whitespace-only `--model` with empty-string `--prompt-sha` write different run JSON fingerprints via `--run-out` (whitespace sha is not normalized to empty under a whitespace model).
+- **Why:** Alone-surface and nonempty-model whitespace-vs-empty `prompt_sha` pairs are locked; the whitespace-model corner is the remaining sha-distinctness cell before the library twin. Carry forward from daily NEXT TICK 2026-11-02.
+- **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json tests/test_adapter.py`
 - **Defer:** multi-format panel exports remain deprioritized until a second real producer exists.
 
 ## First-screen restyle 2026-09-30

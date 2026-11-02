@@ -832,3 +832,13 @@ asserts that `--prompt-sha " "` alone (omit `--model`) and
 via `--run-out`, so whitespace sha is not normalized to empty while both
 retain the panel `model`. README judgekit section cites the claim. 144
 tests green, ruff clean.
+
+## 2026-11-02 — Library whitespace vs empty prompt_sha alone distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json`
+asserts that `prompt_sha=" "` alone (omit `model=`) and
+`prompt_sha=""` alone on `panel_to_run` write different run JSON via
+`write_run_json`, so whitespace sha is not normalized to empty while both
+retain the panel `model`. README judgekit section cites the claim. 145
+tests green, ruff clean.
