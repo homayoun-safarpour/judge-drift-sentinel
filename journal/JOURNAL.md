@@ -842,3 +842,7 @@ asserts that `prompt_sha=" "` alone (omit `model=`) and
 `write_run_json`, so whitespace sha is not normalized to empty while both
 retain the panel `model`. README judgekit section cites the claim. 145
 tests green, ruff clean.
+
+## 2026-11-03 — evening HOLD
+
+Gates green on main (CI 41410141805 / `d07fa0d`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-model whitespace-vs-empty `--prompt-sha` distinctness via `--run-out`.
