@@ -842,3 +842,13 @@ asserts that `prompt_sha=" "` alone (omit `model=`) and
 `write_run_json`, so whitespace sha is not normalized to empty while both
 retain the panel `model`. README judgekit section cites the claim. 145
 tests green, ruff clean.
+
+## 2026-11-03 — CLI whitespace-model × whitespace-vs-empty prompt_sha distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`
+asserts that `--model " "`, `--prompt-sha " "` and `--model " "`,
+`--prompt-sha ""` on `import-judgekit` write different run JSON via
+`--run-out`, so whitespace sha is not normalized to empty under a
+whitespace model. README judgekit section cites the claim. 146 tests
+green, ruff clean.
