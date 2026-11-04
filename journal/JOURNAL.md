@@ -852,3 +852,7 @@ asserts that `--model " "`, `--prompt-sha " "` and `--model " "`,
 `--run-out`, so whitespace sha is not normalized to empty under a
 whitespace model. README judgekit section cites the claim. 146 tests
 green, ruff clean.
+
+## 2026-11-04 — evening HOLD
+
+Gates green on main (CI 41600736513 / `f9aa73e`). HOLD feature work. NEXT TICK points Daily at library whitespace-model whitespace-vs-empty `prompt_sha=` distinctness via `write_run_json`.
