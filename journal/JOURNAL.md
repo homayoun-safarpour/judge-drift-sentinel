@@ -852,3 +852,13 @@ asserts that `--model " "`, `--prompt-sha " "` and `--model " "`,
 `--run-out`, so whitespace sha is not normalized to empty under a
 whitespace model. README judgekit section cites the claim. 146 tests
 green, ruff clean.
+
+## 2026-11-04 — Library whitespace-model × whitespace-vs-empty prompt_sha distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`
+asserts that `model=" "`, `prompt_sha=" "` and `model=" "`,
+`prompt_sha=""` on `panel_to_run` write different run JSON via
+`write_run_json`, so whitespace sha is not normalized to empty under a
+whitespace model. README judgekit section cites the claim. 147 tests
+green, ruff clean.

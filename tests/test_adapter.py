@@ -5085,6 +5085,99 @@ def test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run
     assert whitespace_payload["judge"]["prompt_sha"] != ""
 
 
+def test_whitespace_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json(
+    tmp_path,
+):
+    """Named claim: library whitespace sha under whitespace model is not normalized to empty.
+
+    Whitespace-vs-empty prompt-sha distinctness under a non-empty ``model=`` is
+    locked by
+    ``test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json``.
+    Alone-surface whitespace-vs-empty prompt-sha distinctness is locked by
+    ``test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json``.
+    Whitespace-model + empty-sha write parity is locked by
+    ``test_whitespace_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json``.
+    CLI whitespace-model corner is locked by
+    ``test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json``.
+    This claim locks the library twin: on a panel whose judge meta fingerprints
+    are non-empty, ``write_run_json(panel_to_run(..., model=" ", prompt_sha=" "))``
+    must write a different run JSON than the same ``model=" "`` with
+    ``prompt_sha=""``, so whitespace sha is never collapsed into the empty-sha
+    clear path under a whitespace model (``" "`` stays literal; ``""`` clears to
+    empty; both keep literal whitespace model).
+    """
+    panel_dict = {
+        "schema_version": SCHEMA_VERSION,
+        "created": "2026-11-04",
+        "live_metric": 0.79,
+        "human_labels": {"z09": "fail", "a01": "pass", "m05": "pass"},
+        "ratings": {
+            "z09": {"gpt-4o-judge": ["fail", "fail"]},
+            "a01": {"gpt-4o-judge": ["pass", "pass"]},
+            "m05": {"gpt-4o-judge": ["pass", "fail", "pass"]},
+        },
+        "judges": {
+            "gpt-4o-judge": {
+                "model": "panel-model",
+                "prompt_sha": "panel-sha",
+            }
+        },
+    }
+    panel = parse_panel_dict(panel_dict)
+
+    whitespace_run = tmp_path / "whitespace-run.json"
+    empty_run = tmp_path / "empty-run.json"
+
+    write_run_json(
+        whitespace_run,
+        panel_to_run(
+            panel,
+            "gpt-4o-judge",
+            model=" ",
+            prompt_sha=" ",
+        ),
+    )
+    write_run_json(
+        empty_run,
+        panel_to_run(
+            panel,
+            "gpt-4o-judge",
+            model=" ",
+            prompt_sha="",
+        ),
+    )
+
+    whitespace_text = whitespace_run.read_text(encoding="utf-8")
+    empty_text = empty_run.read_text(encoding="utf-8")
+    assert whitespace_text.endswith("\n")
+    assert empty_text.endswith("\n")
+    assert whitespace_text != empty_text
+
+    whitespace_payload = json.loads(whitespace_text)
+    empty_payload = json.loads(empty_text)
+    assert whitespace_payload == {
+        "judge": {"model": " ", "prompt_sha": " "},
+        "created": "2026-11-04",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    assert empty_payload == {
+        "judge": {"model": " ", "prompt_sha": ""},
+        "created": "2026-11-04",
+        "anchor_scores": {"a01": "pass", "m05": "pass", "z09": "fail"},
+        "live_metric": 0.79,
+    }
+    # Same whitespace model; whitespace sha is not normalized to empty.
+    assert whitespace_payload["judge"]["model"] == empty_payload["judge"]["model"]
+    assert whitespace_payload["judge"]["model"] == " "
+    assert whitespace_payload["judge"]["model"].strip() == ""
+    assert whitespace_payload["judge"]["prompt_sha"] == " "
+    assert empty_payload["judge"]["prompt_sha"] == ""
+    assert whitespace_payload["judge"]["prompt_sha"] != empty_payload["judge"]["prompt_sha"]
+    assert whitespace_payload["judge"]["prompt_sha"].strip() == ""
+    assert whitespace_payload["judge"]["prompt_sha"] != ""
+
+
 def test_import_judgekit_cli_rejects_whitespace_only_judge(tmp_path, capsys):
     """Named claim: CLI rejects whitespace-only --judge with exit 1.
 
