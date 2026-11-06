@@ -872,3 +872,13 @@ asserts that `--model " "`, `--prompt-sha " "` and `--model " "`,
 via `--run-out`, so whitespace sha is not normalized to a concrete override
 under a whitespace model. README judgekit section cites the claim. 148
 tests green, ruff clean.
+
+## 2026-11-06 — Library whitespace-model × whitespace-vs-nonempty prompt_sha distinctness
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_library_write_different_run_json`
+asserts that `model=" "`, `prompt_sha=" "` and `model=" "`,
+`prompt_sha="override-sha"` on `panel_to_run` write different run JSON via
+`write_run_json`, so whitespace sha is not normalized to a concrete override
+under a whitespace model. README judgekit section cites the claim. 149
+tests green, ruff clean.
