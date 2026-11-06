@@ -872,3 +872,7 @@ asserts that `--model " "`, `--prompt-sha " "` and `--model " "`,
 via `--run-out`, so whitespace sha is not normalized to a concrete override
 under a whitespace model. README judgekit section cites the claim. 148
 tests green, ruff clean.
+
+## 2026-11-06 — evening HOLD
+
+Gates green on main (CI 41991376374 / `7ab8438`). HOLD feature work. NEXT TICK points Daily at library whitespace-model whitespace-vs-nonempty `prompt_sha=` distinctness via `write_run_json`.
