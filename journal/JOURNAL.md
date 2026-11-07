@@ -882,3 +882,7 @@ asserts that `model=" "`, `prompt_sha=" "` and `model=" "`,
 `write_run_json`, so whitespace sha is not normalized to a concrete override
 under a whitespace model. README judgekit section cites the claim. 149
 tests green, ruff clean.
+
+## 2026-11-07 — evening HOLD
+
+Gates green on main (CI 42184755705 / `e35f863`). HOLD feature work. NEXT TICK points Daily at library whitespace-vs-empty `model=` under whitespace `prompt_sha=` via `write_run_json`.
