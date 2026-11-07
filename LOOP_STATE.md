@@ -304,10 +304,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-11-06)
+## NEXT TICK (evening 2026-11-07)
 
 - **Item:** Named claim that library whitespace-only `model=` with whitespace-only `prompt_sha=` writes a run via `write_run_json`, while empty-string `model=` with whitespace-only `prompt_sha=` raises `run is missing a judge model id` (whitespace model is not normalized into the empty-reject path under a whitespace sha).
-- **Why:** Prompt-sha whitespace-vs-nonempty under whitespace model is locked on both CLI and library; the remaining model whitespace-vs-empty cell is the whitespace-sha corner (empty-sha and set-sha pairs already locked).
+- **Why:** Library whitespace-model × whitespace-vs-nonempty `prompt_sha` distinctness is locked (`e35f863`, CI 42184755705); open Next checkbox is the whitespace-sha model whitespace-vs-empty asymmetry—do not invent new product scope.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_library_write_vs_reject tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
