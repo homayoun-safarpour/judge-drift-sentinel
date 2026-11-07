@@ -882,3 +882,13 @@ asserts that `model=" "`, `prompt_sha=" "` and `model=" "`,
 `write_run_json`, so whitespace sha is not normalized to a concrete override
 under a whitespace model. README judgekit section cites the claim. 149
 tests green, ruff clean.
+
+## 2026-11-07 — Library whitespace-vs-empty model under whitespace prompt_sha
+
+Named claim
+`tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_library_write_vs_reject`
+asserts that `model=" "`, `prompt_sha=" "` on `panel_to_run` writes run JSON
+via `write_run_json` while `model=""`, `prompt_sha=" "` raises
+`run is missing a judge model id`, so whitespace model is not normalized into
+the empty-reject path under a whitespace sha. README judgekit section cites
+the claim. 150 tests green, ruff clean.
