@@ -903,3 +903,7 @@ writes a run with literal whitespace fingerprints via `--run-out`, while
 `run is missing a judge model id`, so whitespace model is not normalized
 into the empty-reject path under a whitespace sha. README judgekit section
 cites the claim. 151 tests green, ruff clean.
+
+## 2026-11-08 — evening HOLD
+
+Gates green on main (CI 42461180234 / `c663df3`). HOLD feature work. NEXT TICK points Daily at CLI whitespace-vs-nonempty `--model` under whitespace `--prompt-sha` via `--run-out`.
