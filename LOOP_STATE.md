@@ -310,10 +310,10 @@ Field/external benchmark (§B): not claimed this week.
 
 Sunday close 2026-08-09: gate evidence refreshed above; growth pulse wrote 11 face rows; LinkedIn paste remains Boss-only (`D:\live_memory\LINKEDIN_DRAFT_2026-08-08_ireland_jobs.md`). Community: GFI #9 shipped (named pytest); close the GitHub issue when convenient.
 
-## NEXT TICK (daily 2026-11-08)
+## NEXT TICK (evening 2026-11-08)
 
 - **Item:** Named claim that CLI whitespace-only `--model` with whitespace-only `--prompt-sha` and non-empty `--model` with the same whitespace-only `--prompt-sha` write different run JSON fingerprints via `--run-out` (whitespace model is not normalized to a concrete override model under a whitespace sha).
-- **Why:** Whitespace-sha model write-vs-reject is locked on both surfaces; the remaining open corner is whitespace-vs-nonempty model distinctness under whitespace prompt_sha (empty-sha and set-sha pairs already locked).
+- **Why:** CLI whitespace-vs-empty `--model` under whitespace `--prompt-sha` is locked (`c663df3`, CI 42461180234); open Next checkbox is whitespace-vs-nonempty model distinctness under whitespace prompt_sha—do not invent new product scope.
 - **Verify:** `python3 -m ruff check src tests && python3 -m pytest -q tests/test_adapter.py::test_whitespace_vs_nonempty_model_whitespace_prompt_sha_cli_write_different_run_json tests/test_adapter.py`
 
 ## First-screen restyle 2026-09-30
