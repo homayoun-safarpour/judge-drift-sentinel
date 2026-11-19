@@ -1,4 +1,4 @@
-"""Verdict timeline across N pinned runs — catch slow judge decay pairwise checks miss.
+"""Verdict timeline across N pinned runs: catch slow judge decay pairwise checks miss.
 
 A single `check` only sees two snapshots. If kappa falls 0.04 each week for four
 weeks, every pairwise step stays under the default 0.10 drop and reports STABLE,
@@ -51,7 +51,7 @@ class HistoryReport:
         return EXIT_CODES[STABLE]
 
 
-def build_history(  # noqa: PLR0913 — policy knobs stay keyword-only beside the runs
+def build_history(  # noqa: PLR0913  (policy knobs stay keyword-only beside the runs)
     anchors: AnchorSet,
     runs: Sequence[JudgeRun],
     *,

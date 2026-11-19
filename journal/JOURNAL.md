@@ -1,15 +1,15 @@
-# Journal — judge-drift-sentinel
+# Journal: judge-drift-sentinel
 
 Append-only log of backlog ticks. One entry per day the loop advances.
 
-## 2026-08-03 — W1 baseline command
+## 2026-08-03: W1 baseline command
 
 Shipped `drift-sentinel baseline`: scores a judge run against the frozen
 anchor set, records `anchor_freeze_hash` + `baseline_kappa`, and writes a
 pinned baseline JSON usable by `check`. Module `driftsentinel.baseline`
 (`pin_baseline` / `write_baseline`). 31 tests green, ruff clean.
 
-## 2026-08-03 — W2 freeze-hash enforcement
+## 2026-08-03: W2 freeze-hash enforcement
 
 `drift-sentinel check` now refuses when a pinned baseline's
 `anchor_freeze_hash` no longer matches the loaded anchor file
@@ -17,7 +17,7 @@ pinned baseline JSON usable by `check`. Module `driftsentinel.baseline`
 baselines without the field still compare. Named test:
 `test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`.
 
-## 2026-08-04 — W3 weighted kappa for ordinal rubrics
+## 2026-08-04: W3 weighted kappa for ordinal rubrics
 
 Added pure-Python weighted Cohen's kappa (`linear` / `quadratic`) for
 ordinal integer labels such as 0-3 rubrics. `drift-sentinel check` and
@@ -26,16 +26,16 @@ the binary unweighted path. Central test:
 `test_weighted_kappa_separates_near_miss_from_far_miss_on_ordinal_scale`.
 43 tests green, ruff clean.
 
-## 2026-08-04 — W4 history timeline / slow decay
+## 2026-08-04: W4 history timeline / slow decay
 
 Added `drift-sentinel history`: ordered N-run verdict + kappa timeline via
 `driftsentinel.history.build_history`. Flags slow decay when the first→last
-kappa drop exceeds `--kappa-drop` while no consecutive pair alone does —
+kappa drop exceeds `--kappa-drop` while no consecutive pair alone does, 
 the failure mode pairwise `check` cannot see. Central test:
 `test_history_flags_slow_decay_that_pairwise_checks_miss`. Exit 2 on
 JUDGE_DRIFT or slow decay. 49 tests green, ruff clean.
 
-## 2026-08-04 — W5 weekly CI re-score / issue on JUDGE_DRIFT
+## 2026-08-04: W5 weekly CI re-score / issue on JUDGE_DRIFT
 
 Shipped `.github/workflows/weekly-anchor-rescore.yml`: Monday cron +
 `workflow_dispatch`, runs `drift-sentinel check` or `history`, opens or
@@ -47,7 +47,7 @@ repo). Named test:
 `test_weekly_rescore_workflow_opens_issue_on_judge_drift`. 50 tests green,
 ruff clean.
 
-## 2026-08-04 — W6 judgekit panel-export adapter
+## 2026-08-04: W6 judgekit panel-export adapter
 
 Shipped `driftsentinel.adapter` + `drift-sentinel import-judgekit`: reads
 `judgekit.panel_export/v1` (human_labels + replicated ratings) or bare
@@ -57,7 +57,7 @@ into sentinel anchors JSONL + run JSON. Example fixture
 `test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`.
 59 tests green, ruff clean.
 
-## 2026-08-04 — W7 loop-engine gate docs
+## 2026-08-04: W7 loop-engine gate docs
 
 Documented wiring `drift-sentinel check` as an agent-loop-engine
 `--gate NAME=COMMAND`, with exit-code table and remapper
@@ -66,20 +66,20 @@ JUDGE_DRIFT (exit 2) trips **repair beats progress**. Snippet backlog
 `examples/LOOP_STATE.md`. Named tests in `test_loop_engine_gate_docs.py`.
 62 tests green, ruff clean.
 
-## 2026-08-09 — GFI #9 drifting history fixture test
+## 2026-08-09: GFI #9 drifting history fixture test
 
 Locked `examples/drifting/` into CI via
 `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`:
 same CLI path as the fixture README, asserts exit 2 and a step line with
 `JUDGE_DRIFT`. 63 tests green, ruff clean.
 
-## 2026-08-10 — packaging dev extras
+## 2026-08-10: packaging dev extras
 
 Added `[project.optional-dependencies] dev = ["pytest", "ruff"]` so the
 README contributor path `pip install -e ".[dev]"` installs the toolchain.
 Named claim: `tests/test_packaging.py`. 65 tests green, ruff clean.
 
-## 2026-08-11 — adapter envelope + import-judgekit flag claim
+## 2026-08-11: adapter envelope + import-judgekit flag claim
 
 Audited `driftsentinel.adapter` and the README judgekit section against
 `examples/judgekit_panel_export.json`. Added named claim
@@ -89,7 +89,7 @@ flags (`--human-labels` nested gold, `--aggregate`, `--model`,
 `--prompt-sha`). README judgekit claims and ASCII cleanup. 66 tests green,
 ruff clean.
 
-## 2026-08-17 — weekly CI trigger/input/issue claim
+## 2026-08-17: weekly CI trigger/input/issue claim
 
 Audited `.github/workflows/weekly-anchor-rescore.yml` against README § CI.
 Strengthened `test_weekly_rescore_workflow_opens_issue_on_judge_drift` to
@@ -97,7 +97,7 @@ lock Monday cron `0 6 * * 1`, documented workflow_dispatch inputs, JUDGE_DRIFT
 issue title + create/comment path, exit-2 job fail, schedule defaults, and
 `secrets.GITHUB_TOKEN`. 66 tests green, ruff clean.
 
-## 2026-08-20 — loop-engine gate remapper/tick claim
+## 2026-08-20: loop-engine gate remapper/tick claim
 
 Audited README § Gate for agent-loop-engine and
 `examples/as_loop_gate.py` against `tests/test_loop_engine_gate_docs.py`.
@@ -106,7 +106,7 @@ Strengthened named claims to lock the remapper table, documented
 alignment, `_TRUSTWORTHY` remapper contract, and wrapper exits for
 STABLE / SYSTEM_CHANGE / JUDGE_DRIFT fixtures. 67 tests green, ruff clean.
 
-## 2026-08-22 — panel schema_version fail-closed
+## 2026-08-22: panel schema_version fail-closed
 
 Adapter now rejects enveloped panels whose `schema_version` is not
 `judgekit.panel_export/v1`. Named claim:
@@ -114,7 +114,7 @@ Adapter now rejects enveloped panels whose `schema_version` is not
 README + `import-judgekit` help state v1-only; bare ratings + gold remain
 supported. 69 tests green, ruff clean.
 
-## 2026-08-23 — import-judgekit --help v1-only claim
+## 2026-08-23: import-judgekit --help v1-only claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`
@@ -123,7 +123,7 @@ locks `import-judgekit --help` to the v1-only schema gate: panel help cites
 `--human-labels` still documented. README judgekit section cites the claim.
 70 tests green, ruff clean.
 
-## 2026-08-24 — unsupported-schema ValueError escape-hatch claim
+## 2026-08-24: unsupported-schema ValueError escape-hatch claim
 
 Named claim
 `tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`
@@ -132,7 +132,7 @@ omit-schema / bare ratings + human_labels escape hatch as
 `import-judgekit --help`. README judgekit section cites the claim.
 71 tests green, ruff clean.
 
-## 2026-08-25 — unrecognized-panel ValueError escape-hatch claim
+## 2026-08-25: unrecognized-panel ValueError escape-hatch claim
 
 Named claim
 `tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`
@@ -142,7 +142,7 @@ bare ratings + human_labels escape hatch as the unsupported-schema path and
 `SCHEMA_VERSION`. README judgekit section cites the claim.
 72 tests green, ruff clean.
 
-## 2026-08-26 — shared escape-hatch phrase claim
+## 2026-08-26: shared escape-hatch phrase claim
 
 Named claim
 `tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`
@@ -151,7 +151,7 @@ carry the shared operator-facing phrases `only {SCHEMA_VERSION} is supported`,
 `bare ratings`, and `human_labels`, so one path cannot drift from the other.
 README judgekit section cites the claim. 73 tests green, ruff clean.
 
-## 2026-08-27 — help+raise shared escape-hatch claim
+## 2026-08-27: help+raise shared escape-hatch claim
 
 Named claim
 `tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`
@@ -161,7 +161,7 @@ unrecognized-panel `ValueError` strings share SCHEMA_VERSION / v1 citation,
 from the raise paths independently. README judgekit section cites the claim.
 74 tests green, ruff clean.
 
-## 2026-08-28 — import-judgekit CLI stderr escape-hatch claim
+## 2026-08-28: import-judgekit CLI stderr escape-hatch claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`
@@ -171,7 +171,7 @@ stderr and exits 1 for unsupported-schema and unrecognized panel files, so
 the CLI error path cannot diverge from the library raise paths. README
 judgekit section cites the claim. 75 tests green, ruff clean.
 
-## 2026-08-29 — import-judgekit CLI malformed-JSON claim
+## 2026-08-29: import-judgekit CLI malformed-JSON claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`
@@ -180,7 +180,7 @@ traceback, no output files) when the panel file is malformed JSON, so the
 `JSONDecodeError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 76 tests green, ruff clean.
 
-## 2026-08-30 — import-judgekit CLI missing-panel claim
+## 2026-08-30: import-judgekit CLI missing-panel claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`
@@ -189,7 +189,7 @@ traceback, no output files) when `--panel` points at a missing path, so the
 `OSError` catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 77 tests green, ruff clean.
 
-## 2026-08-31 — import-judgekit CLI missing-human-labels claim
+## 2026-08-31: import-judgekit CLI missing-human-labels claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`
@@ -199,7 +199,7 @@ missing path, so the secondary gold `OSError` catch in `main()` cannot
 silently succeed. README judgekit section cites the claim. 78 tests green,
 ruff clean.
 
-## 2026-09-01 — import-judgekit CLI malformed-human-labels claim
+## 2026-09-01: import-judgekit CLI malformed-human-labels claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`
@@ -209,7 +209,7 @@ malformed JSON, so the secondary gold `JSONDecodeError` catch in `main()`
 cannot silently succeed. README judgekit section cites the claim.
 79 tests green, ruff clean.
 
-## 2026-09-02 — import-judgekit CLI non-object-human-labels claim
+## 2026-09-02: import-judgekit CLI non-object-human-labels claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`
@@ -219,7 +219,7 @@ bare ratings point `--human-labels` at a top-level JSON array or scalar, so
 the secondary gold `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 80 tests green, ruff clean.
 
-## 2026-09-03 — import-judgekit CLI nested-non-object-human-labels claim
+## 2026-09-03: import-judgekit CLI nested-non-object-human-labels claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`
@@ -229,7 +229,7 @@ bare ratings point `--human-labels` at nested `{human_labels: array|scalar}`
 JSON, so the secondary gold `ValueError` catch in `main()` cannot silently
 succeed. README judgekit section cites the claim. 81 tests green, ruff clean.
 
-## 2026-09-04 — import-judgekit CLI empty-human-labels claim
+## 2026-09-04: import-judgekit CLI empty-human-labels claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`
@@ -239,7 +239,7 @@ point `--human-labels` at `{}` or `{"human_labels": {}}`, so the secondary
 gold empty-map `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 82 tests green, ruff clean.
 
-## 2026-09-05 — import-judgekit CLI non-object-panel claim
+## 2026-09-05: import-judgekit CLI non-object-panel claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`
@@ -249,7 +249,7 @@ asserts `import-judgekit` exits 1 with an `error:` stderr line carrying
 shape `ValueError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 83 tests green, ruff clean.
 
-## 2026-09-06 — import-judgekit CLI non-object-ratings claim
+## 2026-09-06: import-judgekit CLI non-object-ratings claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_json`
@@ -259,7 +259,7 @@ panel envelope sets `ratings` to a JSON array or scalar, so the adapter
 ratings-shape `ValueError` catch in `main()` cannot silently succeed.
 README judgekit section cites the claim. 84 tests green, ruff clean.
 
-## 2026-09-07 — import-judgekit CLI non-object-judges claim
+## 2026-09-07: import-judgekit CLI non-object-judges claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_judges_json`
@@ -270,7 +270,7 @@ the adapter judges-shape `ValueError` catch in `main()` cannot silently
 succeed. README judgekit section cites the claim. 85 tests green, ruff
 clean.
 
-## 2026-09-08 — import-judgekit CLI empty-ratings claim
+## 2026-09-08: import-judgekit CLI empty-ratings claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_ratings_json`
@@ -280,7 +280,7 @@ sets `ratings` to `{}`, so the adapter empty-ratings `_normalize_ratings`
 ValueError catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 86 tests green, ruff clean.
 
-## 2026-09-09 — import-judgekit CLI non-object-ratings-item claim
+## 2026-09-09: import-judgekit CLI non-object-ratings-item claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`
@@ -291,7 +291,7 @@ adapter per-item ratings-shape `_normalize_ratings` ValueError catch in
 `main()` cannot silently succeed. README judgekit section cites the claim.
 87 tests green, ruff clean.
 
-## 2026-09-10 — import-judgekit CLI non-list-judge-ratings claim
+## 2026-09-10: import-judgekit CLI non-list-judge-ratings claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_list_judge_ratings_json`
@@ -302,7 +302,7 @@ object, so the adapter per-judge replicate-shape `_normalize_ratings`
 ValueError catch in `main()` cannot silently succeed. README judgekit
 section cites the claim. 88 tests green, ruff clean.
 
-## 2026-09-11 — import-judgekit CLI missing-judge-coverage claim
+## 2026-09-11: import-judgekit CLI missing-judge-coverage claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items`
@@ -313,7 +313,7 @@ from `ratings`, or judge absent on an item), so the `panel_to_run`
 missing-items `ValueError` catch in `main()` cannot silently succeed. README
 judgekit section cites the claim. 89 tests green, ruff clean.
 
-## 2026-09-12 — import-judgekit CLI missing-coverage item-preview claim
+## 2026-09-12: import-judgekit CLI missing-coverage item-preview claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow`
@@ -323,7 +323,7 @@ sorted ids when more than five gold items lack ratings for `--judge`, so the
 `panel_to_run` preview truncation contract cannot silently regress. README
 judgekit section cites the claim. 90 tests green, ruff clean.
 
-## 2026-09-13 — panel_to_run library missing-coverage item-preview claim
+## 2026-09-13: panel_to_run library missing-coverage item-preview claim
 
 Named claim
 `tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow`
@@ -333,7 +333,7 @@ than five gold items lack ratings for the judge (unsorted label insertion
 order still sorts), so library callers cannot diverge from the CLI preview
 contract. README judgekit section cites the claim. 91 tests green, ruff clean.
 
-## 2026-09-14 — panel_to_run empty judge_id claim
+## 2026-09-14: panel_to_run empty judge_id claim
 
 Named claim
 `tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`
@@ -342,7 +342,7 @@ when `judge_id` is `""`, and does not fall through into the
 missing-coverage path that lists gold item ids. README judgekit section
 cites the claim. 92 tests green, ruff clean.
 
-## 2026-09-15 — import-judgekit CLI empty --judge claim
+## 2026-09-15: import-judgekit CLI empty --judge claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`
@@ -353,7 +353,7 @@ present but blank (`""`), so the library empty-id `ValueError` catch in
 wording. README judgekit section cites the claim. 93 tests green, ruff
 clean.
 
-## 2026-09-16 — panel_to_run / import-judgekit whitespace-only judge_id claim
+## 2026-09-16: panel_to_run / import-judgekit whitespace-only judge_id claim
 
 Named claims
 `tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id` and
@@ -364,7 +364,7 @@ fail closed with `judge_id is required` (library ValueError; CLI exit 1 /
 missing-coverage wording. `panel_to_run` now gates on blank-after-strip.
 README judgekit section cites both claims. 95 tests green, ruff clean.
 
-## 2026-09-17 — panel_to_run unknown aggregate claim
+## 2026-09-17: panel_to_run unknown aggregate claim
 
 Named claim
 `tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`
@@ -374,7 +374,7 @@ and listing the sorted `AGGREGATES` set when callers pass a value outside
 that CLI argparse `choices` already enforces. README judgekit section cites
 the claim. 96 tests green, ruff clean.
 
-## 2026-09-18 — import-judgekit --aggregate choices claim
+## 2026-09-18: import-judgekit --aggregate choices claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`
@@ -384,7 +384,7 @@ cannot drift from the library `AGGREGATES` gate locked by
 `test_panel_to_run_rejects_unknown_aggregate`. README judgekit section cites
 the claim. 97 tests green, ruff clean.
 
-## 2026-09-19 — import-judgekit unknown --aggregate rejection claim
+## 2026-09-19: import-judgekit unknown --aggregate rejection claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`
@@ -394,7 +394,7 @@ value outside `AGGREGATES` (e.g. `mean`), so the choices lock cannot
 silently become a soft accept. README judgekit section cites the claim.
 98 tests green, ruff clean.
 
-## 2026-09-21 — panel_to_run aggregate signature default modal claim
+## 2026-09-21: panel_to_run aggregate signature default modal claim
 
 Named claim
 `tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`
@@ -405,7 +405,7 @@ omitting the kwarg cannot silently diverge from the CLI
 `test_import_judgekit_aggregate_default_is_modal`. README judgekit
 section cites the claim. 100 tests green, ruff clean.
 
-## 2026-09-22 — panel_to_run omit-aggregate equals explicit modal claim
+## 2026-09-22: panel_to_run omit-aggregate equals explicit modal claim
 
 Named claim
 `tests/test_adapter.py::test_panel_to_run_omit_aggregate_matches_explicit_modal`
@@ -417,7 +417,7 @@ signature default locked by
 via first-replicate. README judgekit section cites the claim. 101 tests
 green, ruff clean.
 
-## 2026-09-23 — import-judgekit omit --aggregate equals explicit modal claim
+## 2026-09-23: import-judgekit omit --aggregate equals explicit modal claim
 
 Named claim
 `tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`
@@ -429,7 +429,7 @@ the argparse default locked by
 via first-replicate. README judgekit section cites the claim. 102 tests
 green, ruff clean.
 
-## 2026-09-24 — CLI↔library omit-aggregate score parity claim
+## 2026-09-24: CLI↔library omit-aggregate score parity claim
 
 Named claim
 `tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`
@@ -440,7 +440,7 @@ from `aggregate="first"`, so the two omit→modal defaults cannot drift
 apart. README judgekit section cites the claim. 103 tests green, ruff
 clean.
 
-## 2026-09-25 — CLI↔library --aggregate first score parity claim
+## 2026-09-25: CLI↔library --aggregate first score parity claim
 
 Named claim
 `tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`
@@ -451,7 +451,7 @@ from the omit→modal path, so the explicit `first` collapse rule cannot
 drift between CLI and library. README judgekit section cites the claim.
 104 tests green, ruff clean.
 
-## 2026-09-27 — CLI↔library --anchors-out JSONL parity claim
+## 2026-09-27: CLI↔library --anchors-out JSONL parity claim
 
 Named claim
 `tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`
@@ -462,7 +462,7 @@ newline), so human-label rows cannot drift between CLI and library write
 paths. README judgekit section cites the claim. 106 tests green, ruff
 clean.
 
-## 2026-09-28 — CLI↔library --run-out run JSON parity claim
+## 2026-09-28: CLI↔library --run-out run JSON parity claim
 
 Named claim
 `tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`
@@ -473,7 +473,7 @@ insertion order (indent-2, trailing newline, sorted `anchor_scores`,
 fingerprints cannot drift between CLI and library write paths. README
 judgekit section cites the claim. 107 tests green, ruff clean.
 
-## 2026-09-29 — CLI↔library fingerprint override parity claim
+## 2026-09-29: CLI↔library fingerprint override parity claim
 
 Named claim
 `tests/test_adapter.py::test_fingerprint_override_cli_and_library_write_same_run_json`
@@ -484,7 +484,7 @@ meta fingerprints differ from the override values, so operator fingerprint
 overrides cannot drift between CLI and library write paths. README
 judgekit section cites the claim. 108 tests green, ruff clean.
 
-## 2026-09-30 — CLI↔library model-only override retains panel prompt_sha
+## 2026-09-30: CLI↔library model-only override retains panel prompt_sha
 
 Named claim
 `tests/test_adapter.py::test_model_only_override_cli_and_library_retain_panel_prompt_sha`
@@ -495,7 +495,7 @@ retaining the panel `prompt_sha` so a model-only override cannot silently
 clear or rewrite it between CLI and library write paths. README judgekit
 section cites the claim. 109 tests green, ruff clean.
 
-## 2026-10-01 — CLI↔library prompt-sha-only override retains panel model
+## 2026-10-01: CLI↔library prompt-sha-only override retains panel model
 
 Named claim
 `tests/test_adapter.py::test_prompt_sha_only_override_cli_and_library_retain_panel_model`
@@ -506,7 +506,7 @@ retaining the panel `model` so a prompt-sha-only override cannot silently
 clear or rewrite it between CLI and library write paths. README judgekit
 section cites the claim. 113 tests green, ruff clean.
 
-## 2026-10-02 — CLI↔library empty-string fingerprint override claim
+## 2026-10-02: CLI↔library empty-string fingerprint override claim
 
 Named claim
 `tests/test_adapter.py::test_empty_string_override_cli_and_library_write_same_run_json`
@@ -519,7 +519,7 @@ missing a judge model id` (CLI exit 1 / library ValueError) rather than
 falling through to panel meta. README judgekit section cites the claim.
 114 tests green, ruff clean.
 
-## 2026-10-03 — CLI↔library whitespace-only fingerprint override claim
+## 2026-10-03: CLI↔library whitespace-only fingerprint override claim
 
 Named claim
 `tests/test_adapter.py::test_whitespace_only_override_cli_and_library_write_same_run_json`
@@ -531,7 +531,7 @@ asserts that whitespace-only `--model` / `--prompt-sha` on
 leak through). README judgekit section cites the claim. 115 tests green,
 ruff clean.
 
-## 2026-10-05 — CLI↔library whitespace prompt-sha-only override retains panel model
+## 2026-10-05: CLI↔library whitespace prompt-sha-only override retains panel model
 
 Named claim
 `tests/test_adapter.py::test_whitespace_prompt_sha_only_override_cli_and_library_retain_panel_model`
@@ -543,7 +543,7 @@ the panel `model` so a whitespace prompt-sha-only override cannot silently
 strip, omit, clear, or rewrite it between CLI and library write paths.
 README judgekit section cites the claim. 117 tests green, ruff clean.
 
-## 2026-10-06 — CLI↔library empty-string prompt-sha-only override retains panel model
+## 2026-10-06: CLI↔library empty-string prompt-sha-only override retains panel model
 
 Named claim
 `tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`
@@ -555,7 +555,7 @@ asserts that `--prompt-sha ""` alone (omit `--model`) on
 through to the panel sha the way omit does. README judgekit section cites
 the claim. 118 tests green, ruff clean.
 
-## 2026-10-07 — CLI↔library empty-string model-only override rejects
+## 2026-10-07: CLI↔library empty-string model-only override rejects
 
 Named claim
 `tests/test_adapter.py::test_empty_string_model_only_override_cli_and_library_reject`
@@ -566,7 +566,7 @@ stderr; library `ValueError`) rather than retaining the panel `model` the
 way omit does. README judgekit section cites the claim. 119 tests green,
 ruff clean.
 
-## 2026-10-08 — CLI↔library empty-string model with prompt-sha override rejects
+## 2026-10-08: CLI↔library empty-string model with prompt-sha override rejects
 
 Named claim
 `tests/test_adapter.py::test_empty_string_model_with_prompt_sha_override_cli_and_library_reject`
@@ -577,7 +577,7 @@ asserts that `--model "" --prompt-sha override-sha` on
 cleared model and override sha. README judgekit section cites the claim.
 120 tests green, ruff clean.
 
-## 2026-10-09 — CLI↔library empty-string model with whitespace prompt-sha rejects
+## 2026-10-09: CLI↔library empty-string model with whitespace prompt-sha rejects
 
 Named claim
 `tests/test_adapter.py::test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject`
@@ -588,7 +588,7 @@ asserts that `--model "" --prompt-sha " "` on
 cleared model and whitespace sha. README judgekit section cites the claim.
 121 tests green, ruff clean.
 
-## 2026-10-10 — CLI↔library whitespace model with empty prompt-sha write parity
+## 2026-10-10: CLI↔library whitespace model with empty prompt-sha write parity
 
 Named claim
 `tests/test_adapter.py::test_whitespace_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`
@@ -600,7 +600,7 @@ asserts that `--model " " --prompt-sha ""` on
 while an explicit empty sha clears the panel sha. README judgekit section
 cites the claim. 122 tests green, ruff clean.
 
-## 2026-10-11 — CLI↔library whitespace model with non-empty prompt-sha write parity
+## 2026-10-11: CLI↔library whitespace model with non-empty prompt-sha write parity
 
 Named claim
 `tests/test_adapter.py::test_whitespace_model_with_prompt_sha_override_cli_and_library_write_same_run_json`
@@ -612,7 +612,7 @@ asserts that `--model " " --prompt-sha override-sha` on
 stripped while an explicit non-empty sha replaces the panel sha. README
 judgekit section cites the claim. 123 tests green, ruff clean.
 
-## 2026-10-12 — CLI↔library non-empty model with empty prompt-sha write parity
+## 2026-10-12: CLI↔library non-empty model with empty prompt-sha write parity
 
 Named claim
 `tests/test_adapter.py::test_nonempty_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`
@@ -623,7 +623,7 @@ asserts that `--model override-model --prompt-sha ""` on
 `prompt_sha` to `""` so an explicit empty sha clears the panel sha rather than
 omitting. README judgekit section cites the claim. 124 tests green, ruff clean.
 
-## 2026-10-13 — CLI↔library non-empty model with whitespace prompt-sha write parity
+## 2026-10-13: CLI↔library non-empty model with whitespace prompt-sha write parity
 
 Named claim
 `tests/test_adapter.py::test_nonempty_model_with_whitespace_prompt_sha_override_cli_and_library_write_same_run_json`
@@ -634,7 +634,7 @@ asserts that `--model override-model --prompt-sha " "` on
 literal whitespace `prompt_sha` so a present whitespace sha is not omit or
 stripped. README judgekit section cites the claim. 125 tests green, ruff clean.
 
-## 2026-10-14 — CLI nonempty model whitespace vs empty prompt-sha distinctness
+## 2026-10-14: CLI nonempty model whitespace vs empty prompt-sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`
@@ -644,7 +644,7 @@ asserts that `--model override-model --prompt-sha " "` on
 normalized to empty while empty sha clears to `""`. README judgekit section
 cites the claim. 126 tests green, ruff clean.
 
-## 2026-10-15 — Library nonempty model whitespace vs empty prompt-sha distinctness
+## 2026-10-15: Library nonempty model whitespace vs empty prompt-sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`
@@ -654,7 +654,7 @@ writes a different run JSON via `write_run_json` than the same
 normalized to empty while empty sha clears to `""`. README judgekit section
 cites the claim. 127 tests green, ruff clean.
 
-## 2026-10-16 — CLI whitespace vs nonempty model under empty prompt-sha distinctness
+## 2026-10-16: CLI whitespace vs nonempty model under empty prompt-sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_cli_write_different_run_json`
@@ -665,7 +665,7 @@ normalized to a concrete override model while empty sha clears to `""`
 on both paths. README judgekit section cites the claim. 128 tests green,
 ruff clean.
 
-## 2026-10-17 — Library whitespace vs nonempty model under empty prompt-sha distinctness
+## 2026-10-17: Library whitespace vs nonempty model under empty prompt-sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_library_write_different_run_json`
@@ -676,7 +676,7 @@ normalized to a concrete override model while empty sha clears to `""`
 on both paths. README judgekit section cites the claim. 129 tests green,
 ruff clean.
 
-## 2026-10-18 — CLI whitespace vs nonempty model under set prompt-sha distinctness
+## 2026-10-18: CLI whitespace vs nonempty model under set prompt-sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_cli_write_different_run_json`
@@ -687,7 +687,7 @@ normalized to a concrete override model while both paths replace the panel
 sha with `override-sha`. README judgekit section cites the claim. 130 tests
 green, ruff clean.
 
-## 2026-10-19 — Library whitespace vs nonempty model under set prompt-sha distinctness
+## 2026-10-19: Library whitespace vs nonempty model under set prompt-sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_library_write_different_run_json`
@@ -698,7 +698,7 @@ whitespace model is not normalized to a concrete override model while both
 paths replace the panel sha with `override-sha`. README judgekit section
 cites the claim. 131 tests green, ruff clean.
 
-## 2026-10-20 — CLI whitespace vs nonempty prompt-sha under set model distinctness
+## 2026-10-20: CLI whitespace vs nonempty prompt-sha under set model distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_cli_write_different_run_json`
@@ -709,7 +709,7 @@ normalized to a concrete override sha while both paths replace the panel
 model with `override-model`. README judgekit section cites the claim. 132
 tests green, ruff clean.
 
-## 2026-10-21 — Library whitespace vs nonempty prompt-sha under set model distinctness
+## 2026-10-21: Library whitespace vs nonempty prompt-sha under set model distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_library_write_different_run_json`
@@ -720,7 +720,7 @@ whitespace sha is not normalized to a concrete override sha while both
 paths replace the panel model with `override-model`. README judgekit section
 cites the claim. 133 tests green, ruff clean.
 
-## 2026-10-22 — CLI whitespace vs nonempty prompt-sha alone distinctness
+## 2026-10-22: CLI whitespace vs nonempty prompt-sha alone distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_cli_write_different_run_json`
@@ -730,7 +730,7 @@ alone, so whitespace sha is not normalized to a concrete override sha while
 both paths retain the panel `model`. README judgekit section cites the claim.
 134 tests green, ruff clean.
 
-## 2026-10-23 — Library whitespace vs nonempty prompt-sha alone distinctness
+## 2026-10-23: Library whitespace vs nonempty prompt-sha alone distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_library_write_different_run_json`
@@ -740,7 +740,7 @@ writes a different run JSON via `write_run_json` than
 concrete override sha while both paths retain the panel `model`. README
 judgekit section cites the claim. 135 tests green, ruff clean.
 
-## 2026-10-24 — CLI whitespace vs nonempty model alone distinctness
+## 2026-10-24: CLI whitespace vs nonempty model alone distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_cli_write_different_run_json`
@@ -750,7 +750,7 @@ alone, so whitespace model is not normalized to a concrete override model
 while both paths retain the panel `prompt_sha`. README judgekit section
 cites the claim. 136 tests green, ruff clean.
 
-## 2026-10-25 — Library whitespace vs nonempty model alone distinctness
+## 2026-10-25: Library whitespace vs nonempty model alone distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_library_write_different_run_json`
@@ -760,7 +760,7 @@ writes a different run JSON via `write_run_json` than
 concrete override model while both paths retain the panel `prompt_sha`.
 README judgekit section cites the claim. 137 tests green, ruff clean.
 
-## 2026-10-26 — Library whitespace vs empty model alone asymmetry
+## 2026-10-26: Library whitespace vs empty model alone asymmetry
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_alone_library_write_vs_reject`
@@ -770,7 +770,7 @@ run retaining the panel `prompt_sha` via `write_run_json`, while
 model is not normalized into the empty-reject path. README judgekit
 section cites the claim. 138 tests green, ruff clean.
 
-## 2026-10-27 — CLI whitespace vs empty model alone asymmetry
+## 2026-10-27: CLI whitespace vs empty model alone asymmetry
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_alone_cli_write_vs_reject`
@@ -780,7 +780,7 @@ writes a run retaining the panel `prompt_sha` via `--run-out`, while
 so whitespace model is not normalized into the empty-reject path. README
 judgekit section cites the claim. 139 tests green, ruff clean.
 
-## 2026-10-28 — Library whitespace vs empty model under cleared sha asymmetry
+## 2026-10-28: Library whitespace vs empty model under cleared sha asymmetry
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject`
@@ -790,7 +790,7 @@ with cleared `prompt_sha` via `write_run_json`, while `model=""`,
 model is not normalized into the empty-reject path under a cleared sha.
 README judgekit section cites the claim. 140 tests green, ruff clean.
 
-## 2026-10-29 — CLI whitespace vs empty model under cleared sha asymmetry
+## 2026-10-29: CLI whitespace vs empty model under cleared sha asymmetry
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_cli_write_vs_reject`
@@ -801,7 +801,7 @@ writes a run with cleared `prompt_sha` via `--run-out`, while
 into the empty-reject path under a cleared sha. README judgekit section
 cites the claim. 141 tests green, ruff clean.
 
-## 2026-10-30 — Library whitespace vs empty model under set sha asymmetry
+## 2026-10-30: Library whitespace vs empty model under set sha asymmetry
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_library_write_vs_reject`
@@ -812,7 +812,7 @@ model id`, so whitespace model is not normalized into the empty-reject
 path under a set sha. README judgekit section cites the claim. 142 tests
 green, ruff clean.
 
-## 2026-10-31 — CLI whitespace vs empty model under set sha asymmetry
+## 2026-10-31: CLI whitespace vs empty model under set sha asymmetry
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_cli_write_vs_reject`
@@ -823,7 +823,7 @@ writes a run with override `prompt_sha` via `--run-out`, while
 into the empty-reject path under a set sha. README judgekit section
 cites the claim. 143 tests green, ruff clean.
 
-## 2026-11-01 — CLI whitespace vs empty prompt_sha alone distinctness
+## 2026-11-01: CLI whitespace vs empty prompt_sha alone distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_cli_write_different_run_json`
@@ -833,7 +833,7 @@ via `--run-out`, so whitespace sha is not normalized to empty while both
 retain the panel `model`. README judgekit section cites the claim. 144
 tests green, ruff clean.
 
-## 2026-11-02 — Library whitespace vs empty prompt_sha alone distinctness
+## 2026-11-02: Library whitespace vs empty prompt_sha alone distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json`
@@ -843,7 +843,7 @@ asserts that `prompt_sha=" "` alone (omit `model=`) and
 retain the panel `model`. README judgekit section cites the claim. 145
 tests green, ruff clean.
 
-## 2026-11-03 — CLI whitespace-model × whitespace-vs-empty prompt_sha distinctness
+## 2026-11-03: CLI whitespace-model × whitespace-vs-empty prompt_sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`
@@ -853,7 +853,7 @@ asserts that `--model " "`, `--prompt-sha " "` and `--model " "`,
 whitespace model. README judgekit section cites the claim. 146 tests
 green, ruff clean.
 
-## 2026-11-04 — Library whitespace-model × whitespace-vs-empty prompt_sha distinctness
+## 2026-11-04: Library whitespace-model × whitespace-vs-empty prompt_sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`
@@ -863,7 +863,7 @@ asserts that `model=" "`, `prompt_sha=" "` and `model=" "`,
 whitespace model. README judgekit section cites the claim. 147 tests
 green, ruff clean.
 
-## 2026-11-05 — CLI whitespace-model × whitespace-vs-nonempty prompt_sha distinctness
+## 2026-11-05: CLI whitespace-model × whitespace-vs-nonempty prompt_sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_cli_write_different_run_json`
@@ -873,7 +873,7 @@ via `--run-out`, so whitespace sha is not normalized to a concrete override
 under a whitespace model. README judgekit section cites the claim. 148
 tests green, ruff clean.
 
-## 2026-11-06 — Library whitespace-model × whitespace-vs-nonempty prompt_sha distinctness
+## 2026-11-06: Library whitespace-model × whitespace-vs-nonempty prompt_sha distinctness
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_library_write_different_run_json`
@@ -883,7 +883,7 @@ asserts that `model=" "`, `prompt_sha=" "` and `model=" "`,
 under a whitespace model. README judgekit section cites the claim. 149
 tests green, ruff clean.
 
-## 2026-11-07 — Library whitespace-vs-empty model under whitespace prompt_sha
+## 2026-11-07: Library whitespace-vs-empty model under whitespace prompt_sha
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_library_write_vs_reject`
@@ -893,7 +893,7 @@ via `write_run_json` while `model=""`, `prompt_sha=" "` raises
 the empty-reject path under a whitespace sha. README judgekit section cites
 the claim. 150 tests green, ruff clean.
 
-## 2026-11-08 — CLI whitespace-vs-empty model under whitespace prompt_sha
+## 2026-11-08: CLI whitespace-vs-empty model under whitespace prompt_sha
 
 Named claim
 `tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_cli_write_vs_reject`

@@ -134,7 +134,7 @@ def test_import_judgekit_cli_writes_files_usable_by_check(tmp_path, capsys):
 
 
 def test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export():
-    """Named claim: no hand-copy — panel export alone yields JudgeRun scores."""
+    """Named claim: no hand-copy: panel export alone yields JudgeRun scores."""
     panel = load_panel_export(PANEL)
     run = panel_to_run(panel, "claude-judge")
     assert set(run.anchor_scores) == set(panel.human_labels)

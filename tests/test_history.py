@@ -16,7 +16,7 @@ from driftsentinel.verdict import JUDGE_DRIFT, STABLE, SYSTEM_CHANGE, diagnose
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 
 # 40 balanced anchors so each single flip drops kappa by 0.05 (under the
-# default 0.10 threshold) — room for multi-step slow decay without floating
+# default 0.10 threshold), room for multi-step slow decay without floating
 # point edging a pairwise step over the line.
 HUMAN_40 = {f"a{i:02d}": ("pass" if i <= 20 else "fail") for i in range(1, 41)}
 
@@ -40,7 +40,7 @@ def _flip_pass_to_fail(base: dict[str, str], n: int) -> dict[str, str]:
 
 
 def test_history_flags_slow_decay_that_pairwise_checks_miss():
-    """The central claim: kappa falls 0.05 per step for four steps — each
+    """The central claim: kappa falls 0.05 per step for four steps: each
     pairwise `check` stays under `--kappa-drop 0.10` and reports STABLE, but
     the window drop is 0.20 and history must flag slow decay (exit 2)."""
     anchors = AnchorSet(labels=dict(HUMAN_40))

@@ -1,6 +1,6 @@
 """Bridge judge-reliability-kit panel ratings into sentinel AnchorSet / JudgeRun.
 
-judge-reliability-kit has no separate "export" file today — its native input is
+judge-reliability-kit has no separate "export" file today, its native input is
 already JSON ratings::
 
     {item_id: {judge_id: [label, label, ...]}}

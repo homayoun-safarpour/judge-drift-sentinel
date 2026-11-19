@@ -7,10 +7,10 @@ treats `returncode == 0` as PASS and any nonzero as FAIL
 
 | Verdict         | `drift-sentinel check` | This wrapper | Loop effect                          |
 |-----------------|------------------------|--------------|--------------------------------------|
-| STABLE          | 0                      | 0            | gate green — advance / unstick OK    |
-| SYSTEM_CHANGE   | 3                      | 0            | gate green — ruler held; movement real |
-| JUDGE_DRIFT     | 2                      | 2            | gate red — repair the scoreboard     |
-| usage / IO error| 1                      | 1            | gate red — fix the wiring            |
+| STABLE          | 0                      | 0            | gate green: advance / unstick OK     |
+| SYSTEM_CHANGE   | 3                      | 0            | gate green: ruler held; movement real  |
+| JUDGE_DRIFT     | 2                      | 2            | gate red: repair the scoreboard      |
+| usage / IO error| 1                      | 1            | gate red: fix the wiring             |
 
 Without this remapping, exit 3 (SYSTEM_CHANGE) would look like a red gate
 and wrongly block backlog progress even though the ruler is trustworthy.
