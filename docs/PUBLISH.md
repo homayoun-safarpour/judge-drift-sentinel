@@ -18,7 +18,7 @@ pip install judge-drift-sentinel
 2. Build and check:
 
 ```powershell
-cd D:\ship\judge-drift-sentinel
+cd judge-drift-sentinel
 python -m pip install --upgrade build twine
 python -m build
 python -m twine check dist/*
