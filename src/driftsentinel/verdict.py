@@ -59,7 +59,7 @@ def _require_full_coverage(anchors: AnchorSet, run: JudgeRun) -> None:
         )
 
 
-def diagnose(  # noqa: PLR0913 — policy knobs stay keyword-only beside the three runs
+def diagnose(  # noqa: PLR0913  (policy knobs stay keyword-only beside the three runs)
     anchors: AnchorSet,
     baseline: JudgeRun,
     current: JudgeRun,

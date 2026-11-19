@@ -1,4 +1,4 @@
-# Example backlog — drift gate + agent-loop-engine
+# Example backlog: drift gate + agent-loop-engine
 
 Snippet for hiring engineers: wire
 [`agent-loop-engine`](https://github.com/homayoun-safarpour/agent-loop-engine)

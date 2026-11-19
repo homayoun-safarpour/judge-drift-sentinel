@@ -1,4 +1,4 @@
-# Reliability card — judge-drift-sentinel
+# Reliability card: judge-drift-sentinel
 
 | Field | Value |
 | --- | --- |

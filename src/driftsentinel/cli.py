@@ -273,7 +273,7 @@ def _render_history_plain(report: HistoryReport) -> str:
         f"(drop {report.cumulative_kappa_drop:+.3f})"
     )
     if report.slow_decay:
-        lines.append(f"slow decay   : YES — {report.slow_decay_reason}")
+        lines.append(f"slow decay   : YES, {report.slow_decay_reason}")
     else:
         lines.append("slow decay   : no")
     lines.extend(f"note         : {note}" for note in report.notes)
