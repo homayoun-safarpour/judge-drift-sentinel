@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Attribute eval-score movement to the system or the LLM judge using a frozen human anchor set and kappa.
+LLM-as-judge reliability: attribute eval-score movement to the system or the LLM judge using a frozen human anchor set and kappa.
 
 drift-sentinel is a small command-line check that tells whether a moved evaluation score came from the system under test or from the language-model judge that grades it. We built it because a judge behind an alias such as `-latest` can change without notice, whereas the score looks the same whichever one moved. Given a frozen set of human-labelled examples that the judge re-scores on every run, it compares the judge's kappa against those labels between two runs and blames the judge when kappa falls by more than 0.10. It prints a verdict and exits 0, 2 or 3, so that CI or an agent loop can stop on judge drift.
 
@@ -28,6 +28,10 @@ note         : live metric moved -0.150 but is untrustworthy under judge drift
 ```
 
 That command exits 2. With `--current examples/run_current_system.json` it exits 3, and a run compared with itself exits 0.
+
+![judge-drift-sentinel: two runs + frozen anchors is checked by judge kappa on human labels; the result is JUDGE_DRIFT with exit 2](docs/readme-flow.svg)
+
+[How it works](#how-it-works) · [Results](#what-each-result-means) · [Limits](#limits) · [Interview pack](docs/INTERVIEW.md) · [Cite](#citation) · Part of [a small open stack for checking AI agents and their judges](https://homayoun-safarpour.github.io)
 
 The package is also on PyPI as `judge-drift-sentinel` ([docs/PUBLISH.md](docs/PUBLISH.md)). Contributors use `pip install -e ".[dev]"`.
 
