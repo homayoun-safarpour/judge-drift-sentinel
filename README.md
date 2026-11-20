@@ -8,6 +8,8 @@
 
 Attribute eval-score movement to the system or the LLM judge using a frozen human anchor set and kappa.
 
+drift-sentinel is a small command-line check that tells whether a moved evaluation score came from the system under test or from the language-model judge that grades it. We built it because a judge behind an alias such as `-latest` can change without notice, whereas the score looks the same whichever one moved. Given a frozen set of human-labelled examples that the judge re-scores on every run, it compares the judge's kappa against those labels between two runs and blames the judge when kappa falls by more than 0.10. It prints a verdict and exits 0, 2 or 3, so that CI or an agent loop can stop on judge drift.
+
 ```bash
 git clone https://github.com/homayoun-safarpour/judge-drift-sentinel
 cd judge-drift-sentinel && pip install -e .
@@ -21,657 +23,52 @@ anchor flips : 25.0% of frozen anchors changed label
 judge pin    : CHANGED frontier-4-2026-05-01@9f2c1a -> frontier-4-latest@9f2c1a
 live metric  : moved -0.150
 reason       : agreement with the frozen human labels fell (0.833 -> 0.333); the ruler moved, not the system
+note         : judge is not pinned: frontier-4-2026-05-01@9f2c1a -> frontier-4-latest@9f2c1a
+note         : live metric moved -0.150 but is untrustworthy under judge drift
 ```
 
-That command exits 2. On PyPI: `pip install judge-drift-sentinel`. Contributors also need `pip install -e ".[dev]"`.
+That command exits 2. With `--current examples/run_current_system.json` it exits 3, and a run compared with itself exits 0.
 
-## The problem
+The package is also on PyPI as `judge-drift-sentinel` ([docs/PUBLISH.md](docs/PUBLISH.md)). Contributors use `pip install -e ".[dev]"`.
 
-Teams that grade LLM systems with an LLM judge get a moving scoreboard and cannot tell why it moved:
-
-| What moved | What it looks like | What teams do (wrongly) |
-|---|---|---|
-| The system | Eval score drops after a deploy | Roll back (correct only if it really was the system) |
-| The judge model | Provider ships a silent update behind `-latest` | Roll back a healthy deploy, or chase a phantom regression |
-| The judge prompt | Someone edited one rubric sentence in week 8 | Trust week-1 vs week-9 charts that are not comparable |
-| Nothing | Ordinary judge variance | Re-run until the number looks right |
-
-All four produce the same dashboard artifact: a number that moved. The score alone cannot tell you which one happened. You need a second measurement that isolates the judge.
-
-## The insight
-
-Freeze a small set of human-labeled examples. The humans never change, so any change in the judge's agreement with them can only come from the judge:
-
-```
-                     frozen anchor set (human labels, never changes)
-                                       |
-        baseline run:  judge scores anchors  ->  kappa vs humans = 0.83
-        current  run:  judge scores anchors  ->  kappa vs humans = ?
-                                       |
-              +------------------------+------------------------+
-              | kappa fell             | kappa held,             | both held
-              |                        | live metric moved       |
-              v                        v                         v
-        JUDGE_DRIFT             SYSTEM_CHANGE                 STABLE
-     (distrust the number)   (the movement is real)      (carry on)
-```
-
-The verdict is deterministic, computed from score files you already have, and needs zero LLM calls. It runs in CI in milliseconds.
-
-## Install
-
-```bash
-pip install judge-drift-sentinel
-```
-
-Import package: `driftsentinel`. CLI: `drift-sentinel`.
-
-From source (contributors):
-
-```bash
-git clone https://github.com/homayoun-safarpour/judge-drift-sentinel
-cd judge-drift-sentinel
-pip install -e ".[dev]"
-```
-
-Release notes and maintainer upload steps: [docs/PUBLISH.md](docs/PUBLISH.md).
-
-## Quickstart
-
-Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md).
-
-Claim boundaries (what metric, what fixture, what is not claimed): [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
-
-Label 10-50 representative outputs once, by hand. That file is your anchor set (JSONL):
-
-```json
-{"id": "a01", "input": "Agent answer that cites both retrieved sources correctly", "label": "pass"}
-{"id": "a07", "input": "Confident answer with one fabricated citation among real ones", "label": "fail"}
-```
-
-Every time you run your eval suite, have the judge also re-score the anchors, and save one small JSON per run:
-
-```json
-{
-  "judge": { "model": "frontier-4-2026-05-01", "prompt_sha": "9f2c1a" },
-  "created": "2026-07-06",
-  "live_metric": 0.81,
-  "anchor_scores": { "a01": "pass", "a07": "pass", "...": "..." }
-}
-```
-
-Pin your July run as the frozen baseline (records the anchor `freeze_hash` + kappa):
-
-```bash
-drift-sentinel baseline --anchors anchors.jsonl --run run_july.json --out baseline.json
-```
-
-Then ask the sentinel who moved:
-
-```bash
-drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json
-```
-
-For ordinal rubrics (integer scores such as 0-3), use weighted kappa so near misses cost less than far misses. Quadratic weights (`--kappa-weights quadratic`) open a larger near-vs-far gap than linear on the same pair (`tests/test_agreement.py::test_quadratic_penalizes_far_misses_more_than_linear`):
-
-```bash
-drift-sentinel check --anchors anchors.jsonl --baseline baseline.json --current run_august.json \
-  --kappa-weights quadratic --kappa-levels 0,1,2,3
-```
-
-Default `--kappa-weights none` keeps unweighted Cohen's kappa for binary pass/fail labels.
-
-To see whether verdicts are stable or eroding across many pinned runs (not just one pair), walk the timeline:
-
-```bash
-drift-sentinel history --anchors anchors.jsonl --runs run_w1.json run_w2.json run_w3.json run_w4.json
-```
-
-Each consecutive pair gets the same 3-way verdict as `check`. If kappa falls slowly (every step under `--kappa-drop`, but the first->last window exceeds it), history flags **slow decay** (exit 2). That is the failure mode a single pairwise gate cannot see.
-
-Exit codes make it a drop-in quality gate: `0` = STABLE (trust your numbers), `3` = SYSTEM_CHANGE (numbers are trustworthy and your system moved), `2` = JUDGE_DRIFT or slow decay (stop: the scoreboard itself is broken).
-
-## Import from judge-reliability-kit
-
-Do not hand-copy panel scores into sentinel files.
-[judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit)
-stores ratings as `{item_id: {judge_id: [label, ...]}}` (replicated labels per
-judge). Sentinel documents a thin envelope (`judgekit.panel_export/v1`) that
-adds the human gold map and judge fingerprint fields this tool needs. Only
-that schema_version is accepted on enveloped panels; unknown versions fail
-closed (`tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`).
-The unsupported-schema and unrecognized-panel `ValueError` texts,
-`import-judgekit --help`, and `import-judgekit` CLI stderr (exit 1) state
-the same v1-only / bare-ratings escape hatch
-(`tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`,
-`tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`,
-`tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`,
-`tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`,
-`tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`,
-`tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`).
-Malformed panel JSON, a missing panel file, a top-level non-object panel
-JSON (array / scalar), a panel envelope whose `ratings` field is a
-non-object (array / scalar), a panel envelope whose `judges` field is a
-non-object (array / scalar), a panel envelope whose `ratings` object is
-empty (`{}`), a panel envelope whose `ratings` map contains an item whose
-value is a non-object (array / scalar), a panel envelope whose `ratings`
-map contains a judge entry whose value is not a non-empty list (empty
-list / scalar / object), a panel where the requested `--judge` has no
-ratings for one or more human-labeled items (CLI stderr and the
-`panel_to_run` library `ValueError` list the missing item id(s) in
-sorted order and append `(+N more)` after the first five when more than
-five gold items lack ratings), a missing `--human-labels`
-file, malformed `--human-labels` JSON, non-object `--human-labels` JSON
-(top-level array / scalar), nested non-object `--human-labels` JSON
-(`{"human_labels": [...]}` / `{"human_labels": "x"}`), and empty
-`--human-labels` JSON (`{}` / `{"human_labels": {}}`; bare ratings
-needing separate gold) fail the same CLI path: exit 1 with an `error:`
-stderr line
-(`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_judges_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_ratings_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_list_judge_ratings_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items`,
-`tests/test_adapter.py::test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow`,
-`tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`).
-An empty or whitespace-only `judge_id` (`""`, `" "`) on `panel_to_run`,
-and an empty or whitespace-only `--judge` on `import-judgekit`, fail closed
-with `judge_id is required` (library `ValueError`; CLI exit 1 / `error:`
-stderr) rather than falling through into the missing-coverage path
-(`tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`,
-`tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`).
-An unknown `aggregate` on `panel_to_run` (anything outside
-`{modal, first}`) fails closed with `aggregate must be one of` listing the
-allowed set (`tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`).
-CLI `--aggregate` argparse `choices` stay locked to `sorted(AGGREGATES)` and
-`--help` lists both `first` and `modal`
-(`tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`).
-An unknown CLI `--aggregate` (e.g. `mean`) fails closed with argparse exit 2
-and stderr carrying `invalid choice` plus both `first` and `modal`
-(`tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`).
-CLI `--aggregate` argparse default stays `modal` (matching `panel_to_run`
-and `--help`); omitting the flag still reports `aggregate: modal`
-(`tests/test_adapter.py::test_import_judgekit_aggregate_default_is_modal`).
-`panel_to_run` signature default for `aggregate` stays `"modal"` (keyword-only),
-matching the CLI default so omitting the kwarg cannot silently flip the
-collapse rule
-(`tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`).
-Omitting `aggregate=` on `panel_to_run` yields the same `anchor_scores` as
-`aggregate="modal"` on a panel where modal and first disagree (and those
-scores differ from `aggregate="first"`)
-(`tests/test_adapter.py::test_panel_to_run_omit_aggregate_matches_explicit_modal`).
-Omitting `--aggregate` on `import-judgekit` yields the same written
-`anchor_scores` as `--aggregate modal` on a panel where modal and first
-disagree (and those scores differ from `--aggregate first`)
-(`tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`).
-CLI omit-`--aggregate` and library omit-`aggregate=` write the same
-`anchor_scores` on a panel where modal and first disagree (and those
-scores differ from `aggregate="first"`)
-(`tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`).
-CLI `--aggregate first` and library `aggregate="first"` write the same
-`anchor_scores` on a panel where modal and first disagree (and those
-scores differ from the omit→modal path)
-(`tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`).
-CLI `--aggregate modal` and library `aggregate="modal"` write the same
-`anchor_scores` on a panel where modal and first disagree (and those
-scores differ from `aggregate="first"`)
-(`tests/test_adapter.py::test_aggregate_modal_cli_and_library_write_same_anchor_scores`).
-CLI `--anchors-out` and library `write_anchors_jsonl(panel_to_anchors(...))`
-write the same JSONL rows for a given panel
-(`tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`).
-CLI `--run-out` and library `write_run_json(panel_to_run(...))` write the
-same run JSON for a given panel
-(`tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`).
-CLI `--model` / `--prompt-sha` overrides and library `model=` /
-`prompt_sha=` write the same run JSON fingerprints via `--run-out` /
-`write_run_json`
-(`tests/test_adapter.py::test_fingerprint_override_cli_and_library_write_same_run_json`).
-CLI `--model` alone (omit `--prompt-sha`) and library `model=` (omit
-`prompt_sha=`) write the same run JSON fingerprints via `--run-out` /
-`write_run_json`, retaining the panel `prompt_sha`
-(`tests/test_adapter.py::test_model_only_override_cli_and_library_retain_panel_prompt_sha`).
-CLI `--prompt-sha` alone (omit `--model`) and library `prompt_sha=` (omit
-`model=`) write the same run JSON fingerprints via `--run-out` /
-`write_run_json`, retaining the panel `model`
-(`tests/test_adapter.py::test_prompt_sha_only_override_cli_and_library_retain_panel_model`).
-CLI empty-string `--model` / `--prompt-sha` and library `model=""` /
-`prompt_sha=""` treat explicit `""` as not omit: empty `prompt_sha` clears
-the panel sha via `--run-out` / `write_run_json` (CLI and library match);
-empty `model` is rejected on both paths with `run is missing a judge model id`
-(`tests/test_adapter.py::test_empty_string_override_cli_and_library_write_same_run_json`).
-CLI whitespace-only `--model` / `--prompt-sha` and library `model=" "` /
-`prompt_sha=" "` write the same run JSON fingerprints via `--run-out` /
-`write_run_json` (whitespace is not treated as omit or stripped)
-(`tests/test_adapter.py::test_whitespace_only_override_cli_and_library_write_same_run_json`).
-CLI whitespace-only `--model` alone (omit `--prompt-sha`) and library
-`model=" "` (omit `prompt_sha=`) write the same run JSON fingerprints via
-`--run-out` / `write_run_json`, retaining the panel `prompt_sha` (literal
-whitespace model is not stripped or omit)
-(`tests/test_adapter.py::test_whitespace_model_only_override_cli_and_library_retain_panel_prompt_sha`).
-CLI whitespace-only `--prompt-sha` alone (omit `--model`) and library
-`prompt_sha=" "` (omit `model=`) write the same run JSON fingerprints via
-`--run-out` / `write_run_json`, retaining the panel `model` (literal
-whitespace prompt_sha is not stripped or omit)
-(`tests/test_adapter.py::test_whitespace_prompt_sha_only_override_cli_and_library_retain_panel_model`).
-CLI empty-string `--prompt-sha` alone (omit `--model`) and library
-`prompt_sha=""` (omit `model=`) write the same run JSON fingerprints via
-`--run-out` / `write_run_json`, retaining the panel `model` (explicit empty
-sha clears the panel sha and is not omit)
-(`tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`).
-CLI empty-string `--model` alone (omit `--prompt-sha`) and library
-`model=""` (omit `prompt_sha=`) are rejected with `run is missing a judge
-model id` on both paths (CLI exit 1 / `error:` stderr; library `ValueError`)
-rather than retaining the panel `model` as omit would (explicit empty model
-is not omit)
-(`tests/test_adapter.py::test_empty_string_model_only_override_cli_and_library_reject`).
-CLI empty-string `--model` with a non-empty `--prompt-sha` and library
-`model=""` with a non-empty `prompt_sha=` are rejected with `run is missing
-a judge model id` on both paths (CLI exit 1 / `error:` stderr; library
-`ValueError`) rather than writing a run with a cleared model and override sha
-(explicit empty model is not omit even when sha is set)
-(`tests/test_adapter.py::test_empty_string_model_with_prompt_sha_override_cli_and_library_reject`).
-CLI empty-string `--model` with whitespace-only `--prompt-sha` and library
-`model=""` with whitespace-only `prompt_sha=` are rejected with `run is
-missing a judge model id` on both paths (CLI exit 1 / `error:` stderr;
-library `ValueError`) rather than writing a run with a cleared model and
-whitespace sha (explicit empty model is not omit even when sha is whitespace)
-(`tests/test_adapter.py::test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject`).
-CLI whitespace-only `--model` with empty-string `--prompt-sha` and library
-`model=" "` with `prompt_sha=""` write the same run JSON fingerprints via
-`--run-out` / `write_run_json` (literal whitespace model is not omit or
-stripped; explicit empty sha clears the panel sha)
-(`tests/test_adapter.py::test_whitespace_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`).
-CLI whitespace-only `--model` with a non-empty `--prompt-sha` and library
-`model=" "` with a non-empty `prompt_sha=` write the same run JSON
-fingerprints via `--run-out` / `write_run_json` (literal whitespace model is
-not omit or stripped; override sha replaces the panel sha)
-(`tests/test_adapter.py::test_whitespace_model_with_prompt_sha_override_cli_and_library_write_same_run_json`).
-CLI non-empty `--model` with empty-string `--prompt-sha` and library
-`model=` with `prompt_sha=""` write the same run JSON fingerprints via
-`--run-out` / `write_run_json` (override model replaces the panel model;
-explicit empty sha clears the panel sha)
-(`tests/test_adapter.py::test_nonempty_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`).
-CLI non-empty `--model` with whitespace-only `--prompt-sha` and library
-`model=` with `prompt_sha=" "` write the same run JSON fingerprints via
-`--run-out` / `write_run_json` (override model replaces the panel model;
-whitespace sha is not omit or stripped)
-(`tests/test_adapter.py::test_nonempty_model_with_whitespace_prompt_sha_override_cli_and_library_write_same_run_json`).
-CLI non-empty `--model` with whitespace-only `--prompt-sha` and the same
-`--model` with empty-string `--prompt-sha` write different run JSON
-fingerprints via `--run-out` (whitespace sha is not normalized to empty;
-empty sha clears to `""`)
-(`tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`).
-Library `model=` with whitespace-only `prompt_sha=` and the same `model=`
-with empty-string `prompt_sha=` write different run JSON fingerprints via
-`write_run_json` (whitespace sha is not normalized to empty; empty sha
-clears to `""`)
-(`tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`).
-CLI whitespace-only `--model` with empty-string `--prompt-sha` and non-empty
-`--model` with empty-string `--prompt-sha` write different run JSON
-fingerprints via `--run-out` (whitespace model is not normalized to a
-concrete override model under a cleared sha)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_cli_write_different_run_json`).
-Library `model=" "` with `prompt_sha=""` and `model=` with `prompt_sha=""`
-write different run JSON fingerprints via `write_run_json` (whitespace model
-is not normalized to a concrete override model under a cleared sha)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_library_write_different_run_json`).
-CLI whitespace-only `--model` with non-empty `--prompt-sha` and non-empty
-`--model` with the same `--prompt-sha` write different run JSON fingerprints
-via `--run-out` (whitespace model is not normalized to a concrete override
-model under a set sha)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_cli_write_different_run_json`).
-Library `model=" "` with non-empty `prompt_sha=` and `model=` with the same
-`prompt_sha=` write different run JSON fingerprints via `write_run_json`
-(whitespace model is not normalized to a concrete override model under a
-set sha)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_library_write_different_run_json`).
-CLI whitespace-only `--prompt-sha` with non-empty `--model` and non-empty
-`--prompt-sha` with the same `--model` write different run JSON fingerprints
-via `--run-out` (whitespace sha is not normalized to a concrete override sha
-under a set model)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_cli_write_different_run_json`).
-Library `prompt_sha=" "` with non-empty `model=` and non-empty `prompt_sha=`
-with the same `model=` write different run JSON fingerprints via
-`write_run_json` (whitespace sha is not normalized to a concrete override sha
-under a set model)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_library_write_different_run_json`).
-CLI whitespace-only `--prompt-sha` alone (omit `--model`) and non-empty
-`--prompt-sha` alone write different run JSON fingerprints via `--run-out`
-(whitespace sha is not normalized to a concrete override sha while both
-retain the panel `model`)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_cli_write_different_run_json`).
-Library `prompt_sha=" "` alone (omit `model=`) and non-empty `prompt_sha=`
-alone write different run JSON fingerprints via `write_run_json` (whitespace
-sha is not normalized to a concrete override sha while both retain the panel
-`model`)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_library_write_different_run_json`).
-CLI whitespace-only `--model` alone (omit `--prompt-sha`) and non-empty
-`--model` alone write different run JSON fingerprints via `--run-out`
-(whitespace model is not normalized to a concrete override model while both
-retain the panel `prompt_sha`)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_cli_write_different_run_json`).
-Library `model=" "` alone (omit `prompt_sha=`) and non-empty `model=` alone
-write different run JSON fingerprints via `write_run_json` (whitespace model
-is not normalized to a concrete override model while both retain the panel
-`prompt_sha`)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_library_write_different_run_json`).
-Library whitespace-only `model=` alone (omit `prompt_sha=`) writes a run
-retaining the panel `prompt_sha` via `write_run_json`, while empty-string
-`model=` alone raises `run is missing a judge model id` (whitespace model is
-not normalized into the empty-reject path)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_alone_library_write_vs_reject`).
-CLI whitespace-only `--model` alone (omit `--prompt-sha`) writes a run
-retaining the panel `prompt_sha` via `--run-out`, while empty-string `--model`
-alone exits 1 with `error:` / `run is missing a judge model id` (whitespace
-model is not normalized into the empty-reject path)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_alone_cli_write_vs_reject`).
-Library whitespace-only `model=` with empty-string `prompt_sha=` writes a run
-via `write_run_json`, while empty-string `model=` with empty-string
-`prompt_sha=` raises `run is missing a judge model id` (whitespace model is
-not normalized into the empty-reject path under a cleared sha)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject`).
-CLI whitespace-only `--model` with empty-string `--prompt-sha` writes a run
-via `--run-out`, while empty-string `--model` with empty-string `--prompt-sha`
-exits 1 with `error:` / `run is missing a judge model id` (whitespace model is
-not normalized into the empty-reject path under a cleared sha)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_cli_write_vs_reject`).
-Library whitespace-only `model=` with non-empty `prompt_sha=` writes a run
-via `write_run_json`, while empty-string `model=` with non-empty `prompt_sha=`
-raises `run is missing a judge model id` (whitespace model is not normalized
-into the empty-reject path under a set sha)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_library_write_vs_reject`).
-CLI whitespace-only `--model` with non-empty `--prompt-sha` writes a run
-via `--run-out`, while empty-string `--model` with non-empty `--prompt-sha`
-exits 1 with `error:` / `run is missing a judge model id` (whitespace model is
-not normalized into the empty-reject path under a set sha)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_cli_write_vs_reject`).
-CLI whitespace-only `--prompt-sha` alone (omit `--model`) and empty-string
-`--prompt-sha` alone write different run JSON fingerprints via `--run-out`
-(whitespace sha is not normalized to empty while both retain the panel
-`model`)
-(`tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_cli_write_different_run_json`).
-Library whitespace-only `prompt_sha=` alone (omit `model=`) and empty-string
-`prompt_sha=` alone write different run JSON fingerprints via `write_run_json`
-(whitespace sha is not normalized to empty while both retain the panel
-`model`)
-(`tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json`).
-CLI whitespace-only `--model` with whitespace-only `--prompt-sha` and the same
-whitespace-only `--model` with empty-string `--prompt-sha` write different run
-JSON fingerprints via `--run-out` (whitespace sha is not normalized to empty
-under a whitespace model)
-(`tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`).
-Library whitespace-only `model=` with whitespace-only `prompt_sha=` and the same
-whitespace-only `model=` with empty-string `prompt_sha=` write different run
-JSON fingerprints via `write_run_json` (whitespace sha is not normalized to
-empty under a whitespace model)
-(`tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`).
-CLI whitespace-only `--prompt-sha` with whitespace-only `--model` and
-non-empty `--prompt-sha` with the same whitespace-only `--model` write
-different run JSON fingerprints via `--run-out` (whitespace sha is not
-normalized to a concrete override sha under a whitespace model)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_cli_write_different_run_json`).
-Library whitespace-only `prompt_sha=` with whitespace-only `model=` and
-non-empty `prompt_sha=` with the same whitespace-only `model=` write
-different run JSON fingerprints via `write_run_json` (whitespace sha is not
-normalized to a concrete override sha under a whitespace model)
-(`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_library_write_different_run_json`).
-Library whitespace-only `model=` with whitespace-only `prompt_sha=` writes a
-run via `write_run_json`, while empty-string `model=` with whitespace-only
-`prompt_sha=` raises `run is missing a judge model id` (whitespace model is
-not normalized into the empty-reject path under a whitespace sha)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_library_write_vs_reject`).
-CLI whitespace-only `--model` with whitespace-only `--prompt-sha` writes a
-run via `--run-out`, while empty-string `--model` with whitespace-only
-`--prompt-sha` exits 1 with `error:` / `run is missing a judge model id`
-(whitespace model is not normalized into the empty-reject path under a
-whitespace sha)
-(`tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_cli_write_vs_reject`).
-Bare ratings + `--human-labels` remain supported without a schema_version:
-
-```json
-{
-  "schema_version": "judgekit.panel_export/v1",
-  "created": "2026-08-04",
-  "live_metric": 0.81,
-  "judges": {
-    "gpt-4o-judge": { "model": "gpt-4o-judge", "prompt_sha": "kit-demo-01" }
-  },
-  "human_labels": { "a01": "pass", "a04": "fail" },
-  "ratings": {
-    "a01": { "gpt-4o-judge": ["pass", "pass", "pass", "pass"] },
-    "a04": { "gpt-4o-judge": ["fail", "fail", "fail", "fail"] }
-  }
-}
-```
-
-Convert one judge's replicates into sentinel anchors + run JSON (modal =
-majority vote, same rule as judgekit):
-
-```bash
-drift-sentinel import-judgekit \
-  --panel examples/judgekit_panel_export.json \
-  --judge gpt-4o-judge \
-  --anchors-out anchors.jsonl \
-  --run-out run.json
-```
-
-Bare kit ratings work too if you pass gold separately:
-
-```bash
-drift-sentinel import-judgekit \
-  --panel ratings.json \
-  --human-labels gold.json \
-  --judge gpt-4o-judge \
-  --anchors-out anchors.jsonl \
-  --run-out run.json
-```
-
-The written run JSON keeps panel `created`, `live_metric`, and judge
-fingerprints (`model` / `prompt_sha`). Optional flags: `--aggregate
-{modal,first}` (default modal), `--model`, `--prompt-sha`, and
-`--human-labels` for bare ratings (`{id: label}` or
-`{human_labels: {...}}`). Python path:
-`driftsentinel.adapter.load_panel_export` -> `panel_to_anchors` /
-`panel_to_run`. Named tests:
-`tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`,
-`tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`,
-`tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`,
-`tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`,
-`tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`,
-`tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`,
-`tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`,
-`tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`,
-`tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_judges_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_ratings_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_list_judge_ratings_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items`,
-`tests/test_adapter.py::test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow`,
-`tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow`,
-`tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`,
-`tests/test_adapter.py::test_panel_to_run_rejects_whitespace_only_judge_id`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_whitespace_only_judge`,
-`tests/test_adapter.py::test_panel_to_run_rejects_unknown_aggregate`,
-`tests/test_adapter.py::test_import_judgekit_aggregate_choices_match_aggregates`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_unknown_aggregate`,
-`tests/test_adapter.py::test_import_judgekit_aggregate_default_is_modal`,
-`tests/test_adapter.py::test_panel_to_run_aggregate_default_is_modal`,
-`tests/test_adapter.py::test_panel_to_run_omit_aggregate_matches_explicit_modal`,
-`tests/test_adapter.py::test_import_judgekit_omit_aggregate_matches_explicit_modal`,
-`tests/test_adapter.py::test_omit_aggregate_cli_and_library_write_same_anchor_scores`,
-`tests/test_adapter.py::test_aggregate_first_cli_and_library_write_same_anchor_scores`,
-`tests/test_adapter.py::test_aggregate_modal_cli_and_library_write_same_anchor_scores`,
-`tests/test_adapter.py::test_anchors_out_cli_and_library_write_same_jsonl_rows`,
-`tests/test_adapter.py::test_run_out_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_fingerprint_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_model_only_override_cli_and_library_retain_panel_prompt_sha`,
-`tests/test_adapter.py::test_prompt_sha_only_override_cli_and_library_retain_panel_model`,
-`tests/test_adapter.py::test_empty_string_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_whitespace_only_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_whitespace_model_only_override_cli_and_library_retain_panel_prompt_sha`,
-`tests/test_adapter.py::test_whitespace_prompt_sha_only_override_cli_and_library_retain_panel_model`,
-`tests/test_adapter.py::test_empty_string_prompt_sha_only_override_cli_and_library_retain_panel_model`,
-`tests/test_adapter.py::test_empty_string_model_only_override_cli_and_library_reject`,
-`tests/test_adapter.py::test_empty_string_model_with_prompt_sha_override_cli_and_library_reject`,
-`tests/test_adapter.py::test_empty_string_model_with_whitespace_prompt_sha_override_cli_and_library_reject`,
-`tests/test_adapter.py::test_whitespace_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_whitespace_model_with_prompt_sha_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_nonempty_model_with_empty_prompt_sha_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_nonempty_model_with_whitespace_prompt_sha_override_cli_and_library_write_same_run_json`,
-`tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`,
-`tests/test_adapter.py::test_nonempty_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_model_empty_prompt_sha_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_model_set_prompt_sha_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_set_model_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_alone_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_model_alone_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_alone_library_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_alone_cli_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_library_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_empty_prompt_sha_cli_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_library_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_set_prompt_sha_cli_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_empty_prompt_sha_alone_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_model_whitespace_vs_empty_prompt_sha_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_cli_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_nonempty_prompt_sha_whitespace_model_library_write_different_run_json`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_library_write_vs_reject`,
-`tests/test_adapter.py::test_whitespace_vs_empty_model_whitespace_prompt_sha_cli_write_vs_reject`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`,
-`tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`.
-
-## CI: weekly anchor re-score
-
-Operators should not wait for a human to notice a bad ruler. This repo ships
-[`.github/workflows/weekly-anchor-rescore.yml`](.github/workflows/weekly-anchor-rescore.yml):
-
-| Trigger | What it does |
-|---|---|
-| Cron (Mondays 06:00 UTC) | Runs `drift-sentinel check` (or `history`) on configured paths |
-| `workflow_dispatch` | Same job, with path/mode inputs you pass in the Actions UI |
-
-**On `JUDGE_DRIFT` (exit 2):** the job opens a GitHub issue titled
-`JUDGE_DRIFT: weekly anchor re-score detected judge drift` (or comments on an
-existing open one), then fails so the workflow run is red. **On
-`SYSTEM_CHANGE` (exit 3) or `STABLE` (exit 0):** no issue. Those are not
-ruler failures.
-
-### Wiring your own paths (no secrets in the repo)
-
-1. Keep producing a weekly re-score JSON the same shape as `examples/run_*.json`
-   (your judge scores the frozen anchors; this workflow never calls an LLM).
-2. In the Actions UI -> **Weekly anchor re-score** -> **Run workflow**, set:
-   - `anchors` -> your frozen `anchors.jsonl`
-   - `baseline` -> pinned baseline from `drift-sentinel baseline ... --out`
-   - `current` -> this week's re-score JSON
-   - or `mode=history` + `history_runs` -> ordered space-separated run paths
-3. For the scheduled run, either keep the defaults or edit the
-   `Resolve paths` defaults in the workflow YAML to your production paths.
-4. **Auth:** the workflow uses only `permissions: issues: write` and
-   `secrets.GITHUB_TOKEN` (automatic). Do **not** commit PATs, OpenAI keys, or
-   provider tokens. If you need issues in another repo, add a fine-scoped PAT
-   as a repository secret and swap `GH_TOKEN`. Never commit the value.
-5. **Smoke the drift path:** dispatch with
-   `current=examples/run_current.json` (the intentional JUDGE_DRIFT fixture) and
-   confirm an issue opens; then point `current` back at your real weekly file.
-
-Named contract test (cron, inputs, issue title/comment path, exit-2 fail):
-`tests/test_weekly_rescore_workflow.py::test_weekly_rescore_workflow_opens_issue_on_judge_drift`.
-
-## Gate for agent-loop-engine
-
-Stack story (copy-pasteable): [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine)
-decides *which* backlog item is safe; this package decides whether the *eval
-ruler* is still trustworthy. Before you automate either loop, fill a
-[Loop Contract](https://github.com/homayoun-safarpour/agent-loop-field-guide)
-(done / verifier / stop layers / state / irreversible). Wire sentinel as a `--gate NAME=COMMAND` so
-**repair beats progress** when the scoreboard itself moved.
-
-### Exit codes (raw `drift-sentinel check` / `history`)
+## What each result means
 
 | Verdict | Exit | Meaning |
 |---|---|---|
-| `STABLE` | `0` | Ruler held; live metric did not move past threshold |
-| `SYSTEM_CHANGE` | `3` | Ruler held; live metric movement is real (system) |
-| `JUDGE_DRIFT` (or history slow decay) | `2` | Ruler moved; do not trust the numbers |
-| bad args / IO / freeze-hash mismatch | `1` | Fix the wiring before trusting any verdict |
+| `STABLE` | 0 | Kappa fell by 0.10 or less, and the live metric moved by 0.05 or less. |
+| `SYSTEM_CHANGE` | 3 | Kappa held, but the live metric moved by more than 0.05. The movement belongs to the system. |
+| `JUDGE_DRIFT` | 2 | Kappa fell by more than 0.10, so the live metric cannot be trusted. `history` also exits 2 on slow decay. |
+| error | 1 | Bad arguments, an unreadable file, a run that missed an anchor, or an anchor file that no longer matches the pinned freeze hash. |
 
-`loop-engine` treats **only exit 0 as PASS** (see its `--gate NAME=COMMAND`
-CLI). So a raw `--gate "drift=drift-sentinel check ..."` would mark
-`SYSTEM_CHANGE` (exit 3) as a red gate and wrongly block feature work even
-though the ruler is fine. Use the shipped remapper:
+A `STABLE` or `SYSTEM_CHANGE` verdict shows that the judge still agrees with the human labels on the anchors. It does not show that the anchors represent your live traffic, or why a provider changed its model. Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md). Central test: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`.
+
+## Use this when
+
+| Situation | Use drift-sentinel? |
+| --- | --- |
+| An LLM judge grades your system and the score moved between runs | Yes |
+| CI or [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine) must stop on judge drift | Yes |
+| You want to know why a judge panel disagrees right now | No. Use [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit) |
+| You have no human-labelled examples | No. Label 10 to 50 outputs first |
+
+## The problem
+
+A judge score can move because the system changed, the judge model changed, someone edited the judge prompt, or the judge varied by chance. All four look the same on a dashboard, so teams roll back healthy deploys or compare charts scored by different judges. A second measurement has to isolate the judge.
+
+## How it works
+
+Label a small set of outputs once, by hand. The human labels never change, so a change in the judge's agreement with them comes from the judge.
+
+1. Keep the anchors as JSONL: `{"id": "a07", "input": "...", "label": "fail"}`.
+2. In every eval run, have the judge also score the anchors, and save the scores as JSON (see `examples/run_baseline.json`).
+3. Pin an approved run as the baseline, which records the anchor `freeze_hash` and kappa.
+4. Run `check` on each new run.
 
 ```bash
-# install both CLIs, then from this repo root:
-loop-engine tick --state examples/LOOP_STATE.md \
-  --gate "tests=python -m pytest -q" \
-  --gate "drift=python examples/as_loop_gate.py --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current_system.json"
+drift-sentinel baseline --anchors examples/anchors.jsonl --run examples/run_baseline.json --out baseline.json
 ```
 
-`examples/as_loop_gate.py` forwards to `drift-sentinel check` and remaps:
-
-| Sentinel exit | Wrapper exit | Loop effect |
-|---|---|---|
-| `0` STABLE | `0` | gate green |
-| `3` SYSTEM_CHANGE | `0` | gate green (ruler trustworthy) |
-| `2` JUDGE_DRIFT | `2` | gate red -> `action: repair` target `drift` |
-| `1` error | `1` | gate red -> repair the command/paths |
-
-Fixture paths: `run_current_system.json` -> wrapper exit 0 + `SYSTEM_CHANGE` in
-stdout; `run_current.json` -> wrapper exit 2 + `JUDGE_DRIFT`. Snippet backlog:
-`examples/LOOP_STATE.md`. Named tests:
-`tests/test_loop_engine_gate_docs.py`.
-
-## What is in the box
-
-| Module | What it does | Use it when |
-|---|---|---|
-| `driftsentinel.anchors` | Loads the frozen anchor set, fingerprints it (`freeze_hash`) | You need proof the reference set itself never moved |
-| `driftsentinel.agreement` | Cohen's kappa (unweighted) plus weighted linear/quadratic kappa for ordinal 0-3 rubrics; observed agreement; flip rate; stdlib only | You want chance-corrected agreement, including near-vs-far misses on ordinal scales |
-| `driftsentinel.runs` | One judge run: model + prompt fingerprint + anchor scores | "Pin your judge" as data, not as a slogan |
-| `driftsentinel.verdict` | The 3-way attribution policy, fully unit-tested | You need "who moved?", not another score |
-| `driftsentinel.baseline` | Score a run and freeze it as a pinned baseline (with `anchor_freeze_hash`); `check` refuses on hash mismatch | You want a durable reference that cannot silently drift |
-| `driftsentinel.history` | Verdict + kappa timeline across N runs; flags slow decay pairwise checks miss | Weekly/monthly pinned runs where erosion is gradual |
-| `driftsentinel.cli` | `drift-sentinel baseline` / `check` / `history` / `import-judgekit`, plain or `--json`, gate-friendly exit codes | Wiring the verdict into CI, cron, or an agent loop |
-| `driftsentinel.adapter` | Load `judgekit.panel_export/v1` only (or bare ratings + gold); reject unknown schema_version | Bridging judge-reliability-kit without hand-copying scores |
-| `examples/as_loop_gate.py` | Remaps check exits so loop-engine only goes red on JUDGE_DRIFT | `--gate "drift=python examples/as_loop_gate.py ..."` |
-| `.github/workflows/weekly-anchor-rescore.yml` | Weekly/manual re-score; `gh issue create` on JUDGE_DRIFT via `GITHUB_TOKEN` | Operators who need a calendar gate without a human watching CLI |
-
-Fixture map (which file is JUDGE_DRIFT vs SYSTEM_CHANGE): [examples/README.md](examples/README.md).
-
-## Worked example (real output)
-
-Freeze the July run as the pinned baseline (records the anchor freeze hash and kappa):
-
-```
-$ drift-sentinel baseline --anchors examples/anchors.jsonl --run examples/run_baseline.json --out baseline.json
+```text
 pinned       : yes
 anchor kappa : 0.833
 freeze hash  : ca7c25804843
@@ -680,23 +77,13 @@ live metric  : 0.810
 wrote        : baseline.json
 ```
 
-The `examples/` folder ships both failure stories. In July the judge was pinned and agreed with the human labels at kappa 0.83. In August the live eval metric dropped from 0.81 to 0.66 (a 15-point fall that looks exactly like a system regression). Ask the sentinel:
+For ordinal rubrics, add `--kappa-weights quadratic --kappa-levels 0,1,2,3` so that near misses cost less than far misses. `drift-sentinel history --anchors A --runs R1 R2 R3` checks each consecutive pair and also flags slow decay, where every step stays under `--kappa-drop` but the whole window exceeds it. On `examples/drifting/` it exits 2.
 
-```
-$ drift-sentinel check --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current.json
-verdict      : JUDGE_DRIFT
-anchor kappa : 0.833 -> 0.333
-anchor flips : 25.0% of frozen anchors changed label
-judge pin    : CHANGED frontier-4-2026-05-01@9f2c1a -> frontier-4-latest@9f2c1a
-live metric  : moved -0.150
-reason       : agreement with the frozen human labels fell (0.833 -> 0.333); the ruler moved, not the system
-note         : judge is not pinned: frontier-4-2026-05-01@9f2c1a -> frontier-4-latest@9f2c1a
-note         : live metric moved -0.150 but is untrustworthy under judge drift
-```
+### Worked example (real output)
 
-The judge was riding a `-latest` alias, the provider updated it, and a quarter of the frozen anchors flipped label. Rolling back the deploy would have fixed nothing. Same metric drop, but with the judge holding steady on the anchors:
+In the first-screen run the live metric fell from 0.81 to 0.66 because the judge moved to a `-latest` alias, so a rollback would fix nothing. With the same fall and a steady judge, the verdict changes:
 
-```
+```text
 $ drift-sentinel check --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current_system.json
 verdict      : SYSTEM_CHANGE
 anchor kappa : 0.833 -> 0.833
@@ -706,42 +93,76 @@ live metric  : moved -0.150
 reason       : anchor agreement held (0.833 -> 0.833) while the live metric moved -0.150; the movement is real and belongs to your system
 ```
 
-Now the rollback is justified, and you can prove it.
+Fixture map: [examples/README.md](examples/README.md).
 
-## Why this exists
+| Module | What it does |
+|---|---|
+| `driftsentinel.anchors` | Loads the anchor set and computes its `freeze_hash` |
+| `driftsentinel.agreement` | Cohen's kappa, weighted kappa and flip rate |
+| `driftsentinel.verdict` | The three-way decision rule |
+| `driftsentinel.baseline` | Pins a baseline; `check` refuses a hash mismatch |
+| `driftsentinel.history` | Timeline across many runs, with slow-decay detection |
+| `driftsentinel.cli` | `baseline`, `check`, `history`, `import-judgekit`, plain or `--json` |
 
-Production eval pain is longitudinal. Cross-sectionally,
-[judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit)
-answers *why a judge panel disagrees right now*. The failure that burns release
-time is different: scores move between weeks and nothing says whether the system
-changed or the ruler did. Every incident reduced to the same missing measurement:
-a frozen human-labeled reference the judge re-scores every run.
+Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md).
 
-That measurement is this package. One verdict, three outcomes, CI exit codes, and
-a loop-engine gate (`examples/as_loop_gate.py` + `--gate "drift=..."`) so an agent
-loop repairs the scoreboard the moment it stops being trustworthy. Honest
-`SYSTEM_CHANGE` stays green; only `JUDGE_DRIFT` blocks.
+## Import from judge-reliability-kit
 
-## Design commitments
+`import-judgekit` reads a `judgekit.panel_export/v1` file, collapses one judge's replicated labels by majority vote (`--aggregate modal`, or `first`), and writes anchors and a run file.
 
-- **No LLM dependency.** The sentinel judges the judge from score files; it never calls a model. Verdicts must be deterministic and testable.
-- **Zero runtime dependencies.** Standard library only.
-- **Chance-corrected, not vibes-corrected.** Agreement is Cohen's kappa (unweighted by default; linear or quadratic weights for ordinal 0-3 rubrics), so a judge that drifts toward always-pass cannot hide behind high raw accuracy.
-- **The reference must be provably frozen.** `AnchorSet.freeze_hash` fingerprints the human labels; a partial re-score is rejected, not silently compared. A pinned baseline records that hash, and `drift-sentinel check` exits 1 if the anchor file no longer matches (`tests/test_baseline.py::test_check_refuses_when_pinned_baseline_freeze_hash_mismatches`).
-- **Every claim above is a test.** The central one: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`. Slow decay across N runs: `tests/test_history.py::test_history_flags_slow_decay_that_pairwise_checks_miss`. Community drifting fixture: `tests/test_history_example.py::test_examples_drifting_history_exits_2_with_judge_drift`. Judgekit bridge: `tests/test_adapter.py::test_adapter_reads_anchor_scores_straight_from_judgekit_panel_export`, `tests/test_adapter.py::test_import_judgekit_cli_locks_panel_envelope_and_documented_flags`, `tests/test_adapter.py::test_unsupported_panel_schema_version_is_rejected`, `tests/test_adapter.py::test_unsupported_schema_error_locks_v1_only_escape_hatch`, `tests/test_adapter.py::test_unrecognized_panel_error_locks_v1_only_escape_hatch`, `tests/test_adapter.py::test_schema_and_unrecognized_errors_share_escape_hatch_phrases`, `tests/test_adapter.py::test_help_and_raise_paths_share_escape_hatch_phrases`, `tests/test_adapter.py::test_import_judgekit_cli_stderr_shares_escape_hatch_phrases`, `tests/test_adapter.py::test_import_judgekit_help_locks_v1_only_schema_gate`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_panel_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_panel_file`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_panel_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_judges_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_ratings_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_ratings_item_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_list_judge_ratings_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_judge_ratings_for_labeled_items`, `tests/test_adapter.py::test_import_judgekit_cli_missing_judge_coverage_lists_item_ids_with_overflow`, `tests/test_adapter.py::test_panel_to_run_missing_coverage_lists_item_ids_with_overflow`, `tests/test_adapter.py::test_panel_to_run_rejects_empty_judge_id`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_judge`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_missing_human_labels_file`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_malformed_human_labels_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_non_object_human_labels_json`, `tests/test_adapter.py::test_import_judgekit_cli_rejects_nested_non_object_human_labels_json`, and `tests/test_adapter.py::test_import_judgekit_cli_rejects_empty_human_labels_json`. Loop gate remap + tick wiring: `tests/test_loop_engine_gate_docs.py` (remapper table, `examples/LOOP_STATE.md` snippet, STABLE/SYSTEM_CHANGE/JUDGE_DRIFT wrapper exits).
+```bash
+drift-sentinel import-judgekit --panel examples/judgekit_panel_export.json --judge gpt-4o-judge --anchors-out anchors.jsonl --run-out run.json
+```
 
-## Field alignment
+```text
+imported     : yes
+anchors      : 6 labels -> anchors.jsonl
+run          : judge gpt-4o-judge -> run.json
+judge pin    : gpt-4o-judge@kit-demo-01
+```
 
-Living / meta-eval practice freezes a reference and re-measures the judge (same family as bias-aware reporting tools and instability CLIs). This package turns that into CI exit codes. Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
+Bare ratings work with `--human-labels gold.json`. An unknown `schema_version`, malformed JSON or missing ratings exits 1 with an `error:` line, and each case has a named test in `tests/test_adapter.py`.
 
-## Related reading
+## CI: weekly anchor re-score
 
-- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide): link-checked map of the LLM-judge tool ecosystem (this package is listed there).
-- [Judge reliability and eval-score movement (arXiv:2606.15474)](https://arxiv.org/html/2606.15474): related field survey on LLM judges; this package is a separate deterministic CI gate, not that paper's code.
+[`.github/workflows/weekly-anchor-rescore.yml`](.github/workflows/weekly-anchor-rescore.yml) runs `check` or `history` every Monday at 06:00 UTC, or on demand with path and mode inputs. On `JUDGE_DRIFT` it opens or comments on an issue titled `JUDGE_DRIFT: weekly anchor re-score detected judge drift` and fails the run. It calls no model and uses only `GITHUB_TOKEN` with `issues: write`. Named test: `tests/test_weekly_rescore_workflow.py`.
+
+## Gate for agent-loop-engine
+
+[agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine) treats only exit 0 as a pass. A raw `--gate "drift=drift-sentinel check ..."` would mark `SYSTEM_CHANGE` (exit 3) as a red gate and block feature work although the judge is fine. The remapper keeps it green, so that repair beats progress only when the judge moved:
+
+```bash
+loop-engine tick --state examples/LOOP_STATE.md \
+  --gate "tests=python -m pytest -q" \
+  --gate "drift=python examples/as_loop_gate.py --anchors examples/anchors.jsonl --baseline examples/run_baseline.json --current examples/run_current_system.json"
+```
+
+| Sentinel exit | Wrapper exit | Loop effect |
+|---|---|---|
+| `0` STABLE | `0` | gate green |
+| `3` SYSTEM_CHANGE | `0` | gate green |
+| `2` JUDGE_DRIFT | `2` | gate red -> `action: repair` target `drift` |
+| `1` error | `1` | gate red -> fix the command or paths |
+
+Named tests: `tests/test_loop_engine_gate_docs.py`.
+
+## Limits
+
+- It is not a judge and not a labelling tool. It calls no model, so your eval job must have the judge re-score the anchors.
+- The verdict covers the anchors only. Drift on cases they do not cover can go unseen.
+- A changed judge fingerprint is reported, but it does not change the verdict without a kappa drop.
+- The thresholds 0.10 and 0.05 are defaults; set them with `--kappa-drop` and `--metric-shift`.
+- It has no runtime dependencies and needs Python 3.10 or later.
+
+## Related tools
+
+- [judge-reliability-kit](https://github.com/homayoun-safarpour/judge-reliability-kit): why a judge panel disagrees at one point in time.
+- [agent-loop-engine](https://github.com/homayoun-safarpour/agent-loop-engine): state, gates and the next-step decision for agent loops.
+- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide): a link-checked map of tools for LLM judges.
 
 ## Contributing
 
-Issues and PRs welcome. Recent community: `examples/drifting/` via PR #8; named pytest lock in `tests/test_history_example.py` (GFI #9). Sibling map: [judge-field-guide #1](https://github.com/homayoun-safarpour/judge-field-guide/issues/1). Run `python -m pytest -q` and `python -m ruff check src tests` before pushing.
+Issues and pull requests are welcome. Run `python -m pytest -q` and `python -m ruff check src tests` before you push.
 
 ## Citation
 
@@ -759,5 +180,3 @@ Author: Homayoun Safarpour | [LinkedIn](https://www.linkedin.com/in/homayoun-saf
 ## License
 
 MIT
-
-
