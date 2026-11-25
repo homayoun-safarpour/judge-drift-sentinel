@@ -21,7 +21,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 from driftsentinel.adapter import (
     AGGREGATES,
@@ -133,8 +133,16 @@ def _render_baseline_plain(payload: dict[str, Any], out_path: str) -> str:
     return "\n".join(lines)
 
 
+class _Parser(argparse.ArgumentParser):
+    """Bad arguments exit 1, as the README says; argparse's own 2 means JUDGE_DRIFT here."""
+
+    def error(self, message: str) -> NoReturn:
+        self.print_usage(sys.stderr)
+        self.exit(1, f"{self.prog}: error: {message}\n")
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
+    parser = _Parser(
         prog="drift-sentinel",
         description="Attribute eval-score movement to your system or to your LLM judge.",
     )
