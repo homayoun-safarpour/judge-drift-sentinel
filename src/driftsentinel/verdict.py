@@ -17,6 +17,7 @@ reported, because it is the usual cause of drift.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from driftsentinel.agreement import DEFAULT_KAPPA, KappaConfig, agreement_kappa, flip_rate
@@ -29,6 +30,9 @@ STABLE = "STABLE"
 
 #: Exit codes for gate composition: 0 means "your eval numbers are trustworthy".
 EXIT_CODES = {STABLE: 0, SYSTEM_CHANGE: 3, JUDGE_DRIFT: 2}
+
+#: Kappa lies in [-1, 1], so a drop of 2 or more can never be reached.
+_MAX_KAPPA_DROP = 2.0
 
 
 @dataclass(frozen=True)
@@ -59,6 +63,19 @@ def _require_full_coverage(anchors: AnchorSet, run: JudgeRun) -> None:
         )
 
 
+def validate_thresholds(kappa_drop: float, metric_shift: float) -> None:
+    """Refuse thresholds that would let a check pass without testing anything."""
+    if not (math.isfinite(kappa_drop) and 0.0 < kappa_drop < _MAX_KAPPA_DROP):
+        raise ValueError(
+            f"--kappa-drop must be a number above 0 and below 2 (kappa lies in -1..1), "
+            f"got {kappa_drop!r}"
+        )
+    if not (math.isfinite(metric_shift) and metric_shift >= 0.0):
+        raise ValueError(
+            f"--metric-shift must be a finite number of 0 or more, got {metric_shift!r}"
+        )
+
+
 def diagnose(  # noqa: PLR0913  (policy knobs stay keyword-only beside the three runs)
     anchors: AnchorSet,
     baseline: JudgeRun,
@@ -73,8 +90,17 @@ def diagnose(  # noqa: PLR0913  (policy knobs stay keyword-only beside the three
     Pass `kappa=KappaConfig(weights="linear"|"quadratic", levels=(0,1,2,3))`
     for ordinal rubrics; default is unweighted Cohen's kappa.
     """
+    validate_thresholds(kappa_drop, metric_shift)
+    anchors.require_two_labels()
     _require_full_coverage(anchors, baseline)
     _require_full_coverage(anchors, current)
+    if (baseline.live_metric is None) != (current.live_metric is None):
+        missing = baseline if baseline.live_metric is None else current
+        raise ValueError(
+            f"run {missing.source or missing.fingerprint} has no live_metric but the other run "
+            "has one, so the live metric cannot be compared. "
+            "Give both runs a live_metric or neither."
+        )
     kappa_cfg = kappa or DEFAULT_KAPPA
 
     k_baseline = agreement_kappa(
@@ -99,6 +125,8 @@ def diagnose(  # noqa: PLR0913  (policy knobs stay keyword-only beside the three
     metric_delta = None
     if baseline.live_metric is not None and current.live_metric is not None:
         metric_delta = current.live_metric - baseline.live_metric
+    else:
+        notes.append("no live_metric in either run; the verdict covers the anchors only")
 
     if k_baseline - k_current > kappa_drop:
         kind = JUDGE_DRIFT
@@ -116,6 +144,9 @@ def diagnose(  # noqa: PLR0913  (policy knobs stay keyword-only beside the three
             f"anchor agreement held ({k_baseline:.3f} -> {k_current:.3f}) while the live "
             f"metric moved {metric_delta:+.3f}; the movement is real and belongs to your system"
         )
+    elif metric_delta is None:
+        kind = STABLE
+        reason = "anchor agreement is within threshold; no live metric was compared"
     else:
         kind = STABLE
         reason = "anchor agreement and live metric are both within thresholds"

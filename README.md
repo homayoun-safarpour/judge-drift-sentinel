@@ -42,7 +42,7 @@ The package is also on PyPI as `judge-drift-sentinel` ([docs/PUBLISH.md](docs/PU
 | `STABLE` | 0 | Kappa fell by 0.10 or less, and the live metric moved by 0.05 or less. |
 | `SYSTEM_CHANGE` | 3 | Kappa held, but the live metric moved by more than 0.05. The movement belongs to the system. |
 | `JUDGE_DRIFT` | 2 | Kappa fell by more than 0.10, so the live metric cannot be trusted. `history` also exits 2 on slow decay. |
-| error | 1 | Bad arguments, an unreadable file, a run that missed an anchor, or an anchor file that no longer matches the pinned freeze hash. |
+| error | 1 | Bad arguments, an unreadable or malformed file, a run that missed an anchor, an anchor file that no longer matches the pinned freeze hash, anchors that all carry one human label (kappa is undefined there), a `live_metric` in only one run or one that is not a finite number, or a `--kappa-drop` outside 0 to 2 or a negative `--metric-shift`. |
 
 A `STABLE` or `SYSTEM_CHANGE` verdict shows that the judge still agrees with the human labels on the anchors. It does not show that the anchors represent your live traffic, or why a provider changed its model. Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md). Central test: `tests/test_verdict.py::test_drift_on_frozen_anchors_blames_the_judge_not_the_system`.
 
@@ -65,7 +65,7 @@ Label a small set of outputs once, by hand. The human labels never change, so a 
 
 1. Keep the anchors as JSONL: `{"id": "a07", "input": "...", "label": "fail"}`.
 2. In every eval run, have the judge also score the anchors, and save the scores as JSON (see `examples/run_baseline.json`).
-3. Pin an approved run as the baseline, which records the anchor `freeze_hash` and kappa.
+3. Pin an approved run as the baseline, which records the anchor `freeze_hash` (over each anchor's id, input and label) and kappa.
 4. Run `check` on each new run.
 
 ```bash
@@ -75,7 +75,7 @@ drift-sentinel baseline --anchors examples/anchors.jsonl --run examples/run_base
 ```text
 pinned       : yes
 anchor kappa : 0.833
-freeze hash  : ca7c25804843
+freeze hash  : a8569b1c7428
 judge pin    : frontier-4-2026-05-01@9f2c1a
 live metric  : 0.810
 wrote        : baseline.json
@@ -156,6 +156,8 @@ Named tests: `tests/test_loop_engine_gate_docs.py`.
 - The verdict covers the anchors only. Drift on cases they do not cover can go unseen.
 - A changed judge fingerprint is reported, but it does not change the verdict without a kappa drop.
 - The thresholds 0.10 and 0.05 are defaults; set them with `--kappa-drop` and `--metric-shift`.
+- A plain run file used as `--baseline` carries no freeze hash, so `check` cannot tell whether the anchors changed since it was scored; pin baselines with `drift-sentinel baseline` to get that check.
+- When neither run has a `live_metric`, the verdict covers the anchors only, and the output says so in a note.
 - It has no runtime dependencies and needs Python 3.10 or later.
 
 ## Related tools

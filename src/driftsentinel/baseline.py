@@ -34,6 +34,7 @@ def pin_baseline(
     kappa: KappaConfig | None = None,
 ) -> dict[str, Any]:
     """Score `run` against `anchors` and return a freeze-ready baseline payload."""
+    anchors.require_two_labels()
     _require_full_coverage(anchors, run)
     kappa_cfg = kappa or DEFAULT_KAPPA
     score = agreement_kappa(
@@ -64,6 +65,8 @@ def write_baseline(path: str | Path, payload: dict[str, Any]) -> Path:
 def load_recorded_freeze_hash(path: str | Path) -> str | None:
     """Return `anchor_freeze_hash` from a baseline JSON, or None if absent."""
     record = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(record, dict):
+        raise ValueError(f"baseline {path}: expected a JSON object, got {type(record).__name__}")
     value = record.get("anchor_freeze_hash")
     if value is None or value == "":
         return None

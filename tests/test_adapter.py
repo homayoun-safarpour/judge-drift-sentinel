@@ -1341,12 +1341,13 @@ def test_import_judgekit_aggregate_choices_match_aggregates(capsys):
 
 
 def test_import_judgekit_cli_rejects_unknown_aggregate(capsys):
-    """Named claim: CLI rejects unknown --aggregate with argparse exit 2.
+    """Named claim: CLI rejects unknown --aggregate with exit 1 (bad arguments).
 
     Choices are locked to ``sorted(AGGREGATES)`` by
     ``test_import_judgekit_aggregate_choices_match_aggregates``. This claim
     locks the operator rejection surface: an unknown value (e.g. ``mean``)
-    must exit 2 with stderr carrying ``invalid choice`` plus both ``first``
+    must exit 1 (README: bad arguments exit 1; 2 means JUDGE_DRIFT) with
+    stderr carrying ``invalid choice`` plus both ``first``
     and ``modal``, so the choices lock cannot silently become a soft accept.
     """
     with pytest.raises(SystemExit) as excinfo:
@@ -1365,7 +1366,7 @@ def test_import_judgekit_cli_rejects_unknown_aggregate(capsys):
                 "mean",
             ]
         )
-    assert excinfo.value.code == 2
+    assert excinfo.value.code == 1
     err = capsys.readouterr().err
     assert "invalid choice" in err
     assert "mean" in err

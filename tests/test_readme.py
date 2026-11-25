@@ -43,3 +43,22 @@ def test_readme_stranger_check_is_judge_drift():
         ]
     )
     assert code == 2
+
+
+def test_readme_baseline_block_matches_real_output(tmp_path, capsys):
+    out = tmp_path / "baseline.json"
+    code = main(
+        [
+            "baseline",
+            "--anchors",
+            str(EXAMPLES / "anchors.jsonl"),
+            "--run",
+            str(EXAMPLES / "run_baseline.json"),
+            "--out",
+            str(out),
+        ]
+    )
+    assert code == 0
+    printed = capsys.readouterr().out.splitlines()
+    for line in printed[:-1]:  # the last line names the local output path
+        assert line in README, line

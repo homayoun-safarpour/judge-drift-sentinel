@@ -8,6 +8,7 @@ rulers, and any score movement between them is suspect by default.
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -34,6 +35,17 @@ class JudgeRun:
         return f"{self.model}@{self.prompt_sha or 'unversioned'}"
 
 
+def _parse_metric(path: str | Path, metric: object) -> float | None:
+    if metric is None:
+        return None
+    if isinstance(metric, bool) or not isinstance(metric, (int, float)):
+        raise ValueError(f"run {path}: live_metric must be a number, got {metric!r}")
+    value = float(metric)
+    if not math.isfinite(value):
+        raise ValueError(f"run {path}: live_metric must be a finite number, got {metric!r}")
+    return value
+
+
 def load_run(path: str | Path) -> JudgeRun:
     """Load a run from JSON.
 
@@ -46,13 +58,19 @@ def load_run(path: str | Path) -> JudgeRun:
         }
     """
     record = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(record, dict):
+        raise ValueError(f"run {path}: expected a JSON object, got {type(record).__name__}")
     judge = record.get("judge", {})
-    metric = record.get("live_metric")
+    if not isinstance(judge, dict):
+        raise ValueError(f"run {path}: 'judge' must be an object with model and prompt_sha")
+    scores = record.get("anchor_scores", {})
+    if not isinstance(scores, dict):
+        raise ValueError(f"run {path}: 'anchor_scores' must be an object of anchor id -> label")
     return JudgeRun(
         model=str(judge.get("model", "")),
         prompt_sha=str(judge.get("prompt_sha", "")),
-        anchor_scores={str(k): str(v) for k, v in record.get("anchor_scores", {}).items()},
-        live_metric=float(metric) if metric is not None else None,
+        anchor_scores={str(k): str(v) for k, v in scores.items()},
+        live_metric=_parse_metric(path, record.get("live_metric")),
         created=str(record.get("created", "")),
         source=str(path),
     )
